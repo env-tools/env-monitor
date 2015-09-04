@@ -9,3 +9,6 @@ Generic web-based monitoring app for distributed multi-process systems
 - Ilya Sungurov (bombinmybag)
 
 *Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
+
+- Alexander Dodonov
+*Java developer, I am ineterested in the modern architechtural solutions and in the practical usage of Java 8
