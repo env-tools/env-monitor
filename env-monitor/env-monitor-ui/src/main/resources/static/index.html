@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Echo prototype for env-monitor</title>
+    <script src="sockjs-0.3.4.js"></script>
+    <script src="stomp.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('messageDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('response').innerHTML = '';
+        }
+
+        function connect() {
+            var socket = new SockJS('/monitor');
+            stompClient = Stomp.over(socket);
+            stompClient.connect('guest', 'guest', function (frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+
+                var suffix = frame.headers['queue-suffix'];
+                console.log('queue-suffix is: ' + suffix);
+
+                stompClient.subscribe('/user/topic/moduleresponse', function (response) {
+                    showResponse(JSON.parse(response.body).payload);
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function generateRequestId() {
+            return Math.floor(Math.random() * 999999999);
+        }
+
+        function sendMessage() {
+            var message = document.getElementById('content').value;
+            var module = document.getElementById('module').value;
+            stompClient.send("/app/modulerequest", {}, JSON.stringify(
+                    {   'requestId': generateRequestId(),
+                        'targetModuleId': module,
+                        'payload': { 'content': message }
+                    }));
+        }
+
+
+        function showResponse(message) {
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(message));
+            response.appendChild(p);
+        }
+    </script>
+</head>
+<body onload="disconnect()">
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div>
+    <div id="loginDiv">
+        <table>
+            <tr>
+                <td>
+                    <label>Username:</label><input type="text" id="login" value="guest"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Password:</label><input type="password" id="password" value="guest"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <button id="connect" onclick="connect();">Connect</button>
+                </td>
+                <td>
+                    <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="messageDiv">
+        <table>
+            <tr>
+                <td>
+                    <label>To which module?</label><input type="text" id="module" value="echo"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>What content?</label><input type="text" id="content" value="All the world's a stage"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="sendMessage" onclick="sendMessage();">Send</button>
+                </td>
+            </tr>
+        </table>
+        <p id="response"></p>
+    </div>
+</div>
+</body>
+</html>

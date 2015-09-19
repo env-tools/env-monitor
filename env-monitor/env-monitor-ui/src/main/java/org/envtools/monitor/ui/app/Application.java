@@ -1,4 +1,4 @@
-package org.envtools.monitor.envtools.monitor.ui.app;
+package org.envtools.monitor.ui.app;
 
 /**
  * Created: 9/19/15 11:51 PM
