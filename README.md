@@ -23,7 +23,7 @@ Generic web-based monitoring app for distributed multi-process systems
 To run the prototype:
 - Build with maven 3
 - Take jar from env-monitor-ui/target
-- Run with java -jar <jarfile>. Use -Dserver.port=<other_port> if you don't like default 8080
+- Run with java -jar &lt;jarfile&gt;. Use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
 - Access localhost:8080
 
 To debug:
