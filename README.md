@@ -29,3 +29,4 @@ To run the prototype:
 To debug:
  - cd env-monitor-ui
  - mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+ Or just run Application::main from your IDE in debug mode
