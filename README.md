@@ -20,13 +20,25 @@ Generic web-based monitoring app for distributed multi-process systems
 *Java developer, interested in participating at development of new project from scratch*
 
 #How to run:
-To run the prototype:
+*To run the prototype standalone (from command line):*
 - Build with maven 3
 - Take jar from env-monitor-ui/target
-- Run with java -jar &lt;jarfile&gt;. Use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
-- Access localhost:8080
+- Run with java -jar &lt;jarfile&gt;. 
+- In command line, use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
 
-To debug:
+*To run the prototype from your IDE*
+- Import root maven pom.xml into your project
+- Find class "Application" and method "main", run it from IDE 
+- In your run configuration (Java startup settings) use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
+
+*Final step:*
+- Access http://localhost:8080
+
+#How to debug:
+*To debug the prototype remotely as a standalone app:*
  - cd env-monitor-ui
  - mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
- Or just run Application::main from your IDE in debug mode
+ - Launch remote debugging session in your IDE
+ 
+*To debug from your IDE*
+ - Run Application::main in debug mode
