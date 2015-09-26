@@ -17,7 +17,7 @@
         function connect() {
             var socket = new SockJS('/monitor');
             stompClient = Stomp.over(socket);
-            stompClient.connect('guest', 'guest', function (frame) {
+            stompClient.connect({}, /*'guest', 'guest',*/ function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
 

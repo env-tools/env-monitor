@@ -6,6 +6,7 @@ package org.envtools.monitor.ui.app.config;
  * @author Yury Yakovlev
  */
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -23,7 +24,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/monitor").withSockJS();
+        registry.addEndpoint("/monitor").setAllowedOrigins("*").withSockJS();
     }
 
 }
