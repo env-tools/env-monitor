@@ -15,14 +15,14 @@
         }
 
         function connect() {
+            var login = document.getElementById('login').value;
+            var password = document.getElementById('password').value;
+
             var socket = new SockJS('/monitor');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, /*'guest', 'guest',*/ function (frame) {
+            stompClient.connect(login, password, function (frame) {
                 setConnected(true);
-                console.log('Connected: ' + frame);
-
-                var suffix = frame.headers['queue-suffix'];
-                console.log('queue-suffix is: ' + suffix);
+                console.log('Connected as ' + login + ' : ' + frame);
 
                 stompClient.subscribe('/user/topic/moduleresponse', function (response) {
                     showResponse(JSON.parse(response.body).payload);
@@ -57,7 +57,7 @@
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
+            p.appendChild(document.createTextNode(JSON.stringify(message)));
             response.appendChild(p);
         }
     </script>
