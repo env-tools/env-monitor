@@ -22,6 +22,17 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-integration</artifactId>
+        </dependency>
+        <!--dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+            <version>4.0.1</version>
+        </dependency-->
+    </dependencies>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -36,6 +47,11 @@
             </dependency>
             <dependency>
                 <groupId>env.monitor</groupId>
+                <artifactId>env-monitor-module</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>env.monitor</groupId>
                 <artifactId>env-monitor-ui</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -44,6 +60,7 @@
 
     <modules>
         <module>env-monitor-model</module>
+        <module>env-monitor-module</module>
         <module>env-monitor-provider</module>
         <module>env-monitor-ui</module>
     </modules>

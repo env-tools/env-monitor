@@ -4,25 +4,23 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Created: 9/20/15 12:56 AM
+ * Created: 10/16/15 10:07 PM
  *
  * @author Yury Yakovlev
+ *  This class represents a one-time or periodic data puched by a module to the data requestor (subscriber)
+ *
  */
-public class ModuleRequest {
-
+public class RequestedDataMessage {
     private String requestId;
     private String sessionId;
     private String targetModuleId;
     private String username;
-    private RequestPayload payload;
+    private RequestedDataPayload payload;
 
-    //TODO implement builder classes
-
-    //For Jackson
-    public ModuleRequest() {
+    public RequestedDataMessage() {
     }
 
-    public ModuleRequest(String requestId, String sessionId, String targetModuleId, String username, RequestPayload payload) {
+    public RequestedDataMessage(String requestId, String sessionId, String targetModuleId, String username, RequestedDataPayload payload) {
         this.requestId = requestId;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
@@ -62,11 +60,11 @@ public class ModuleRequest {
         this.username = username;
     }
 
-    public RequestPayload getPayload() {
+    public RequestedDataPayload getPayload() {
         return payload;
     }
 
-    public void setPayload(RequestPayload payload) {
+    public void setPayload(RequestedDataPayload payload) {
         this.payload = payload;
     }
 

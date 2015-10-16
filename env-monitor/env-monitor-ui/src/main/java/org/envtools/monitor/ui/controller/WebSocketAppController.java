@@ -1,20 +1,19 @@
 package org.envtools.monitor.ui.controller;
 
-import org.envtools.monitor.model.ModuleRequest;
+import org.envtools.monitor.model.DataRequestMessage;
+import org.envtools.monitor.module.ModuleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.MessageHeaders;
+import org.springframework.context.ApplicationContext;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Controller;
 import org.apache.log4j.Logger;
 
-import java.security.Principal;
-import java.util.Collections;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 
 /**
@@ -25,35 +24,42 @@ import java.util.Collections;
 @Controller
 public class WebSocketAppController {
 
-    private static Logger LOGGER = Logger.getLogger(WebSocketAppController.class);
+    private static final Logger LOGGER = Logger.getLogger(WebSocketAppController.class);
 
     @Autowired
-    private SimpMessagingTemplate template;
+    ApplicationContext ctx;
 
+    @PostConstruct
+    public void init() {
+        LOGGER.info("WebSocketAppController.init - WebSocketAppController has been initialized. ");
+    }
+
+    @Resource(name = "applications.channel")
+    MessageChannel applicationsModuleDataRequestChannel;
+
+    //WebSocket message mapping
     @MessageMapping("/modulerequest")
-    //@SendToUser(value = "/topic/moduleresponse", broadcast = false)
-    public void sendModuleRequest(@Payload ModuleRequest request,
-                                           SimpMessageHeaderAccessor headerAccessor
-                                           /* ,Principal principal*/) {
+    public void handleDataRequest(@Payload DataRequestMessage dataRequestMessage,
+                                  SimpMessageHeaderAccessor headerAccessor)
+    {
         String sessionId = headerAccessor.getSessionId();
-        request.setSessionId(sessionId);
-        LOGGER.info("WebSocketAppController.sendModuleRequest - request : " + request);
+        dataRequestMessage.setSessionId(sessionId);
+        LOGGER.info("WebSocketAppController.handleDataRequest - request : " + dataRequestMessage);
 
-        String user = sessionId;
-        String destination = "/topic/moduleresponse";
-        template.convertAndSendToUser(user, destination, request,
-                createHeaders(sessionId) );
-                //Collections.<String, Object>singletonMap(
-                //        SimpMessageHeaderAccessor.SESSION_ID_HEADER, sessionId));
+        String targetModuleId = dataRequestMessage.getTargetModuleId();
+        if (targetModuleId == null) {
+            LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not specified, ignoring");
+            return;
+        }
 
-        //return request;
+        //Send data request to the appropriate module
+        switch(dataRequestMessage.getTargetModuleId()) {
+            case ModuleConstants.APPLICATIONS_MODULE_ID:
+                applicationsModuleDataRequestChannel.send(new GenericMessage<DataRequestMessage>(dataRequestMessage));
+                break;
+            default:
+                LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not supported");
+        }
+
     }
-
-    private MessageHeaders createHeaders(String sessionId) {
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        headerAccessor.setSessionId(sessionId);
-        headerAccessor.setLeaveMutable(true);
-        return headerAccessor.getMessageHeaders();
-    }
-
 }

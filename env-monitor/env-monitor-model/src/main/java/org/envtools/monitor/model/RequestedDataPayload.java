@@ -4,19 +4,28 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Created: 9/20/15 12:58 AM
+ * Created: 10/16/15 10:09 PM
  *
  * @author Yury Yakovlev
  */
-public class RequestPayload {
+public class RequestedDataPayload {
+    private DataRequestPayload requestPayload;
     private String content;
 
-    //For Jackson
-    public RequestPayload() {
+    public RequestedDataPayload() {
     }
 
-    public RequestPayload(String content) {
+    public RequestedDataPayload(DataRequestPayload requestPayload, String content) {
+        this.requestPayload = requestPayload;
         this.content = content;
+    }
+
+    public DataRequestPayload getRequestPayload() {
+        return requestPayload;
+    }
+
+    public void setRequestPayload(DataRequestPayload requestPayload) {
+        this.requestPayload = requestPayload;
     }
 
     public String getContent() {
@@ -30,6 +39,7 @@ public class RequestPayload {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("requestPayload", requestPayload).
                 append("content", content).
                 toString();
     }
