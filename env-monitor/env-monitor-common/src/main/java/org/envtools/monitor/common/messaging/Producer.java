@@ -6,4 +6,7 @@ package org.envtools.monitor.common.messaging;
  * @author Yury Yakovlev
  */
 public interface Producer {
+
+    String CONNECTION_TYPE = "PRODUCER";
+
 }

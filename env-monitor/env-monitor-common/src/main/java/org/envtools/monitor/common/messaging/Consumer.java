@@ -6,4 +6,7 @@ package org.envtools.monitor.common.messaging;
  * @author Yury Yakovlev
  */
 public interface Consumer {
+
+    String CONNECTION_TYPE = "CONSUMER";
+
 }
