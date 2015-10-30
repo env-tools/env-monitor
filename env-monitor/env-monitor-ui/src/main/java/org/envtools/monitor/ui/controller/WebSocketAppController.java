@@ -1,6 +1,6 @@
 package org.envtools.monitor.ui.controller;
 
-import org.envtools.monitor.model.DataRequestMessage;
+import org.envtools.monitor.model.messaging.DataRequestMessage;
 import org.envtools.monitor.module.ModuleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

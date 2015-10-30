@@ -1,4 +1,4 @@
-package org.envtools.monitor.model;
+package org.envtools.monitor.model.messaging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * Created: 10/16/15 10:07 PM
  *
  * @author Yury Yakovlev
- *  This class represents a one-time or periodic data puched by a module to the data requestor (subscriber)
+ *  This class represents a one-time or periodic data pushed by a module to the data requestor (subscriber)
  *
  */
 public class RequestedDataMessage {

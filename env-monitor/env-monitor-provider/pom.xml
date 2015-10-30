@@ -10,6 +10,12 @@
 	<name>env-monitor-provider</name>
 	<url>http://maven.apache.org</url>
 
+    <dependencies>
+        <dependency>
+            <groupId>env.monitor</groupId>
+            <artifactId>env-monitor-model</artifactId>
+        </dependency>
+    </dependencies>
 
 
 </project>

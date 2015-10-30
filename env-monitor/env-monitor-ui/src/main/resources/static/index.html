@@ -25,7 +25,11 @@
                 console.log('Connected as ' + login + ' : ' + frame);
 
                 stompClient.subscribe('/user/topic/moduleresponse', function (response) {
-                    showResponse(JSON.parse(response.body).payload);
+                    showRequestedResponse(JSON.parse(response.body).payload);
+                });
+
+                stompClient.subscribe('/topic/modulepush', function (response) {
+                    showPushedResponse(JSON.parse(response.body).payload);
                 });
             });
         }
@@ -53,8 +57,16 @@
         }
 
 
-        function showResponse(message) {
-            var response = document.getElementById('response');
+        function showRequestedResponse(message) {
+            showResponse(message, "requested-response");
+        }
+
+        function showPushedResponse(message) {
+            showResponse(message, "pushed-response");
+        }
+
+        function showResponse(message, elementId) {
+            var response = document.getElementById(elementId);
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
             p.appendChild(document.createTextNode(JSON.stringify(message)));
@@ -111,7 +123,12 @@
                 </td>
             </tr>
         </table>
-        <p id="response"></p>
+
+        <h3>Response to request:</h3>
+        <p id="requested-response"></p>
+
+        <h3>Pushed from module:</h3>
+        <p id="pushed-response"></p>
     </div>
 </div>
 </body>

@@ -21,5 +21,13 @@
             <groupId>env.monitor</groupId>
             <artifactId>env-monitor-model</artifactId>
         </dependency>
+        <dependency>
+            <groupId>env.monitor</groupId>
+            <artifactId>env-monitor-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>env.monitor</groupId>
+            <artifactId>env-monitor-provider</artifactId>
+        </dependency>
     </dependencies>
 </project>

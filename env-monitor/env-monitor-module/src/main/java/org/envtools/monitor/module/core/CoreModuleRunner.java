@@ -1,7 +1,7 @@
 package org.envtools.monitor.module.core;
 
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.RequestedDataMessage;
+import org.envtools.monitor.model.messaging.RequestedDataMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessageHeaders;
@@ -61,8 +61,14 @@ public class CoreModuleRunner implements Runnable {
         LOGGER.info("CoreModuleRunner.handleRequestedData - requestedDataMessage : " + requestedDataMessage);
         String user = requestedDataMessage.getSessionId();
         String webSocketDestination = "/topic/moduleresponse";
-        webSocketClientMessagingTemplate.convertAndSendToUser(user, webSocketDestination, requestedDataMessage,
-                createUniqueSessionDestinationHeaders(user));
+
+        if (user != null) {
+            webSocketClientMessagingTemplate.convertAndSendToUser(user, webSocketDestination, requestedDataMessage,
+                    createUniqueSessionDestinationHeaders(user));
+        } else {
+            //TODO manage subscriptions
+            webSocketClientMessagingTemplate.convertAndSend(webSocketDestination, requestedDataMessage);
+        }
     }
 
     @PreDestroy

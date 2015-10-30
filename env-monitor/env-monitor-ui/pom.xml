@@ -46,6 +46,14 @@
             <groupId>env.monitor</groupId>
             <artifactId>env-monitor-module</artifactId>
         </dependency>
+        <dependency>
+            <groupId>env.monitor</groupId>
+            <artifactId>env-monitor-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>env.monitor</groupId>
+            <artifactId>env-monitor-common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -42,6 +42,11 @@
             </dependency>
             <dependency>
                 <groupId>env.monitor</groupId>
+                <artifactId>env-monitor-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>env.monitor</groupId>
                 <artifactId>env-monitor-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>

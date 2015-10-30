@@ -2,12 +2,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:int="http://www.springframework.org/schema/integration"
        xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-       http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd">
+       http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <int:channel id="applications.channel"/>
 
     <bean id="applications.runner" class="org.envtools.monitor.module.applications.ApplicationsModuleRunner"/>
+
+    <bean id="applications.provider" class="org.envtools.monitor.provider.mock.MockApplicationsModuleProvider"/>
+
+    <bean id="serializer" class="org.envtools.monitor.common.serialization.JSONSerializer" />
+
+    <!-- TODO move to provider context -->
+    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.CPUDataProvider"/>
+
+    <task:annotation-driven scheduler="messageBrokerSockJsTaskScheduler"/>
 
 </beans>
