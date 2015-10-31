@@ -60,14 +60,15 @@ public class CoreModuleRunner implements Runnable {
     private void handleRequestedData(RequestedDataMessage requestedDataMessage) {
         LOGGER.info("CoreModuleRunner.handleRequestedData - requestedDataMessage : " + requestedDataMessage);
         String user = requestedDataMessage.getSessionId();
-        String webSocketDestination = "/topic/moduleresponse";
+        String responseWebSocketDestination = "/topic/moduleresponse";
+        String pushedWebSocketDestination = "/topic/modulepush";
 
         if (user != null) {
-            webSocketClientMessagingTemplate.convertAndSendToUser(user, webSocketDestination, requestedDataMessage,
+            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, requestedDataMessage,
                     createUniqueSessionDestinationHeaders(user));
         } else {
             //TODO manage subscriptions
-            webSocketClientMessagingTemplate.convertAndSend(webSocketDestination, requestedDataMessage);
+            webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, requestedDataMessage);
         }
     }
 

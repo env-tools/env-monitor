@@ -10,16 +10,16 @@ import java.io.Serializable;
  * This is model object for Applications module
  */
 public class ApplicationsData implements Serializable {
-    private Double cpuLoad;
+    private Long freeMemory;
 
     public ApplicationsData() {
     }
 
-    public Double getCpuLoad() {
-        return cpuLoad;
+    public Long getFreeMemory() {
+        return freeMemory;
     }
 
-    public void setCpuLoad(Double cpuLoad) {
-        this.cpuLoad = cpuLoad;
+    public void setFreeMemory(Long freeMemory) {
+        this.freeMemory = freeMemory;
     }
 }

@@ -1,10 +1,7 @@
 package org.envtools.monitor.provider.mock;
 
-import com.sun.management.OperatingSystemMXBean;
 import org.apache.log4j.Logger;
 
-import javax.management.MBeanServerConnection;
-import java.lang.management.ManagementFactory;
 import java.util.Random;
 
 /**
@@ -12,13 +9,13 @@ import java.util.Random;
  *
  * @author Yury Yakovlev
  */
-public class CPUDataProvider {
+public class MemoryDataProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(CPUDataProvider.class);
+    private static final Logger LOGGER = Logger.getLogger(MemoryDataProvider.class);
 
-    public Double getCPULoad() {
+    public Long getFreeMemory() {
+          return Runtime.getRuntime().freeMemory();
 
-          return new Random().nextDouble() * 100;
 
 //        try {
 //            MBeanServerConnection mbsc = ManagementFactory.getPlatformMBeanServer();
@@ -44,7 +41,7 @@ public class CPUDataProvider {
 //
 //            return Double.valueOf(percent);
 //        } catch (Throwable t) {
-//             LOGGER.error("CPUDataProvider.getCPULoad - error getting CPU load", t);
+//             LOGGER.error("MemoryDataProvider.getFreeMemory - error getting CPU load", t);
 //            return 0.0;
 //        }
     }

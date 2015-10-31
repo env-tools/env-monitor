@@ -16,7 +16,7 @@
     <bean id="serializer" class="org.envtools.monitor.common.serialization.JSONSerializer" />
 
     <!-- TODO move to provider context -->
-    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.CPUDataProvider"/>
+    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.MemoryDataProvider"/>
 
     <task:annotation-driven scheduler="messageBrokerSockJsTaskScheduler"/>
 

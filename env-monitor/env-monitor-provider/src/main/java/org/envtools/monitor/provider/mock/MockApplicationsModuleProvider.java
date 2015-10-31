@@ -21,17 +21,17 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
     private NotificationHandler handler;
 
     @Autowired
-    private CPUDataProvider cpuDataProvider;
+    private MemoryDataProvider memoryDataProvider;
 
     @Override
     public void initialize(NotificationHandler handler) {
         LOGGER.info("MockApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-        Double cpuLoad = cpuDataProvider.getCPULoad();
+        Long freeMemory = memoryDataProvider.getFreeMemory();
 
         //TODO: consider refactoring synchronization approach
         synchronized (data) {
-            data.setCpuLoad(cpuLoad);
+            data.setFreeMemory(freeMemory);
         }
 
         handler.sendUpdateNotification();
@@ -39,12 +39,12 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
 
     @Scheduled(initialDelay = 2000, fixedDelay = 5000)
     protected void updateCPU() {
-        Double newCpuLoad = cpuDataProvider.getCPULoad();
+        Long newFreeMemory = memoryDataProvider.getFreeMemory();
         boolean sendUpdate = false;
-        if (newCpuLoad != data.getCpuLoad()) {
+        if (!newFreeMemory.equals(data.getFreeMemory())) {
             synchronized (data) {
-                if (newCpuLoad != data.getCpuLoad()) {
-                    data.setCpuLoad(newCpuLoad);
+                if (newFreeMemory != data.getFreeMemory()) {
+                    data.setFreeMemory(newFreeMemory);
                     sendUpdate = true;
                 }
             }
@@ -53,7 +53,6 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
         if (sendUpdate) {
             handler.sendUpdateNotification();
         }
-
     }
 
     @Override
