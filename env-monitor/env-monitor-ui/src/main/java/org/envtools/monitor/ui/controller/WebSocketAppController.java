@@ -29,6 +29,12 @@ public class WebSocketAppController {
     @Autowired
     ApplicationContext ctx;
 
+    @Resource(name = "clientInboundChannel")
+    MessageChannel clientInboundChannel;
+
+    @Resource(name = "clientOutboundChannel")
+    MessageChannel clientOutboundChannel;
+
     @PostConstruct
     public void init() {
         LOGGER.info("WebSocketAppController.init - WebSocketAppController has been initialized. ");
