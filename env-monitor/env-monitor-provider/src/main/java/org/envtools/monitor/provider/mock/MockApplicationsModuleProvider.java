@@ -38,7 +38,7 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
     }
 
     @Scheduled(initialDelay = 2000, fixedDelay = 5000)
-    protected void updateCPU() {
+    protected void updateFreeMemory() {
         Long newFreeMemory = memoryDataProvider.getFreeMemory();
         boolean sendUpdate = false;
         if (!newFreeMemory.equals(data.getFreeMemory())) {

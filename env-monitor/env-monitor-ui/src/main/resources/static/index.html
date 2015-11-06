@@ -11,7 +11,8 @@
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
             document.getElementById('messageDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('response').innerHTML = '';
+            document.getElementById('requested-response').innerHTML = '';
+            document.getElementById('pushed-response').innerHTML = '';
         }
 
         function connect() {

@@ -2,15 +2,26 @@ package org.envtools.monitor.ui.controller;
 
 import org.envtools.monitor.model.messaging.DataRequestMessage;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.core.CoreModuleRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
+import org.springframework.messaging.simp.broker.SubscriptionRegistry;
+import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Controller;
 import org.apache.log4j.Logger;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -22,7 +33,7 @@ import javax.annotation.Resource;
  * @author Yury Yakovlev
  */
 @Controller
-public class WebSocketAppController {
+public class WebSocketAppController implements ApplicationListener<SessionSubscribeEvent>{
 
     private static final Logger LOGGER = Logger.getLogger(WebSocketAppController.class);
 
@@ -30,18 +41,34 @@ public class WebSocketAppController {
     ApplicationContext ctx;
 
     @Resource(name = "clientInboundChannel")
-    MessageChannel clientInboundChannel;
+    SubscribableChannel clientInboundChannel;
 
     @Resource(name = "clientOutboundChannel")
-    MessageChannel clientOutboundChannel;
+    SubscribableChannel clientOutboundChannel;
+
+    @Autowired
+    AbstractMessageBrokerConfiguration configuration;
+
+    @Autowired
+    CoreModuleRunner coreModuleRunner;
 
     @PostConstruct
     public void init() {
         LOGGER.info("WebSocketAppController.init - WebSocketAppController has been initialized. ");
+
+        configuration.simpleBrokerMessageHandler().start();
+
+        clientInboundChannel.subscribe(message -> LOGGER.info("Message from browser: " + message));
+        clientOutboundChannel.subscribe(message -> LOGGER.info("Message to browser: " + message));
     }
 
     @Resource(name = "applications.channel")
     MessageChannel applicationsModuleDataRequestChannel;
+
+//    @SubscribeMapping("/topic/modulepush")
+//    public void handleSubscription() {
+//
+//    }
 
     //WebSocket message mapping
     @MessageMapping("/modulerequest")
@@ -68,4 +95,22 @@ public class WebSocketAppController {
         }
 
     }
+
+    @Override
+    public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
+        Message<byte[]> message = sessionSubscribeEvent.getMessage();
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        StompCommand command = accessor.getCommand();
+        if (command.equals(StompCommand.SUBSCRIBE)) {
+            String sessionId = accessor.getSessionId();
+            String stompSubscriptionId = accessor.getSubscriptionId();
+            String destination = accessor.getDestination();
+            LOGGER.info(String.format(
+                    "WebSocketAppController.onSubscriptionEvent - session %s with stomp subscription id %s subscribed to destination %s",
+                    sessionId,
+                    stompSubscriptionId,
+                    destination));
+        }
+    }
+
 }

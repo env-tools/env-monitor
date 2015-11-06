@@ -9,6 +9,7 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
