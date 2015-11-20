@@ -3,7 +3,7 @@ package org.envtools.monitor.provider.mock;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
-import org.envtools.monitor.model.applications.NotificationHandler;
+import org.envtools.monitor.model.applications.update.NotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
