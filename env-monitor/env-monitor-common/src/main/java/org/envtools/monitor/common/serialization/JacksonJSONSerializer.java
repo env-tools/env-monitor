@@ -12,9 +12,9 @@ import java.io.Serializable;
  *
  * @author Yury Yakovlev
  */
-public class JSONSerializer implements Serializer {
+public class JacksonJSONSerializer implements Serializer {
 
-    private static final Logger LOGGER = Logger.getLogger(JSONSerializer.class);
+    private static final Logger LOGGER = Logger.getLogger(JacksonJSONSerializer.class);
 
     @Override
     public String serialize(Serializable object) {
@@ -30,7 +30,6 @@ public class JSONSerializer implements Serializer {
 
     @Override
     public Serializable deserialize(String serializedForm) {
-        //TODO implement
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+       throw new UnsupportedOperationException("deserialize not implemented in JacksonJSONSerializer");
     }
 }

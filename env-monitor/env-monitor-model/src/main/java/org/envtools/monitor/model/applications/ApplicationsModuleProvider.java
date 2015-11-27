@@ -1,6 +1,6 @@
 package org.envtools.monitor.model.applications;
 
-import org.envtools.monitor.model.applications.update.NotificationHandler;
+import org.envtools.monitor.model.applications.update.UpdateNotificationHandler;
 
 /**
  * Created: 10/31/15 1:38 AM
@@ -9,7 +9,7 @@ import org.envtools.monitor.model.applications.update.NotificationHandler;
  */
 public interface ApplicationsModuleProvider {
 
-    void initialize(NotificationHandler handler);
+    void initialize(UpdateNotificationHandler handler);
 
     ApplicationsData getApplicationsData();
 

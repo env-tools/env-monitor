@@ -10,17 +10,17 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *  This class represents a one-time or periodic data pushed by a module to the data requestor (subscriber)
  *
  */
-public class RequestedDataMessage {
+public class ResponseMessage {
     private String requestId;
     private String sessionId;
     private String targetModuleId;
     private String username;
-    private RequestedDataPayload payload;
+    private ResponsePayload payload;
 
-    public RequestedDataMessage() {
+    public ResponseMessage() {
     }
 
-    public RequestedDataMessage(String requestId, String sessionId, String targetModuleId, String username, RequestedDataPayload payload) {
+    public ResponseMessage(String requestId, String sessionId, String targetModuleId, String username, ResponsePayload payload) {
         this.requestId = requestId;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
@@ -60,11 +60,11 @@ public class RequestedDataMessage {
         this.username = username;
     }
 
-    public RequestedDataPayload getPayload() {
+    public ResponsePayload getPayload() {
         return payload;
     }
 
-    public void setPayload(RequestedDataPayload payload) {
+    public void setPayload(ResponsePayload payload) {
         this.payload = payload;
     }
 

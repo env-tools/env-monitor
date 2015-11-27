@@ -13,7 +13,7 @@
 
     <bean id="applications.provider" class="org.envtools.monitor.provider.mock.MockApplicationsModuleProvider"/>
 
-    <bean id="serializer" class="org.envtools.monitor.common.serialization.JSONSerializer" />
+    <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer" />
 
     <!-- TODO move to provider context -->
     <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.MemoryDataProvider"/>

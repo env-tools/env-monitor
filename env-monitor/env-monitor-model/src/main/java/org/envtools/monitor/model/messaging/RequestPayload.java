@@ -3,29 +3,22 @@ package org.envtools.monitor.model.messaging;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.io.Serializable;
+
 /**
- * Created: 10/16/15 10:09 PM
+ * Created: 9/20/15 12:58 AM
  *
  * @author Yury Yakovlev
  */
-public class RequestedDataPayload {
-    private DataRequestPayload requestPayload;
+public class RequestPayload implements Serializable{
     private String content;
 
-    public RequestedDataPayload() {
+    //For Jackson
+    public RequestPayload() {
     }
 
-    public RequestedDataPayload(DataRequestPayload requestPayload, String content) {
-        this.requestPayload = requestPayload;
+    public RequestPayload(String content) {
         this.content = content;
-    }
-
-    public DataRequestPayload getRequestPayload() {
-        return requestPayload;
-    }
-
-    public void setRequestPayload(DataRequestPayload requestPayload) {
-        this.requestPayload = requestPayload;
     }
 
     public String getContent() {
@@ -39,7 +32,6 @@ public class RequestedDataPayload {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("requestPayload", requestPayload).
                 append("content", content).
                 toString();
     }

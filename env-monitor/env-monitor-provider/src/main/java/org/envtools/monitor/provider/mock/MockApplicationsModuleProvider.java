@@ -3,7 +3,7 @@ package org.envtools.monitor.provider.mock;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
-import org.envtools.monitor.model.applications.update.NotificationHandler;
+import org.envtools.monitor.model.applications.update.UpdateNotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -18,23 +18,17 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
 
     private ApplicationsData data = new ApplicationsData();
 
-    private NotificationHandler handler;
+    private UpdateNotificationHandler handler;
 
     @Autowired
     private MemoryDataProvider memoryDataProvider;
 
     @Override
-    public void initialize(NotificationHandler handler) {
+    public void initialize(UpdateNotificationHandler handler) {
         LOGGER.info("MockApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-        Long freeMemory = memoryDataProvider.getFreeMemory();
 
-        //TODO: consider refactoring synchronization approach
-        synchronized (data) {
-            data.setFreeMemory(freeMemory);
-        }
-
-        handler.sendUpdateNotification();
+        updateFreeMemory();
     }
 
     @Scheduled(initialDelay = 2000, fixedDelay = 5000)
@@ -55,9 +49,18 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
         }
     }
 
+    @Scheduled(initialDelay = 1000, fixedDelay = 10000)
+    protected void updateMockApplicationsModel() {
+        synchronized (data) {
+            data.setPlatforms(MockApplicationsDataCreator.createPlatforms());
+        }
+        handler.sendUpdateNotification();
+    }
+
     @Override
     public ApplicationsData getApplicationsData() {
         return data;
     }
+
 
 }

@@ -5,7 +5,7 @@ package org.envtools.monitor.model.applications.update;
  *
  * @author Yury Yakovlev
  */
-public interface NotificationHandler {
+public interface UpdateNotificationHandler {
 
      void sendUpdateNotification();
 

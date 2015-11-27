@@ -1,7 +1,7 @@
 package org.envtools.monitor.module.core;
 
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.messaging.RequestedDataMessage;
+import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessageHeaders;
@@ -9,7 +9,6 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,7 +34,7 @@ public class CoreModuleRunner implements Runnable {
     SubscribableChannel requestedDataChannel;
 
     private ExecutorService threadPool = Executors.newCachedThreadPool();
-    private MessageHandler incomingMessageHandler = (message) -> handleRequestedData((RequestedDataMessage) message.getPayload());
+    private MessageHandler incomingMessageHandler = (message) -> handleModuleResponse((ResponseMessage) message.getPayload());
 
     @PostConstruct
     public void init() {
@@ -58,18 +57,18 @@ public class CoreModuleRunner implements Runnable {
         }
     }
 
-    private void handleRequestedData(RequestedDataMessage requestedDataMessage) {
-        LOGGER.info("CoreModuleRunner.handleRequestedData - requestedDataMessage : " + requestedDataMessage);
-        String user = requestedDataMessage.getSessionId();
+    private void handleModuleResponse(ResponseMessage responseMessage) {
+        LOGGER.info("CoreModuleRunner.handleModuleResponse - responseMessage : " + responseMessage);
+        String user = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
         String pushedWebSocketDestination = "/topic/modulepush";
 
         if (user != null) {
-            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, requestedDataMessage,
+            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
                     createUniqueSessionDestinationHeaders(user));
         } else {
             //TODO manage subscriptions
-            webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, requestedDataMessage);
+            webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, responseMessage);
         }
     }
 

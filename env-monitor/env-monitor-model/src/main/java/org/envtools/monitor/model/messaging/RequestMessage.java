@@ -10,21 +10,21 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * This class represents a request (subscription) for some data, addressed to a specific module
  */
-public class DataRequestMessage {
+public class RequestMessage {
 
     private String requestId;
     private String sessionId;
     private String targetModuleId;
     private String username;
-    private DataRequestPayload payload;
+    private RequestPayload payload;
 
     //TODO implement builder classes
 
     //For Jackson
-    public DataRequestMessage() {
+    public RequestMessage() {
     }
 
-    public DataRequestMessage(String requestId, String sessionId, String targetModuleId, String username, DataRequestPayload payload) {
+    public RequestMessage(String requestId, String sessionId, String targetModuleId, String username, RequestPayload payload) {
         this.requestId = requestId;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
@@ -64,11 +64,11 @@ public class DataRequestMessage {
         this.username = username;
     }
 
-    public DataRequestPayload getPayload() {
+    public RequestPayload getPayload() {
         return payload;
     }
 
-    public void setPayload(DataRequestPayload payload) {
+    public void setPayload(RequestPayload payload) {
         this.payload = payload;
     }
 

@@ -1,6 +1,6 @@
 package org.envtools.monitor.ui.controller;
 
-import org.envtools.monitor.model.messaging.DataRequestMessage;
+import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.CoreModuleRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,6 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
-import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -72,23 +69,23 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     //WebSocket message mapping
     @MessageMapping("/modulerequest")
-    public void handleDataRequest(@Payload DataRequestMessage dataRequestMessage,
+    public void handleDataRequest(@Payload RequestMessage requestMessage,
                                   SimpMessageHeaderAccessor headerAccessor)
     {
         String sessionId = headerAccessor.getSessionId();
-        dataRequestMessage.setSessionId(sessionId);
-        LOGGER.info("WebSocketAppController.handleDataRequest - request : " + dataRequestMessage);
+        requestMessage.setSessionId(sessionId);
+        LOGGER.info("WebSocketAppController.handleDataRequest - request : " + requestMessage);
 
-        String targetModuleId = dataRequestMessage.getTargetModuleId();
+        String targetModuleId = requestMessage.getTargetModuleId();
         if (targetModuleId == null) {
             LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not specified, ignoring");
             return;
         }
 
         //Send data request to the appropriate module
-        switch(dataRequestMessage.getTargetModuleId()) {
+        switch(requestMessage.getTargetModuleId()) {
             case ModuleConstants.APPLICATIONS_MODULE_ID:
-                applicationsModuleDataRequestChannel.send(new GenericMessage<DataRequestMessage>(dataRequestMessage));
+                applicationsModuleDataRequestChannel.send(new GenericMessage<RequestMessage>(requestMessage));
                 break;
             default:
                 LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not supported");
