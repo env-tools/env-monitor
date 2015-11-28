@@ -3,7 +3,7 @@ Generic web-based monitoring app for distributed multi-process systems
 
 #Project participants:
 
-- Yury Yakovlev (yyakovlev)
+- Yury Yakovlev (env-tools and yyakovlev committers)
 
 *Java developer, interested in learning JS, Angular JS, and improving experience with persistence layer technologies for Java.*
 
