@@ -1,7 +1,10 @@
 package org.envtools.monitor.ui.controller;
 
 import org.envtools.monitor.model.messaging.RequestMessage;
+import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.core.ApplicationsModuleDataService;
 import org.envtools.monitor.module.core.CoreModuleRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -9,9 +12,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -48,6 +53,9 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     @Autowired
     CoreModuleRunner coreModuleRunner;
+
+    @Autowired
+    ApplicationsModuleDataService applicationsModuleDataService;
 
     @PostConstruct
     public void init() {
@@ -93,6 +101,20 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     }
 
+    @SubscribeMapping("/modules/M_APPLICATIONS/data/{selector}")
+    public ResponseMessage handleCall(SimpMessageHeaderAccessor headerAccessor,
+                                  @DestinationVariable("selector") String selector) {
+
+        String sessId = headerAccessor.getSessionId();
+        LOGGER.info(String.format("WebSocketAppController.handleCall - received call from client %s for selector %s",
+                sessId, selector));
+        ResponseMessage responseMessage = new ResponseMessage.Builder()
+                .sessionId(sessId)
+                .payload(new ResponsePayload(null, applicationsModuleDataService.extractSerializedPartBySelector(selector)))
+                        .build();
+        return responseMessage;
+    }
+
     @Override
     public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
         Message<byte[]> message = sessionSubscribeEvent.getMessage();
@@ -107,6 +129,8 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
                     sessionId,
                     stompSubscriptionId,
                     destination));
+
+            //TODO: manage subscriptions for later sending updates
         }
     }
 

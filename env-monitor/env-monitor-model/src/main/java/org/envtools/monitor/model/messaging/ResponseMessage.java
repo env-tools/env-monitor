@@ -68,6 +68,43 @@ public class ResponseMessage {
         this.payload = payload;
     }
 
+    public static class Builder {
+        private String requestId;
+        private String sessionId;
+        private String targetModuleId;
+        private String username;
+        private ResponsePayload payload;
+
+        public Builder requestId(String requestId) {
+            this.requestId = requestId;
+            return this;
+        }
+
+        public Builder sessionId(String sessionId) {
+            this.sessionId = sessionId;
+            return this;
+        }
+
+        public Builder targetModuleId(String targetModuleId) {
+            this.targetModuleId = targetModuleId;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder payload(ResponsePayload payload) {
+            this.payload = payload;
+            return this;
+        }
+
+        public ResponseMessage build() {
+            return new ResponseMessage(requestId, sessionId, targetModuleId, username, payload);
+        }
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).

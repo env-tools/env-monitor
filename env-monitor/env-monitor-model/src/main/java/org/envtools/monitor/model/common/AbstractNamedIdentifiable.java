@@ -7,7 +7,7 @@ package org.envtools.monitor.model.common;
  */
 public abstract class AbstractNamedIdentifiable <T> extends AbstractIdentifiable <T> implements HasName{
 
-    private String name;
+    protected String name;
 
     public String getName() {
         return name;

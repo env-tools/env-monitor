@@ -20,7 +20,9 @@ public class MockApplication extends Application {
     public MockApplication() {
     }
 
-    public MockApplication(String applicationType, String host, int port, String url, String componentName, String version, Double processMemory) {
+    public MockApplication(String id, String name, ApplicationStatus status,
+                           String applicationType, String host, int port, String url, String componentName, String version, Double processMemory) {
+        super(id, name, status);
         this.applicationType = applicationType;
         this.host = host;
         this.port = port;
@@ -87,6 +89,7 @@ public class MockApplication extends Application {
     }
 
     public static class Builder {
+        private String id;
         private String name;
         private ApplicationStatus status;
         private String applicationType;
@@ -97,6 +100,11 @@ public class MockApplication extends Application {
         private String version;
         private Double processMemory;
 
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder status(ApplicationStatus status) {
             this.status = status;
@@ -145,7 +153,7 @@ public class MockApplication extends Application {
         }
 
         public MockApplication build() {
-            return new MockApplication(applicationType, host, port, url, componentName, version, processMemory);
+            return new MockApplication(id, name, status, applicationType, host, port, url, componentName, version, processMemory);
         }
     }
 }

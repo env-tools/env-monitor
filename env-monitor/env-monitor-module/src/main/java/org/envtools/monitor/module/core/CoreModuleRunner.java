@@ -27,6 +27,9 @@ public class CoreModuleRunner implements Runnable {
     @Autowired
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
+    @Autowired
+    ApplicationsModuleDataService applicationsModuleDataService;
+
     /**
      * This channel accepts the requested data from all modules
      */
@@ -58,7 +61,7 @@ public class CoreModuleRunner implements Runnable {
     }
 
     private void handleModuleResponse(ResponseMessage responseMessage) {
-        LOGGER.info("CoreModuleRunner.handleModuleResponse - responseMessage : " + responseMessage);
+ //       LOGGER.info("CoreModuleRunner.handleModuleResponse - responseMessage : " + responseMessage);
         String user = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
         String pushedWebSocketDestination = "/topic/modulepush";
@@ -67,8 +70,9 @@ public class CoreModuleRunner implements Runnable {
             webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
                     createUniqueSessionDestinationHeaders(user));
         } else {
+            applicationsModuleDataService.store(responseMessage.getPayload().getContent());
             //TODO manage subscriptions
-            webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, responseMessage);
+            //webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, responseMessage);
         }
     }
 

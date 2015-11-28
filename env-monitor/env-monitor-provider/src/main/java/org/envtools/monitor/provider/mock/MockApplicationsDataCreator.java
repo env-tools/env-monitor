@@ -60,6 +60,7 @@ public class MockApplicationsDataCreator {
 
     private static List<Application> createApplications(String label) {
         Application application1 = new MockApplication.Builder()
+                .id(label)
                 .name("app1_" + label)
                 .status(ApplicationStatus.RUNNING)
                 .host("host1")
@@ -68,9 +69,10 @@ public class MockApplicationsDataCreator {
                 .componentName("component-1")
                 .url("http://host1:7000/app/login")
                 .version("1.12_Q20-SNAPSHOT")
-                .processMemory(ThreadLocalRandom.current().nextDouble(512, 16384)).build();
+                .processMemory(randomMemory()).build();
 
         Application application2 = new MockApplication.Builder()
+                .id(label)
                 .name("app2_" + label)
                 .status(ApplicationStatus.RUNNING)
                 .host("host2")
@@ -79,9 +81,13 @@ public class MockApplicationsDataCreator {
                 .componentName("component-2-" + label)
                 .url("http://host1:7001/app/login")
                 .version("1.12_E20")
-                .processMemory(ThreadLocalRandom.current().nextDouble(512, 16384)).build();
+                .processMemory(randomMemory()).build();
 
         return Arrays.asList(application1, application2);
+    }
+
+    private static Double randomMemory() {
+         return Double.valueOf(ThreadLocalRandom.current().nextInt(512, 16384));
     }
 
 }

@@ -11,8 +11,9 @@
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
             document.getElementById('messageDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('requested-response').innerHTML = '';
-            document.getElementById('pushed-response').innerHTML = '';
+            document.getElementById('roundtrip-response').innerHTML = '';
+            document.getElementById('call-response').innerHTML = '';
+            document.getElementById('subscription-response').innerHTML = '';
         }
 
         function connect() {
@@ -26,12 +27,9 @@
                 console.log('Connected as ' + login + ' : ' + frame);
 
                 stompClient.subscribe('/user/topic/moduleresponse', function (response) {
-                    showRequestedResponse(JSON.parse(response.body).payload);
+                    showRoundtripResponse(JSON.parse(response.body).payload);
                 });
 
-                stompClient.subscribe('/topic/modulepush', function (response) {
-                    showPushedResponse(JSON.parse(response.body).payload);
-                });
             });
         }
 
@@ -58,21 +56,46 @@
         }
 
 
-        function showRequestedResponse(message) {
-            showResponse(message, "requested-response");
+        function showRoundtripResponse(message) {
+            showResponse(message, "roundtrip-response");
         }
 
-        function showPushedResponse(message) {
-            showResponse(message, "pushed-response");
+        function showCallResponse(message) {
+            showResponse(message, "call-response");
+        }
+
+        function showSubscriptionResponse(message) {
+            showResponse(message, "subscription-response");
         }
 
         function showResponse(message, elementId) {
             var response = document.getElementById(elementId);
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
+            p.style.fontSize = '8pt';
+
             p.appendChild(document.createTextNode(JSON.stringify(message)));
             response.appendChild(p);
         }
+
+        function doCall(destination) {
+            stompClient.subscribe(destination, function (response) {
+                showCallResponse(JSON.parse(response.body).payload);
+            });
+
+        }
+
+        function doSubscribe(destination) {
+            stompClient.subscribe(destination, function (response) {
+                showSubscriptionResponse(JSON.parse(response.body).payload);
+            });
+
+        }
+
+        function doUnsubscribe(destination) {
+            stompClient.unsubscribe(destination);
+        }
+
     </script>
 </head>
 <body onload="disconnect()">
@@ -106,6 +129,9 @@
             </tr>
         </table>
     </div>
+
+    <hr/>
+
     <div id="messageDiv">
         <table>
             <tr>
@@ -125,11 +151,84 @@
             </tr>
         </table>
 
-        <h6>Response to request:</h6>
-        <p id="requested-response"></p>
+        <h5>Response to request:</h5>
 
-        <h6>Pushed from module:</h6>
-        <p id="pushed-response"></p>
+        <p id="roundtrip-response"></p>
+
+        <hr/>
+
+        <table>
+            <tr>
+                <td>
+                    <label>Subscription destination (must be prefixed with /topic):</label>
+                    <input size="100" type="text" id="subscription.destination"
+                           value="/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications:DEEP"/>
+                    <br>
+                    Samples:
+                    <ul>
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications:DEEP
+                        </li>
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV2.applications:DEEP
+                        </li>
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV1.applications:DEEP
+                        </li>
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV2.applications:DEEP
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="subscribe"
+                            onclick="doSubscribe(document.getElementById('subscription.destination').value);">
+                        Subscribe(Not Implemented Yet)
+                    </button>
+                    &nbsp;
+                    <button id="unsubscribe"
+                            onclick="doUnsubscribe(document.getElementById('subscription.destination').value);">
+                        Unsubscribe(Not Implemented Yet)
+                    </button>
+                </td>
+            </tr>
+        </table>
+
+        <h5>Subscription result:</h5>
+
+        <p id="subscription-response"></p>
+
+        <hr/>
+
+        <table>
+            <tr>
+                <td>
+                    <label>Call destination (must be prefixed with /app):</label>
+                    <input size="100" type="text" id="call.destination"
+                           value="/app/modules/M_APPLICATIONS/data/platforms:PLAIN"/>
+                    <br>
+                    Samples:
+                    <ul>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms:PLAIN</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments:PLAIN</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments:DEEP</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="call" onclick="doCall(document.getElementById('call.destination').value);">Call (for
+                        one-time data) (will return full model yet)
+                    </button>
+                </td>
+            </tr>
+        </table>
+
+
+        <h5>Call result:</h5>
+
+        <p id="call-response"></p>
+
+        <hr/>
+
     </div>
 </div>
 </body>

@@ -10,4 +10,6 @@
 
     <bean id="core.runner" class="org.envtools.monitor.module.core.CoreModuleRunner"/>
 
+    <bean id="applications.service" class = "org.envtools.monitor.module.core.ApplicationsModuleDataServiceImpl"/>
+
 </beans>
