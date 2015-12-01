@@ -68,6 +68,7 @@
         <module>env-monitor-module</module>
         <module>env-monitor-provider</module>
         <module>env-monitor-ui</module>
+        <module>env-monitor-common</module>
     </modules>
 
 
