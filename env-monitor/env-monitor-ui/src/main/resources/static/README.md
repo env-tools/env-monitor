@@ -65,17 +65,14 @@ The app has 4 feature modules and depends on a series of external modules and cu
 ```
 app --> [
         app.admin --> [
-            app.core,
-            app.widgets
+            app.core
         ],
         app.dashboard --> [
-            app.core,
-            app.widgets
+            app.core
         ],
         app.layout --> [
             app.core
         ],
-        app.widgets,
 		app.core --> [
 			ngAnimate,
 			ngSanitize,

@@ -8,6 +8,7 @@
     dataservice.$inject = ['$http', '$q', 'exception', 'logger'];
     /* @ngInject */
     function dataservice($http, $q, exception, logger) {
+
         var service = {
             getPeople: getPeople,
             getMessageCount: getMessageCount
