@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.core.selection;
+package org.envtools.monitor.module.core.selection.exception;
 
 /**
  * Created: 12/5/15 2:16 AM

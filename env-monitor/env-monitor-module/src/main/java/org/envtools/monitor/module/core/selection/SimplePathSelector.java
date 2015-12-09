@@ -3,6 +3,7 @@ package org.envtools.monitor.module.core.selection;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -15,14 +16,14 @@ import java.util.stream.Collectors;
  */
 public class SimplePathSelector implements Iterable<String>{
 
-    private static final String ALPHA_NUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
+    private static final String SEGMENT_PATTERN = "^[a-zA-Z0-9\\-_]*$";
     private static final String DEFAULT_SEGMENT_SEPARATOR = ".";
 
     private String selectorStr;
 
     private List<String> segments;
 
-    public SimplePathSelector(String selectorString, String selectorSegmentSeparator) throws IllegalSelectorException{
+    public SimplePathSelector(String selectorString, String selectorSegmentSeparator) throws IllegalSelectorException {
         this.selectorStr = selectorString;
         this.segments = Arrays.asList(
                 StringUtils.split(selectorString, selectorSegmentSeparator))
@@ -39,9 +40,11 @@ public class SimplePathSelector implements Iterable<String>{
 
     private void validateSegments() throws IllegalSelectorException {
        for (String segment : this) {
-           if (!segment.matches(ALPHA_NUMERIC_PATTERN)) {
-               throw new IllegalSelectorException(String.format("Selector %s: segment '%s' is not valid (must be alphanumeric)",
-                       selectorStr, segment));
+           if (!segment.matches(SEGMENT_PATTERN)) {
+               throw new IllegalSelectorException(
+                       String.format(
+                               "Selector %s: segment '%s' is not valid (must match pattern %s)",
+                       selectorStr, segment, SEGMENT_PATTERN));
            }
        }
     }
