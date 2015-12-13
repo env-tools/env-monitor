@@ -7,9 +7,10 @@ import java.io.Serializable;
  *
  * @author Yury Yakovlev
  */
-@FunctionalInterface
 public interface Extractor<T extends Serializable, S> {
 
     T extract(T source, S selector);
+
+    T emptyExtractionResult();
 
 }

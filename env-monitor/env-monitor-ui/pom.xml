@@ -72,6 +72,19 @@
                 </configuration-->
             </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <!-- The rest resources not included here are temporarily excluded as they are not yet used and
+                     it takes much time to copy/remove during build -->
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/static/stomp*.js</include>
+                    <include>**/static/sockjs*.js</include>
+                    <include>**/static/index.html</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
 </project>

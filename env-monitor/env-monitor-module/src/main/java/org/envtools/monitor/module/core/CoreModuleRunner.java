@@ -2,6 +2,7 @@ package org.envtools.monitor.module.core;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessageHeaders;
@@ -30,6 +31,8 @@ public class CoreModuleRunner implements Runnable {
     @Autowired
     ApplicationsModuleDataService applicationsModuleDataService;
 
+    @Autowired
+    SubscriptionManager subscriptionManager;
     /**
      * This channel accepts the requested data from all modules
      */
@@ -64,15 +67,18 @@ public class CoreModuleRunner implements Runnable {
  //       LOGGER.info("CoreModuleRunner.handleModuleResponse - responseMessage : " + responseMessage);
         String user = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
-        String pushedWebSocketDestination = "/topic/modulepush";
 
         if (user != null) {
             webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
                     createUniqueSessionDestinationHeaders(user));
         } else {
-            applicationsModuleDataService.store(responseMessage.getPayload().getContent());
-            //TODO manage subscriptions
-            //webSocketClientMessagingTemplate.convertAndSend(pushedWebSocketDestination, responseMessage);
+            String newContent = responseMessage.getPayload().getContent();
+            applicationsModuleDataService.store(newContent);
+
+            for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
+                //TODO: extract relevant parts to send, analyze for difference
+                webSocketClientMessagingTemplate.convertAndSend(subscribedDestination, responseMessage);
+            }
         }
     }
 

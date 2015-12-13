@@ -8,9 +8,6 @@ import org.envtools.monitor.module.core.selection.SimplePathSelector;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /**
  * Created: 12/5/15 3:45 AM
  *

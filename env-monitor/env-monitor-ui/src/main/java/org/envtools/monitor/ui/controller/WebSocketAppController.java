@@ -6,13 +6,13 @@ import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.ApplicationsModuleDataService;
 import org.envtools.monitor.module.core.CoreModuleRunner;
+import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -35,7 +35,7 @@ import javax.annotation.Resource;
  * @author Yury Yakovlev
  */
 @Controller
-public class WebSocketAppController implements ApplicationListener<SessionSubscribeEvent>{
+public class WebSocketAppController implements ApplicationListener<SessionSubscribeEvent> {
 
     private static final Logger LOGGER = Logger.getLogger(WebSocketAppController.class);
 
@@ -56,6 +56,9 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     @Autowired
     ApplicationsModuleDataService applicationsModuleDataService;
+
+    @Autowired
+    StompSubscriptionCommandHandler stompSubscriptionCommandHandler;
 
     @PostConstruct
     public void init() {
@@ -78,8 +81,7 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
     //WebSocket message mapping
     @MessageMapping("/modulerequest")
     public void handleDataRequest(@Payload RequestMessage requestMessage,
-                                  SimpMessageHeaderAccessor headerAccessor)
-    {
+                                  SimpMessageHeaderAccessor headerAccessor) {
         String sessionId = headerAccessor.getSessionId();
         requestMessage.setSessionId(sessionId);
         LOGGER.info("WebSocketAppController.handleDataRequest - request : " + requestMessage);
@@ -91,7 +93,7 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
         }
 
         //Send data request to the appropriate module
-        switch(requestMessage.getTargetModuleId()) {
+        switch (requestMessage.getTargetModuleId()) {
             case ModuleConstants.APPLICATIONS_MODULE_ID:
                 applicationsModuleDataRequestChannel.send(new GenericMessage<RequestMessage>(requestMessage));
                 break;
@@ -101,37 +103,49 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     }
 
-    @SubscribeMapping("/modules/M_APPLICATIONS/data/{selector}")
-    public ResponseMessage handleCall(SimpMessageHeaderAccessor headerAccessor,
-                                  @DestinationVariable("selector") String selector) {
+    /**
+     * This method supports one-time data request by selector
+     * Clients should subscribe with "/app" prefix
+     *
+     * @param headerAccessor Means to extract request details
+     * @return Extracted data matching the selector
+     */
+    @SubscribeMapping("/modules/M_APPLICATIONS" + DestinationUtil.SELECTOR_SEPARATOR + "*")
+    public ResponseMessage handleCall(SimpMessageHeaderAccessor headerAccessor
+    ) {
 
         String sessId = headerAccessor.getSessionId();
-        LOGGER.info(String.format("WebSocketAppController.handleCall - received call from client %s for selector %s",
-                sessId, selector));
+        String destination = headerAccessor.getDestination();
+        String selector = DestinationUtil.extractSelector(destination);
+
+        LOGGER.info(String.format("WebSocketAppController.handleCall - received call from client %s for destination %s, selector %s",
+                sessId, destination, selector));
         ResponseMessage responseMessage = new ResponseMessage.Builder()
                 .sessionId(sessId)
                 .payload(new ResponsePayload(null, applicationsModuleDataService.extractSerializedPartBySelector(selector)))
-                        .build();
+                .build();
         return responseMessage;
+    }
+
+    /**
+     * This method handles continuous subscriptions from clients
+     * Subscriptions must be registered so that data updated could be sent to them
+     *
+     * @param sessionSubscribeEvent event containing STOMP subscription information
+     */
+    private void handleSubscription(SessionSubscribeEvent sessionSubscribeEvent) {
+        Message<byte[]> message = sessionSubscribeEvent.getMessage();
+        StompHeaderAccessor stompAccessor = StompHeaderAccessor.wrap(message);
+        StompCommand stompCommand = stompAccessor.getCommand();
+
+        if (StompSubscriptionCommandHandler.isSubscriptionCommand(stompCommand)) {
+            stompSubscriptionCommandHandler.processSubscriptionCommand(stompCommand, stompAccessor);
+        }
     }
 
     @Override
     public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
-        Message<byte[]> message = sessionSubscribeEvent.getMessage();
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        StompCommand command = accessor.getCommand();
-        if (command.equals(StompCommand.SUBSCRIBE)) {
-            String sessionId = accessor.getSessionId();
-            String stompSubscriptionId = accessor.getSubscriptionId();
-            String destination = accessor.getDestination();
-            LOGGER.info(String.format(
-                    "WebSocketAppController.onSubscriptionEvent - session %s with stomp subscription id %s subscribed to destination %s",
-                    sessionId,
-                    stompSubscriptionId,
-                    destination));
-
-            //TODO: manage subscriptions for later sending updates
-        }
+        handleSubscription(sessionSubscribeEvent);
     }
 
 }

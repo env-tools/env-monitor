@@ -7,7 +7,7 @@ package org.envtools.monitor.module;
  */
 public interface ModuleConstants {
 
-    String APPLICATIONS_MODULE_ID = "APPLICATIONS";
-    String CORE_MODULE_ID = "APPLICATIONS";
+    String APPLICATIONS_MODULE_ID = "M_APPLICATIONS";
+    String CORE_MODULE_ID = "M_CORE";
 
 }

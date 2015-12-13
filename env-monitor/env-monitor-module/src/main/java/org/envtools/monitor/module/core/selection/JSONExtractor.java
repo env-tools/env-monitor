@@ -63,7 +63,7 @@ public class JSONExtractor implements Extractor<String, SimplePathSelector> {
                         return noResult(String.format("No nested property neither item with id '%s' in json data object for path %s",
                                 segment, selector.getSelectorStr()));
                     } else {
-                        currentJsonPart = Optional.of(firstElement(currentJsonPart.get()));
+                        currentJsonPart = Optional.of(firstJsonElement(currentJsonPart.get()));
                         currentValidPath = idAccessPath;
                     }
                 } else {
@@ -79,30 +79,16 @@ public class JSONExtractor implements Extractor<String, SimplePathSelector> {
         return currentJsonPart.get();
     }
 
-    private String unnest(String singleElementArray) {
-        return getJsonPart(singleElementArray, "[0]").get();
-
-//
-//        if (StringUtils.isBlank(singleElementArray)) {
-//            return EMPTY_JSON;
-//        }
-//
-//        singleElementArray = singleElementArray.trim();
-//        int openingBracketPos = singleElementArray.indexOf("[");
-//        int closingBracketPos = singleElementArray.lastIndexOf("]");
-//
-//        if (openingBracketPos != -1 && closingBracketPos != -1 && openingBracketPos < closingBracketPos) {
-//            return singleElementArray.substring(openingBracketPos + 1, closingBracketPos);
-//        } else {
-//            return singleElementArray;
-//        }
+    @Override
+    public String emptyExtractionResult() {
+        return EMPTY_JSON;
     }
 
     private String noResult(String message) {
         return String.format(EMPTY_JSON_WITH_MESSAGE, message);
     }
 
-    private String firstElement(String source) {
+    private String firstJsonElement(String source) {
         return source + "[0]";
     }
 
