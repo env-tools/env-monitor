@@ -14,14 +14,14 @@ import java.io.Serializable;
 public class ResponsePayload implements Serializable{
     private RequestPayload requestPayload;
     @JsonRawValue
-    private String content;
+    private String jsonContent;
 
     public ResponsePayload() {
     }
 
-    public ResponsePayload(RequestPayload requestPayload, String content) {
+    public ResponsePayload(RequestPayload requestPayload, String jsonContent) {
         this.requestPayload = requestPayload;
-        this.content = content;
+        this.jsonContent = jsonContent;
     }
 
     public RequestPayload getRequestPayload() {
@@ -32,19 +32,19 @@ public class ResponsePayload implements Serializable{
         this.requestPayload = requestPayload;
     }
 
-    public String getContent() {
-        return content;
+    public String getJsonContent() {
+        return jsonContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setJsonContent(String jsonContent) {
+        this.jsonContent = jsonContent;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("requestPayload", requestPayload).
-                append("content", content).
+                append("jsonContent", jsonContent).
                 toString();
     }
 }

@@ -110,7 +110,7 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
      * @param headerAccessor Means to extract request details
      * @return Extracted data matching the selector
      */
-    @SubscribeMapping("/modules/M_APPLICATIONS" + DestinationUtil.SELECTOR_SEPARATOR + "*")
+    @SubscribeMapping("/modules/M_APPLICATIONS" + DestinationUtil.SELECTOR_SEPARATOR + "**")
     public ResponseMessage handleCall(SimpMessageHeaderAccessor headerAccessor
     ) {
 

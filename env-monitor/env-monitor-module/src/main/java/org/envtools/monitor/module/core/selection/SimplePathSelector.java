@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SimplePathSelector implements Iterable<String>{
 
     private static final String SEGMENT_PATTERN = "^[a-zA-Z0-9\\-_]*$";
-    private static final String DEFAULT_SEGMENT_SEPARATOR = ".";
+    private static final String DEFAULT_SEGMENT_SEPARATOR = "/";
 
     private String selectorStr;
 

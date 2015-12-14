@@ -1,5 +1,8 @@
 package org.envtools.monitor.module.core.selection;
 
+
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import com.jayway.jsonpath.*;
@@ -70,15 +73,16 @@ public class JSONExtractor implements Extractor<String, SimplePathSelector> {
                     }
                 } else {
                     currentValidPath = propertyAccessPath;
+                    currentJsonPart = Optional.of(noNestedArrays(currentJsonPart.get()));
                 }
             }
 
             LOGGER.debug(String.format("JSONExtractor.extract - extracted by path %s : %s ",
                     currentValidPath,
-                    currentJsonPart.get()));
+                    currentJsonPart));
         }
 
-        return currentJsonPart.get();
+        return currentJsonPart.orElse(noResult("Extraction result was empty for selector " + selector.getSelectorStr()));
     }
 
     @Override
@@ -90,8 +94,36 @@ public class JSONExtractor implements Extractor<String, SimplePathSelector> {
         return String.format(EMPTY_JSON_WITH_MESSAGE, message);
     }
 
+    private String noNestedArrays(String source) {
+        source = StringUtils.trim(source);
+        if (source.startsWith("[[") && source.endsWith("]]")) {
+            return source.substring(1, source.length() - 1);
+        }
+        return source;
+    }
+
     private String firstJsonElement(String source) {
-        return source + "[0]";
+        source = StringUtils.trim(source);
+        int startIndex = source.indexOf("[");
+        int endIndex = source.lastIndexOf("]");
+
+        if (startIndex != -1 && endIndex != -1) {
+
+            //TODO get normal regular JSONArray here??
+            JSONObject json = JsonPath.read(source, "[0]");
+            return json.toJSONString();
+//            if (json.size() == 1) {
+//                return source.substring(startIndex + 1, endIndex);
+//            } else {
+//                LOGGER.warn("JSONExtractor.firstJsonElement - " +
+//                        "JSON being processed is not a 1-sized array : " + source);
+//                return source;
+//            }
+        }
+
+        LOGGER.warn("JSONExtractor.firstJsonElement - " +
+                "JSON being processed is not an anonymous array : " + source);
+        return source;
     }
 
     private Optional<String> getJsonPart(String source, String path) {

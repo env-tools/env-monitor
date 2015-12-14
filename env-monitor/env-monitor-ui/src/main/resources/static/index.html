@@ -71,14 +71,14 @@
         function showResponse(message, elementId) {
             var response = document.getElementById(elementId);
             /*
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.style.fontSize = '8pt';
+             var p = document.createElement('p');
+             p.style.wordWrap = 'break-word';
+             p.style.fontSize = '8pt';
 
-            p.appendChild(document.createTextNode(JSON.stringify(message)));
-            response.appendChild(p);
-            */
-            response.value += JSON.stringify(message) + '\n\n';
+             p.appendChild(document.createTextNode(JSON.stringify(message)));
+             response.appendChild(p);
+             */
+            response.value += JSON.stringify(message, null, 4) + '\n\n';
 
             var responseCount = document.getElementById(elementId + "-count");
             responseCount.value++;
@@ -168,8 +168,12 @@
         <h5>Response to module request:</h5>
 
         <textarea cols="100" rows="10" id="roundtrip-response"></textarea>
-        <input readonly="true" id="roundtrip-response-count" value="0">
-        <button onclick="document.getElementById('roundtrip-response').value=''">Clear</button>
+
+        <div>
+            <label for="roundtrip-response-count">Message count:</label>
+            <input readonly="true" id="roundtrip-response-count" value="0">
+            <button onclick="document.getElementById('roundtrip-response').value=''">Clear</button>
+        </div>
 
         <hr/>
 
@@ -178,9 +182,10 @@
         <table>
             <tr>
                 <td>
-                    <label for="subscription.destination">Subscription destination (must be prefixed with /topic):</label>
+                    <label for="subscription.destination">Subscription destination (must be prefixed with
+                        /topic):</label>
                     <input size="100" type="text" id="subscription.destination"
-                           value="/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications"/>
+                           value="/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications"/>
 
                     <br/>
 
@@ -190,13 +195,13 @@
                     <br>
                     Samples:
                     <ul>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV2.applications
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV2/applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV1.applications
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms/PLAT2/environments/PL2-ENV1/applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV2.applications
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms/PLAT2/environments/PL2-ENV2/applications
                         </li>
                     </ul>
                 </td>
@@ -219,8 +224,12 @@
         <h5>Subscription result:</h5>
 
         <textarea cols="100" rows="10" id="subscription-response"></textarea>
-        <input readonly="true" id="subscription-response-count" value="0">
-        <button onclick="document.getElementById('subscription-response').value=''">Clear</button>
+
+        <div>
+            <label for="subscription-response-count">Message count:</label>
+            <input readonly="true" id="subscription-response-count" value="0">
+            <button onclick="document.getElementById('subscription-response').value=''">Clear</button>
+        </div>
 
         <hr/>
 
@@ -236,8 +245,10 @@
                     Samples:
                     <ul>
                         <li>/app/modules/M_APPLICATIONS/data/platforms</li>
-                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments</li>
-                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms/PLAT1/environments</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications/1-1</li>
                     </ul>
                 </td>
             </tr>
@@ -250,9 +261,13 @@
 
         <h5>Call result:</h5>
 
+
         <textarea cols="100" rows="10" id="call-response"></textarea>
-        <input readonly="true" id="call-response-count" value="0">
-        <button onclick="document.getElementById('call-response').value=''">Clear</button>
+        <div>
+            <label for="call-response-count">Message count:</label>
+            <input readonly="true" id="call-response-count" value="0">
+            <button onclick="document.getElementById('call-response').value=''">Clear</button>
+        </div>
 
         <hr/>
 

@@ -82,7 +82,7 @@ public class ApplicationsModuleRunner {
                 requestMessage.getTargetModuleId(), requestMessage.getUsername(),
                 new ResponsePayload(
                         requestMessage.getPayload(),
-                        "Application module processed this message at " + LocalDateTime.now()));
+                        "\"Application module processed this message at " + LocalDateTime.now() + "\""));
         coreModuleChannel.send(new GenericMessage<ResponseMessage>(response));
     }
 
