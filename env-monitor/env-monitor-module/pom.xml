@@ -17,10 +17,11 @@
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
         </dependency>
+        <!-- If you upgrade the below version, spring 4 will break -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.0.0</version>
+            <version>0.9.1</version>
         </dependency>
         <dependency>
             <groupId>env.monitor</groupId>

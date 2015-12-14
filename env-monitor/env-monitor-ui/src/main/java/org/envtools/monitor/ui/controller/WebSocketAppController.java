@@ -80,15 +80,15 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
 
     //WebSocket message mapping
     @MessageMapping("/modulerequest")
-    public void handleDataRequest(@Payload RequestMessage requestMessage,
-                                  SimpMessageHeaderAccessor headerAccessor) {
+    public void handleRequest(@Payload RequestMessage requestMessage,
+                              SimpMessageHeaderAccessor headerAccessor) {
         String sessionId = headerAccessor.getSessionId();
         requestMessage.setSessionId(sessionId);
-        LOGGER.info("WebSocketAppController.handleDataRequest - request : " + requestMessage);
+        LOGGER.info("WebSocketAppController.handleRequest - request : " + requestMessage);
 
         String targetModuleId = requestMessage.getTargetModuleId();
         if (targetModuleId == null) {
-            LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not specified, ignoring");
+            LOGGER.error("WebSocketAppController.handleRequest - target module id is not specified, ignoring");
             return;
         }
 
@@ -98,7 +98,7 @@ public class WebSocketAppController implements ApplicationListener<SessionSubscr
                 applicationsModuleDataRequestChannel.send(new GenericMessage<RequestMessage>(requestMessage));
                 break;
             default:
-                LOGGER.error("WebSocketAppController.handleDataRequest - target module id is not supported");
+                LOGGER.error("WebSocketAppController.handleRequest - target module id is not supported");
         }
 
     }

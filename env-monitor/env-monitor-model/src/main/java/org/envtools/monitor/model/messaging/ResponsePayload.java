@@ -2,6 +2,7 @@ package org.envtools.monitor.model.messaging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 public class ResponsePayload implements Serializable{
     private RequestPayload requestPayload;
+    @JsonRawValue
     private String content;
 
     public ResponsePayload() {

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.module.core.selection.Extractor;
 import org.envtools.monitor.module.core.selection.SimplePathSelector;
 import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,6 +20,7 @@ public class ApplicationsModuleDataServiceImpl implements ApplicationsModuleData
 
     private String serializedApplicationsData;
 
+    @Autowired
     private Extractor<String, SimplePathSelector> extractor;
 
     @Override

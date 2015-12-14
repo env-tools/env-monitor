@@ -70,12 +70,19 @@
 
         function showResponse(message, elementId) {
             var response = document.getElementById(elementId);
+            /*
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
             p.style.fontSize = '8pt';
 
             p.appendChild(document.createTextNode(JSON.stringify(message)));
             response.appendChild(p);
+            */
+            response.value += JSON.stringify(message) + '\n\n';
+
+            var responseCount = document.getElementById(elementId + "-count");
+            responseCount.value++;
+
         }
 
         function doCall(destination) {
@@ -138,12 +145,12 @@
 
     <div id="messageDiv">
 
-        <h3>Invoke remote function via Websocket connection</h3>
+        <h3>Echo function (send request message to module and get it back)</h3>
 
         <table>
             <tr>
                 <td>
-                    <label>To which module?</label><input type="text" id="module" value="APPLICATIONS"/>
+                    <label>To which module?</label><input type="text" id="module" value="M_APPLICATIONS"/>
                 </td>
             </tr>
             <tr>
@@ -158,20 +165,22 @@
             </tr>
         </table>
 
-        <h5>Response to request:</h5>
+        <h5>Response to module request:</h5>
 
-        <p id="roundtrip-response"></p>
+        <textarea cols="100" rows="10" id="roundtrip-response"></textarea>
+        <input readonly="true" id="roundtrip-response-count" value="0">
+        <button onclick="document.getElementById('roundtrip-response').value=''">Clear</button>
 
         <hr/>
 
-        <h3>Subscribe to remote data via Websocket connection</h3>
+        <h3>Subscribe to remote data via Websocket connection (continuous subscription)</h3>
 
         <table>
             <tr>
                 <td>
                     <label for="subscription.destination">Subscription destination (must be prefixed with /topic):</label>
                     <input size="100" type="text" id="subscription.destination"
-                           value="/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications:DEEP"/>
+                           value="/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications"/>
 
                     <br/>
 
@@ -181,13 +190,13 @@
                     <br>
                     Samples:
                     <ul>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications:DEEP
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV1.applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV2.applications:DEEP
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT1.environments.PL1-ENV2.applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV1.applications:DEEP
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV1.applications
                         </li>
-                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV2.applications:DEEP
+                        <li>/topic/modules/M_APPLICATIONS/data/platforms.PLAT2.environments.PL2-ENV2.applications
                         </li>
                     </ul>
                 </td>
@@ -209,38 +218,41 @@
 
         <h5>Subscription result:</h5>
 
-        <p id="subscription-response"></p>
+        <textarea cols="100" rows="10" id="subscription-response"></textarea>
+        <input readonly="true" id="subscription-response-count" value="0">
+        <button onclick="document.getElementById('subscription-response').value=''">Clear</button>
 
         <hr/>
+
+        <h3>Remote call via Websocket connection (one-time subscription)</h3>
 
         <table>
             <tr>
                 <td>
                     <label>Call destination (must be prefixed with /app):</label>
                     <input size="100" type="text" id="call.destination"
-                           value="/app/modules/M_APPLICATIONS/data/platforms:PLAIN"/>
+                           value="/app/modules/M_APPLICATIONS/data/platforms"/>
                     <br>
                     Samples:
                     <ul>
-                        <li>/app/modules/M_APPLICATIONS/data/platforms:PLAIN</li>
-                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments:PLAIN</li>
-                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments:DEEP</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments</li>
+                        <li>/app/modules/M_APPLICATIONS/data/platforms.PLAT1.environments</li>
                     </ul>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button id="call" onclick="doCall(document.getElementById('call.destination').value);">Call (for
-                        one-time data) (will return full model yet)
-                    </button>
+                    <button id="call" onclick="doCall(document.getElementById('call.destination').value);">Call</button>
                 </td>
             </tr>
         </table>
 
-
         <h5>Call result:</h5>
 
-        <p id="call-response"></p>
+        <textarea cols="100" rows="10" id="call-response"></textarea>
+        <input readonly="true" id="call-response-count" value="0">
+        <button onclick="document.getElementById('call-response').value=''">Clear</button>
 
         <hr/>
 

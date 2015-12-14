@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.jayway.jsonpath.*;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import java.util.Optional;
  *
  * @author Yury Yakovlev
  */
+@Component
 public class JSONExtractor implements Extractor<String, SimplePathSelector> {
 
     private static final Logger LOGGER = Logger.getLogger(JSONExtractor.class);
@@ -97,7 +99,7 @@ public class JSONExtractor implements Extractor<String, SimplePathSelector> {
         try {
             //JSonPath always returns array of 1 element as result
             jsonPart = JsonPath.read(source, path);
-        } catch (InvalidPathException e) {
+        } catch (Exception e) {
             return Optional.empty();
         }
 
