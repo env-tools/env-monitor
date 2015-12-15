@@ -5,13 +5,17 @@ import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
 import org.envtools.monitor.model.applications.update.UpdateNotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * Created: 10/31/15 1:49 AM
  *
  * @author Yury Yakovlev
  */
+@Component
+@Profile("mock")
 public class MockApplicationsModuleProvider implements ApplicationsModuleProvider {
 
     private static final Logger LOGGER = Logger.getLogger(MockApplicationsModuleProvider.class);
