@@ -82,6 +82,7 @@
                     <include>**/static/stomp*.js</include>
                     <include>**/static/sockjs*.js</include>
                     <include>**/static/index.html</include>
+                    <include>**/application.properties</include>
                 </includes>
             </resource>
         </resources>

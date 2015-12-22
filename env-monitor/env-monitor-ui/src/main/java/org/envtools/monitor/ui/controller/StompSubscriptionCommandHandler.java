@@ -1,13 +1,22 @@
 package org.envtools.monitor.ui.controller;
 
 import org.apache.log4j.Logger;
+import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.core.ApplicationsModuleDataService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PreDestroy;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created: 12/11/15 1:12 PM
@@ -20,7 +29,15 @@ public class StompSubscriptionCommandHandler {
     private static final Logger LOGGER = Logger.getLogger(StompSubscriptionCommandHandler.class);
 
     @Autowired
+    private SimpMessagingTemplate webSocketClientMessagingTemplate;
+
+    @Autowired
+    ApplicationsModuleDataService applicationsModuleDataService;
+
+    @Autowired
     SubscriptionManager subscriptionManager;
+
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
 
     public static boolean isSubscriptionCommand(StompCommand stompCommand) {
         return isSubscribe(stompCommand) || isUnSubscribe(stompCommand);
@@ -52,6 +69,15 @@ public class StompSubscriptionCommandHandler {
 
             if (isSubscribe(stompCommand)) {
                 subscriptionManager.registerSubscription(sessionId, destination);
+
+                //TODO: rework to run instantly after subscription has been internally processed (in the same thread)!
+
+                //Send initial data immediately after subscription has been processed (how to do it more gracefully? )
+                executor.schedule(() -> {
+                    sendDataToSubscriberImmediately(destination);
+                }, 100, TimeUnit.MILLISECONDS);
+
+
             } else if (isUnSubscribe(stompCommand)) {
                 subscriptionManager.unregisterSubscription(sessionId, destination);
             }
@@ -59,5 +85,28 @@ public class StompSubscriptionCommandHandler {
         } else {
             LOGGER.warn("WebSocketAppController.handleSubscription - destination module not specified or not supported in destination " + destination);
         }
+    }
+
+    private void sendDataToSubscriberImmediately(String subscribedDestination) {
+        String contentPart = applicationsModuleDataService.extractSerializedPartBySelector(
+                DestinationUtil.extractSelector(subscribedDestination));
+            ResponseMessage subscriberResponseMessage = new ResponseMessage.Builder()
+                    .payload(new ResponsePayload(null,
+                            contentPart
+                    ))
+                    .build();
+
+        LOGGER.info(String.format("StompSubscriptionCommandHandler.sendDataToSubscriberImmediately - sending to destination %s - %s",
+                subscribedDestination, subscriberResponseMessage));
+        webSocketClientMessagingTemplate.convertAndSend(subscribedDestination,
+                    subscriberResponseMessage);
+        LOGGER.info(String.format("StompSubscriptionCommandHandler.sendDataToSubscriberImmediately - message to destination %s sent",
+                subscribedDestination));
+
+    }
+
+    @PreDestroy
+    public void destroy() {
+        executor.shutdown();
     }
 }

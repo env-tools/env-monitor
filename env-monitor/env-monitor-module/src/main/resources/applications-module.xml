@@ -3,15 +3,18 @@
        xmlns:int="http://www.springframework.org/schema/integration"
        xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
        xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-       http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+       http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath*:application.properties" system-properties-mode="OVERRIDE"/>
 
     <int:channel id="applications.channel"/>
 
     <bean id="applications.runner" class="org.envtools.monitor.module.applications.ApplicationsModuleRunner"/>
 
-    <bean id="applications.provider" class="org.envtools.monitor.provider.mock.MockApplicationsModuleProvider"/>
+    <bean id="applications.provider" class="${applications.provider}"/>
 
     <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer" />
 

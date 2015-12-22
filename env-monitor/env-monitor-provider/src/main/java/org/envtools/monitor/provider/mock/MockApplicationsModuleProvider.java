@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
  *
  * @author Yury Yakovlev
  */
-@Component
-@Profile("mock")
+//@Component
+//@Profile("mock")
 public class MockApplicationsModuleProvider implements ApplicationsModuleProvider {
 
     private static final Logger LOGGER = Logger.getLogger(MockApplicationsModuleProvider.class);
@@ -33,6 +33,8 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
         this.handler = handler;
 
         updateFreeMemory();
+        updateMockApplicationsModel();
+
     }
 
     @Scheduled(initialDelay = 2000, fixedDelay = 5000)
@@ -49,7 +51,12 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
         }
 
         if (sendUpdate) {
-            handler.sendUpdateNotification();
+            if (handler != null) {
+                handler.sendUpdateNotification();
+            } else {
+                LOGGER.warn("MockApplicationsModuleProvider.updateFreeMemory - handler not initialized!");
+
+            }
         }
     }
 
@@ -58,13 +65,16 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
         synchronized (data) {
             data.setPlatforms(MockApplicationsDataCreator.createPlatforms());
         }
-        handler.sendUpdateNotification();
+        if (handler != null) {
+            handler.sendUpdateNotification();
+        } else {
+            LOGGER.warn("MockApplicationsModuleProvider.updateMockApplicationsModel - handler not initialized!");
+        }
     }
 
     @Override
     public ApplicationsData getApplicationsData() {
         return data;
     }
-
 
 }
