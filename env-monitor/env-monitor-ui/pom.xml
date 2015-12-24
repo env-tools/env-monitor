@@ -81,7 +81,8 @@
                 <includes>
                     <include>**/static/stomp*.js</include>
                     <include>**/static/sockjs*.js</include>
-                    <include>**/static/index.html</include>
+                    <include>**/static/index*.html</include>
+                    <include>**/static/bower_components/ng-stomp/*</include>
                     <include>**/application.properties</include>
                 </includes>
             </resource>
