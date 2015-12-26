@@ -29,20 +29,78 @@
         envMonitor.controller('ApplicationsPageController', ['$stomp', '$scope',
             function ApplicationsPageController($stomp, $scope) {
 
-                $scope.applications = [
-                    {name: 'Application 1', applicationType: 'Type 1'},
-                    {name: 'Application 2', applicationType: 'Type 2'}
-                ];
+                $scope.applications = [];
 
-                $scope.platforms = [
-                    {id: "PL-1", name: "Hardcoded Platform 1"},
-                    {id: "PL-2", name: "Hardcoded Platform 2"}
-                ];
+//                        [
+//                    {name: 'Application 1', applicationType: 'Type 1'},
+//                    {name: 'Application 2', applicationType: 'Type 2'}
+//                ];
 
-                $scope.environments = [
-                    {id: "ENV-1", name: "Hardcoded Environment 1"},
-                    {id: "ENV-2", name: "Hardcoded Environment 2"}
-                ];
+                $scope.platforms = [];
+
+//                [
+//                    {id: "PL-1", name: "Hardcoded Platform 1"},
+//                    {id: "PL-2", name: "Hardcoded Platform 2"}
+//                ];
+
+                $scope.environments = [];
+
+//                [
+//                    {id: "ENV-1", name: "Hardcoded Environment 1"},
+//                    {id: "ENV-2", name: "Hardcoded Environment 2"}
+//                ];
+
+                $scope.filters = {
+                    selectedPlatform: null,
+                    selectedEnvironment: null
+                };
+
+                $scope.selectedPlatformChanged = function () {
+                    var pattern = '/app/modules/M_APPLICATIONS/data/platforms/{platform}/environments';
+
+                    $stomp.subscribe(pattern.replace("{platform}", $scope.filters.selectedPlatform.id),
+                            function (msg, headers, res) {
+                                $scope.$apply(function () {
+                                    $scope.environments = msg.payload.jsonContent;
+                                    $scope.filters.selectedEnvironment = $scope.environments[0];
+
+                                    $scope.selectedEnvironmentChanged();
+
+                                });
+
+                                console.log('Call result for environments: ' + JSON.stringify(msg.payload.jsonContent));
+                            }, { });
+
+                };
+
+                $scope.selectedEnvironmentChanged = function () {
+
+                    var pattern = '/topic/modules/M_APPLICATIONS/data/platforms/{platformId}/environments/{environmentId}/applications';
+
+                    if (!$scope.filters.selectedPlatform) {
+                        return;
+                    }
+
+                    if ($scope.currentApplicationsSubscribeId) {
+                        //TODO: check order subsc/unsubscr
+                        $stomp.unsubscribe($scope.currentApplicationsSubscribeId);
+                    }
+
+                    $scope.currentApplicationsSubscribeId = $stomp.subscribe(
+                            pattern
+                                    .replace("{platformId}",
+                                            $scope.filters.selectedPlatform.id)
+                                    .replace("{environmentId}",
+                                            $scope.filters.selectedEnvironment.id),
+                            function (msg, headers, res) {
+                                $scope.$apply(function () {
+                                    $scope.applications = msg.payload.jsonContent;
+                                });
+
+                                console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.payload.jsonContent));
+                            }, {});
+
+                }
 
 
                 $stomp.connect('/monitor', [])
@@ -51,34 +109,42 @@
                         .then(function (frame) {
                             console.log('Connected!');
 
-                            $stomp.subscribe('/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications',
-                                    function (msg, headers, res) {
-                                        $scope.$apply(function () {
-                                            $scope.applications = msg.payload.jsonContent;
-                                        });
+                            //TODO create wrapper around $stomp to clearly distinguish CALL and SUBSCRIBE
 
-                                        console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.payload.jsonContent));
-                                    }, { });
+                            //TODO configure TomCat to catch hot code updates immediately
 
-                            $stomp.subscribe('/app/modules/M_APPLICATIONS/data/platforms',
-                                    function (msg, headers, res) {
-                                        $scope.$apply(function () {
-                                            $scope.platforms = msg.payload.jsonContent;
-                                            $scope.selectedPlatform = $scope.platforms[0];
-                                        });
+                            $stomp.subscribe('/app/modules/M_APPLICATIONS/data/platforms', function (msg, headers, res) {
+                                $scope.$apply(function () {
+                                    $scope.platforms = msg.payload.jsonContent;
+                                    $scope.filters.selectedPlatform = $scope.platforms[0];
+                                });
+                                console.log('Call result for platforms: ' + JSON.stringify(msg.payload.jsonContent));
 
-                                        console.log('Call result for platforms: ' + JSON.stringify( msg.payload.jsonContent));
-                                    }, { });
 
-                            $stomp.subscribe('/app/modules/M_APPLICATIONS/data/platforms/PLAT1/environments',
-                                    function (msg, headers, res) {
-                                        $scope.$apply(function () {
-                                            $scope.environments = msg.payload.jsonContent;
-                                            $scope.selectedEnvironment = $scope.environments[0];
-                                        });
+                                var pattern = '/app/modules/M_APPLICATIONS/data/platforms/{platformId}/environments'
+                                $stomp.subscribe(pattern.replace('{platformId}', $scope.filters.selectedPlatform.id),
+                                        function (msg, headers, res) {
+                                            $scope.$apply(function () {
+                                                $scope.environments = msg.payload.jsonContent;
+                                                $scope.filters.selectedEnvironment = $scope.environments[0];
+                                            });
 
-                                        console.log('Call result for environments: ' + JSON.stringify( msg.payload.jsonContent));
-                                    }, { });
+                                            console.log('Call result for environments: ' + JSON.stringify(msg.payload.jsonContent));
+
+                                            $scope.selectedEnvironmentChanged();
+
+                                        }, { });
+
+                            }, { });
+
+//                            $stomp.subscribe('/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications',
+//                                    function (msg, headers, res) {
+//                                        $scope.$apply(function () {
+//                                            $scope.applications = msg.payload.jsonContent;
+//                                        });
+//
+//                                        console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.payload.jsonContent));
+//                                    }, { });
 
                         });
 
@@ -120,10 +186,12 @@
 <div class="container-fluid" ng-controller="ApplicationsPageController">
 
     <div style="padding: 20px">
-        <div class="row" id="platforms">
+        <span class="row" id="platforms">
             <div class="col-sm-6">
                 <h4>Select platform</h4>
-                <select ng-options="platform as platform.name for platform in platforms track by platform.id" ng-model="selectedPlatform"
+                <select ng-options="platform as platform.name for platform in platforms track by platform.id"
+                        ng-change="selectedPlatformChanged()"
+                        ng-model="filters.selectedPlatform"
                         id="platformsSelect" class="form-control">
 
 
@@ -133,15 +201,17 @@
                 </select>
             </div>
             <!--/col-->
-        </div>
+        </span>
         <!--/row-->
 
-        <div style="padding-top: 20px">{{selectedPlatform.id}}</div>
+        <!--div style="padding-top: 20px">{{selectedPlatform.id}}</div-->
 
-        <div class="row" id="environments">
+        <span class="row" id="environments">
             <div class="col-sm-6">
                 <h4>Select environment</h4>
-                <select ng-options="environment as environment.name for environment in environments track by environment.id" ng-model="selectedEnvironment"
+                <select ng-options="environment as environment.name for environment in environments track by environment.id"
+                        ng-model="filters.selectedEnvironment"
+                        ng-change="selectedEnvironmentChanged()"
                         id="environmentsSelect" class="form-control">
                     <!--option ng-repeat="environment in environments" ng-selected="selectedEnvironmentId"
                             ng-model="environment.id">{{environment.name}}
@@ -149,10 +219,10 @@
                 </select>
             </div>
             <!--/col-->
-        </div>
+        </span>
         <!--/row-->
 
-        <div style="padding-top: 20px">{{selectedEnvironment.id}}</div>
+        <!--div style="padding-top: 20px">{{selectedEnvironment.id}}</div-->
 
     </div>
 
@@ -166,7 +236,7 @@
             <th>Url</th>
             <th>Version</th>
             <th>Component name</th>
-            <th>Memory</th>
+            <th>Memory (Mb)</th>
             <th>Status</th>
         </tr>
         <tbody>
@@ -175,7 +245,7 @@
             <td>{{application.applicationType}}</td>
             <td>{{application.host}}</td>
             <td>{{application.port}}</td>
-            <td>{{application.url}}</td>
+            <td><a ng-href="{{application.url}}">{{application.url}}</a></td>
             <td>{{application.version}}</td>
             <td>{{application.componentName}}</td>
             <td>{{application.processMemory}}</td>
