@@ -8,13 +8,15 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Yury Yakovlev
  */
-public class Query {
+public class LibQuery {
 
-    public Query() {
+    public LibQuery() {
     }
 
     private Long id;
     private String text;
+    private String title;
+    private String description;
 
     public Long getId() {
         return id;
@@ -32,11 +34,29 @@ public class Query {
         this.text = text;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("id", id).
                 append("text", text).
+                append("title", title).
+                append("description", description).
                 toString();
     }
 }
