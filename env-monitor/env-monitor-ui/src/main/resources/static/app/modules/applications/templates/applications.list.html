@@ -1,0 +1,68 @@
+<div style="padding: 20px">
+        <span class="row" id="platforms">
+            <div class="col-sm-6">
+                <h4>Select platform</h4>
+                <select ng-options="platform as platform.name for platform in platforms track by platform.id"
+                        ng-change="selectedPlatformChanged()"
+                        ng-model="filters.selectedPlatform"
+                        id="platformsSelect" class="form-control">
+
+
+                    <!--option ng-repeat="platform in platforms" ng-selected="selectedPlatformId" ng-model="platform.id">
+                        {{platform.name}}
+                    </option-->
+                </select>
+            </div>
+            <!--/col-->
+        </span>
+    <!--/row-->
+
+    <!--div style="padding-top: 20px">{{selectedPlatform.id}}</div-->
+
+        <span class="row" id="environments">
+            <div class="col-sm-6">
+                <h4>Select environment</h4>
+                <select ng-options="environment as environment.name for environment in environments track by environment.id"
+                        ng-model="filters.selectedEnvironment"
+                        ng-change="selectedEnvironmentChanged()"
+                        id="environmentsSelect" class="form-control">
+                    <!--option ng-repeat="environment in environments" ng-selected="selectedEnvironmentId"
+                            ng-model="environment.id">{{environment.name}}
+                    </option-->
+                </select>
+            </div>
+            <!--/col-->
+        </span>
+    <!--/row-->
+
+    <!--div style="padding-top: 20px">{{selectedEnvironment.id}}</div-->
+
+</div>
+
+
+<table border="1" class="table table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Host</th>
+        <th>Port</th>
+        <th>Url</th>
+        <th>Version</th>
+        <th>Component name</th>
+        <th>Memory (Mb)</th>
+        <th>Status</th>
+    </tr>
+    <tbody>
+    <tr ng-repeat="application in applications">
+        <td>{{application.name}}</td>
+        <td>{{application.applicationType}}</td>
+        <td>{{application.host}}</td>
+        <td>{{application.port}}</td>
+        <td><a ng-href="{{application.url}}">{{application.url}}</a></td>
+        <td>{{application.version}}</td>
+        <td>{{application.componentName}}</td>
+        <td>{{application.processMemory}}</td>
+        <td>{{application.status}}</td>
+    </tr>
+    </tbody>
+</table>
