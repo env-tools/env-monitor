@@ -1,9 +1,10 @@
 (function () {
-    'use strict';
-    angular.module('app', [
-        'app.core',
-        'app.layout',
-        'app.applications',
-        'app.querylibrary'
+  'use strict';
+
+  angular
+    .module('envMonitor', [
+      'core',
+      'applications',
+      'queryLib'
     ]);
 })();

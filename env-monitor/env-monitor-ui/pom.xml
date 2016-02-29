@@ -79,9 +79,11 @@
                      it takes much time to copy/remove during build -->
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>**/static/ng-stomp*.js</include>
-                    <include>**/static/stomp*.js</include>
-                    <include>**/static/sockjs*.js</include>
+                    <include>**/static/scripts.js</include>
+                    <include>**/static/styles.css</include>
+                    <include>**/static/fonts/*</include>
+                    <include>**/static/images/</include>
+                    <include>**/static/app/modules/**/templates/*.html</include>
                     <include>**/static/index*.html</include>
                     <include>**/application.properties</include>
                 </includes>
