@@ -20,6 +20,33 @@ Generic web-based monitoring app for distributed multi-process systems
 *Java developer, interested in participating at development of new project from scratch*
 
 #How to run:
+*Build web UI:*
+- Install npm
+- Install global bower
+```sh
+npm i bower -g
+```
+- Install global gulp (windows only)
+```sh
+npm i gulp@3.9.0 -g
+```
+- Go to UI module
+```sh
+cd env-monitor/env-monitor/env-monitor-ui/src/main/resources/static/
+```
+- Download npm dependencies
+```sh
+npm install
+```
+- Download bower dependencies
+```sh
+bower install
+```
+- Build project
+```sh
+gulp dist
+```
+
 *To run the prototype standalone (from command line):*
 - Build with maven 3
 - Take jar from env-monitor-ui/target
