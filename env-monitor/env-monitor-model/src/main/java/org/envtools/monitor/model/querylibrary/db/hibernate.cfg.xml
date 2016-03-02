@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">
+            org.apache.derby.jdbc.ClientDriver
+        </property>
+        <property name="hibernate.connection.password">
+            admin
+        </property>
+        <property name="hibernate.connection.url">
+            jdbc:derby://localhost:1527/databaseName;create=true
+        </property>
+        <property name="hibernate.connection.username">
+            admin
+        </property>
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.DerbyDialect
+        </property>
+        <property name="current_session_context_class">thread</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <mapping class="tables.Category" />
+        <mapping class="tables.DataSource" />
+        <mapping class="tables.DataSourceProperties" />
+        <mapping class="tables.Query" />
+        <mapping class="tables.QueryExecution" />
+        <mapping class="tables.QueryExecutionParam" />
+        <mapping class="tables.QueryParam" />
+        <mapping class="tables.AbstractDbIdentifiable" />
+    </session-factory>
+</hibernate-configuration>
