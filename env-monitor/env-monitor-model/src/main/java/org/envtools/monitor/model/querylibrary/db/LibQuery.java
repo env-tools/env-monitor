@@ -3,16 +3,23 @@ package org.envtools.monitor.model.querylibrary.db;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import javax.persistence.*;
+
 /**
  * Created: 2/23/16 12:30 AM
  *
  * @author Yury Yakovlev
  */
+@Entity
+@Table(name = "LIB_QUERY")
 public class LibQuery {
 
     public LibQuery() {
     }
 
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private String text;
     private String title;
