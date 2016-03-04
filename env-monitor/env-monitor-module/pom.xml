@@ -25,12 +25,26 @@
             <artifactId>h2</artifactId>
         </dependency>
 
-<!-- For H2 console when running in Core module space (env-monitor-ui) -->
+        <!-- For H2 console when running in Core module space (env-monitor-ui) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
+        <!-- For database tests -->
+        <dependency>
+            <groupId>com.github.springtestdbunit</groupId>
+            <artifactId>spring-test-dbunit</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- Common widely used dependencies -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>

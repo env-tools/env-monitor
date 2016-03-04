@@ -47,7 +47,7 @@ public class TestJSONExtractor {
 
     @Test()
     public void testComplexStructure() throws Exception {
-        String source = IOUtils.toString(getClass().getResourceAsStream("/test-complex-structure.json"));
+        String source = IOUtils.toString(getClass().getResourceAsStream("/applications/test-complex-structure.json"));
         String json = extractor.extract(
                 source,
                 SimplePathSelector.of("data.platforms.ID_MCS_PRIME.environments.ID_DEV9.applications"));

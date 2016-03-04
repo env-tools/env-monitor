@@ -1,16 +1,16 @@
 package org.envtools.monitor.module.querylibrary.dao;
 
-import org.hibernate.SessionFactory;
+import org.envtools.monitor.model.querylibrary.db.LibQuery;
+
+import java.util.List;
 
 /**
- * Created: 23.02.16 3:01
+ * Created: 05.03.16 1:55
  *
  * @author Yury Yakovlev
  */
-public class LibQueryDao extends AbstractDbDao{
+public interface LibQueryDao extends Dao<LibQuery, Long> {
 
-    public LibQueryDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
+    List<LibQuery> getLibQueryByTextFragment(String textFragment);
 
 }

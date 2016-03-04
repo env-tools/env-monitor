@@ -5,8 +5,12 @@ import org.envtools.monitor.model.querylibrary.execution.QueryExecutionException
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.module.querylibrary.repo.LibQueryRepository;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.UUID;
 
 /**
@@ -14,6 +18,7 @@ import java.util.UUID;
  *
  * @author Yury Yakovlev
  */
+@Service
 public class QueryExecutionServiceImpl implements QueryExecutionService{
 
     private static final Logger LOGGER = Logger.getLogger(QueryExecutionServiceImpl.class);
