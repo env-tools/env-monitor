@@ -24,6 +24,7 @@ public class LibQueryDaoImpl  extends AbstractDbDao<LibQuery, Long> implements L
         LOGGER.info("LibQueryDaoImpl created.");
     }
 
+
     @Override
     @SuppressWarnings("unchecked")
     public List<LibQuery> getLibQueryByTextFragment(String textFragment) {

@@ -30,7 +30,7 @@ public class LibQueryDaoIT {
     @Autowired
     LibQueryDao libQueryDao;
 
-    private static final String QUERY_TEXT = "SELECT * FROM T WHERE a = '123'";
+    private static final String QUERY_TEXT = "SELECT * FROM LIB_QUERY WHERE title LIKE '%query%'";
     private static final String QUERY_SEARCH_PRESENT = "WHERE";
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
@@ -43,7 +43,12 @@ public class LibQueryDaoIT {
 
         List<LibQuery> foundQueries = libQueryDao.getLibQueryByTextFragment(QUERY_SEARCH_PRESENT);
         Assert.assertEquals(1, foundQueries.size());
-        Assert.assertEquals(QUERY_TEXT, foundQueries.get(0).getText());
+        System.out.println(QUERY_TEXT);
+        List<LibQuery> foundQueries1 = libQueryDao.getLibQueryByTextFragment("LIB_QUERY");
+        Assert.assertEquals(0, foundQueries1.size());
+        List<LibQuery> foundQueries2 = libQueryDao.getLibQueryByTextFragment("123");
+        Assert.assertEquals(1, foundQueries2.size());
+        Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getText());
 
         LOGGER.info("Found queries: " + foundQueries);
 
@@ -69,6 +74,13 @@ public class LibQueryDaoIT {
         libQuery.setText(text);
         libQuery.setDescription("some_description");
         libQuery.setTitle("some_title");
+
+        LibQuery libQuery1 = new LibQuery();
+        //Don't set Id - it will be auto generated
+        libQuery1.setText("123");
+        libQuery1.setDescription("some_description1");
+        libQuery1.setTitle("some_title1");
+        libQueryDao.saveAndFlush(libQuery1);
         return libQueryDao.saveAndFlush(libQuery);
     }
 }
