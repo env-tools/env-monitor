@@ -69,7 +69,7 @@ public class DataSourcePropertiesDaoIT {
     private  DataSourceProperties createWithText(String text) {
         DataSourceProperties dataSourceProperties = new  DataSourceProperties();
         //Don't set Id - it will be auto generated
-        dataSourceProperties.setParam("dfgdfg");
+        dataSourceProperties.setProperty("dfgdfg");
         dataSourceProperties.setValue(text);
 
         return  dataSourcePropertiesDao.saveAndFlush(dataSourceProperties);

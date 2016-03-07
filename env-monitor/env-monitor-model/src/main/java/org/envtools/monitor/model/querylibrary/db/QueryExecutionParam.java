@@ -11,27 +11,14 @@ import javax.persistence.*;
  * @author Yury Yakovlev
  */
 @Entity
-//@Table(name = "LIB_QUERY")
-public class QueryExecutionParam {
+public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     public QueryExecutionParam() {
     }
 
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
     private String name;
     private String value;
-    //private String description;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -52,7 +39,6 @@ public class QueryExecutionParam {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
                 append("name", name).
                 append("value", value).
                 toString();

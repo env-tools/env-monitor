@@ -4,8 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
-/*Сущности без связей.
-* Скопировала, так как со связями не работало. (сыпались ошибки)*/
+/* Category --- Query OneToMany*/
 /**
  * Created: 2/23/16 12:30 AM
  *
@@ -13,25 +12,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "CATEGORY")
-public class Category {
+public class Category extends AbstractDbIdentifiable {
 
     public Category() {
     }
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-    private String ower;
+    private String ower; //пустое для public
     private String title;
-    private String parent_category;
+    private String description;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getOwer() {
         return ower;
@@ -41,12 +30,12 @@ public class Category {
         this.ower = ower;
     }
 
-    public String getParent_category() {
-        return parent_category;
+    public String getDescription() {
+        return description;
     }
 
-    public void setParent_category(String parent_category) {
-        this.parent_category = parent_category;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {
@@ -60,10 +49,9 @@ public class Category {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
                 append("ower", ower).
                 append("title", title).
-                append("parent_category", parent_category).
+                append("parent_category", description).
                 toString();
     }
 }

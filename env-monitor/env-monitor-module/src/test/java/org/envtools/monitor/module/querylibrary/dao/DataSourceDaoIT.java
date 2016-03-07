@@ -66,13 +66,13 @@ public class DataSourceDaoIT {
         //Don't set Id - it will be auto generated
         dataSource.setDescription("123");
         dataSource.setName(text);
-        dataSource.setType_code("wrwr");
+        dataSource.setType("wrwr");
 
      //   DataSource  dataSource1 = new  DataSource();
         //Don't set Id - it will be auto generated
      //   dataSource1.setDescription("123sfd");
      //   dataSource1.setName("sdfsds222f");
-     //   dataSource1.setType_code("wrwr233323");
+     //   dataSource1.setType("wrwr233323");
        // dataSourceDao.saveAndFlush(dataSource1);
 
         return  dataSourceDao.saveAndFlush(dataSource);

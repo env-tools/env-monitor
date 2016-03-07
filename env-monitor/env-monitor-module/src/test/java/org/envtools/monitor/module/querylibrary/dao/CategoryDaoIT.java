@@ -65,14 +65,14 @@ public class CategoryDaoIT {
         Category category = new Category();
         //Don't set Id - it will be auto generated
         category.setTitle(text);
-        category.setParent_category("some_description");
+        category.setDescription("some_description");
         category.setOwer("some_title");
 
 
       //  Category category1 = new Category();
         //Don't set Id - it will be auto generated
       //  category1.setTitle("453333");
-      //  category1.setParent_category("parent");
+      //  category1.setDescription("parent");
       //  category1.setOwer("ower");
         return categoryDao.saveAndFlush(category);
       //  return null;

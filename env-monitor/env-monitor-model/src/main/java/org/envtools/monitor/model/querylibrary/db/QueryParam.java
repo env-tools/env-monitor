@@ -12,24 +12,20 @@ import javax.persistence.*;
  */
 @Entity
 //@Table(name = "LIB_QUERY")
-public class QueryParam {
+public class QueryParam extends AbstractDbIdentifiable {
 
     public QueryParam() {
     }
 
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
     private String name;
-    private String datatype;
+    private String type;
 
-    public String getDatatype() {
-        return datatype;
+    public String getType() {
+        return type;
     }
 
-    public void setDatatype(String datatype) {
-        this.datatype = datatype;
+    public void setType(String datatype) {
+        this.type = datatype;
     }
 
     public String getName() {
@@ -41,24 +37,11 @@ public class QueryParam {
     }
 
 
-   // private String description;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
                 append("name", name).
-                append("datatype", datatype).
+                append("type", type).
                 toString();
     }
 }

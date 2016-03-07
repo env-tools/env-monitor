@@ -11,34 +11,21 @@ import javax.persistence.*;
  * @author Yury Yakovlev
  */
 @Entity
-//@Table(name = "LIB_QUERY")
-public class DataSource {
+public class DataSource extends AbstractDbIdentifiable {
 
     public  DataSource() {
     }
 
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-    private String type_code;
+    private String type;
     private String name;
     private String description;
 
-    public Long getId() {
-        return id;
+    public String getType() {
+        return type;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getType_code() {
-        return type_code;
-    }
-
-    public void setType_code(String type_code) {
-        this.type_code = type_code;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -60,9 +47,8 @@ public class DataSource {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
                 append("name", name).
-                append("type_code", type_code).
+                append("type_code", type).
                 append("description", description).
                 toString();
     }

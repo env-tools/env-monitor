@@ -12,26 +12,14 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "LIB_QUERY")
-public class LibQuery {
+public class LibQuery extends AbstractDbIdentifiable {
 
     public LibQuery() {
     }
 
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
     private String text;
     private String title;
     private String description;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getText() {
         return text;
@@ -60,7 +48,7 @@ public class LibQuery {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
+
                 append("text", text).
                 append("title", title).
                 append("description", description).

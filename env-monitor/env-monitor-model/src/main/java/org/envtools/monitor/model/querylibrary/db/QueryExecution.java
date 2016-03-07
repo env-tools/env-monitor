@@ -11,34 +11,29 @@ import javax.persistence.*;
  * @author Yury Yakovlev
  */
 @Entity
-//@Table(name = "LIB_QUERY")
-public class QueryExecution {
+public class QueryExecution extends AbstractDbIdentifiable {
 
     public QueryExecution() {
     }
 
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
     private String user;
-    private Long timestanp;
-   // private String description;
+    private Long start_timestamp;
+    private Long end_timestamp;
 
-    public Long getId() {
-        return id;
+    public Long getStart_timestamp() {
+        return start_timestamp;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setStart_timestamp(Long start_timestamp) {
+        this.start_timestamp = start_timestamp;
     }
 
-    public Long getTimestanp() {
-        return timestanp;
+    public Long getEnd_timestamp() {
+        return end_timestamp;
     }
 
-    public void setTimestanp(Long timestanp) {
-        this.timestanp = timestanp;
+    public void setEnd_timestamp(Long end_timestamp) {
+        this.end_timestamp = end_timestamp;
     }
 
     public String getUser() {
@@ -52,9 +47,9 @@ public class QueryExecution {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("id", id).
                 append("user", user).
-                append("timestanp", timestanp.toString()).
+                append("start_timestamp",  start_timestamp.toString()).
+                        append("end_timestamp",  end_timestamp.toString()).
                 toString();
     }
 }
