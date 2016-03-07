@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created: 2/23/16 12:30 AM
@@ -15,10 +16,45 @@ public class QueryExecution extends AbstractDbIdentifiable {
 
     public QueryExecution() {
     }
-
+    @Column(name = "QUERYEXECUTION_ID")
+    private Long id;
     private String user;
     private Long start_timestamp;
     private Long end_timestamp;
+
+    @ManyToOne
+    @JoinColumn(name="QUERY_ID")
+    private Query query;
+
+    @OneToMany(mappedBy = "queryExecution")
+    private Set<QueryExecutionParam> queryExecutionParam;
+
+    @OneToOne(mappedBy = "queryExecution")
+    private DataSource dataSource;
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public Set<QueryExecutionParam> getQueryExecutionParam() {
+        return queryExecutionParam;
+    }
+
+    public void setQueryExecutionParam(Set<QueryExecutionParam> queryExecutionParam) {
+        this.queryExecutionParam = queryExecutionParam;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
 
     public Long getStart_timestamp() {
         return start_timestamp;

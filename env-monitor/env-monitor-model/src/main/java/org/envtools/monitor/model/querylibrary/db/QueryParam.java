@@ -16,9 +16,22 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     public QueryParam() {
     }
-
+    @Column(name = "QUERYPARAM_ID")
+    private Long id;
     private String name;
     private String type;
+
+    @ManyToOne
+    @JoinColumn(name="QUERY_ID")
+    private Query query;
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
 
     public String getType() {
         return type;

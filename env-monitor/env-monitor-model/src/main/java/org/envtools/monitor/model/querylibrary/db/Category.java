@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.util.Set;
 /* Category --- Query OneToMany*/
 /**
  * Created: 2/23/16 12:30 AM
@@ -16,11 +17,29 @@ public class Category extends AbstractDbIdentifiable {
 
     public Category() {
     }
-
+    @Column(name = "CATEGORY_ID")
+    private Long id;
     private String ower; //пустое для public
     private String title;
     private String description;
+    @OneToMany(mappedBy = "category")
+    private Set<Query> query;
 
+    /*Один ко многим к одной таблице*/
+    @OneToMany(mappedBy = "category1")
+    private Set<Category> categoryRelation;
+
+    @ManyToOne
+   // @JoinColumn(name="CATEGORY_ID")
+    private Category category1;
+
+    public Set<Query> getQuery() {
+        return query;
+    }
+
+    public void setQuery(Set<Query> query) {
+        this.query = query;
+    }
 
     public String getOwer() {
         return ower;

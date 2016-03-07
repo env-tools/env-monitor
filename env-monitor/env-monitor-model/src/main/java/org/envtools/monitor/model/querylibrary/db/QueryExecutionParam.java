@@ -15,9 +15,14 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     public QueryExecutionParam() {
     }
-
+    @Column(name = "QUERYEXECUTIONPARAM_ID")
+    private Long id;
     private String name;
     private String value;
+
+    @ManyToOne
+    @JoinColumn(name="QUERYEXECUTION_ID")
+    private QueryExecution queryExecution;
 
 
     public String getName() {
