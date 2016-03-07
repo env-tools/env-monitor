@@ -11,7 +11,7 @@ import javax.persistence.*;
  * @author Yury Yakovlev
  */
 @Entity
-@Table(name = "LIB_QUERY")
+//@Table(name = "LIB_QUERY")
 public class DataSourceProperties {
 
     public  DataSourceProperties() {

@@ -4,12 +4,14 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Created by anastasiya on 06.03.16.
  */
+@Repository
 public class CategoryDaoImpl  extends AbstractDbDao<Category, Long> implements CategoryDao {
 
 

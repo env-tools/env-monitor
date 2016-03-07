@@ -12,12 +12,11 @@ import javax.persistence.*;
  * @author Yury Yakovlev
  */
 @Entity
-@Table(name = "LIB_QUERY")
+@Table(name = "CATEGORY")
 public class Category {
 
     public Category() {
     }
-
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)

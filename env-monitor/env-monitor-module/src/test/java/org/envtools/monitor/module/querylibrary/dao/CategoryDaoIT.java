@@ -15,9 +15,9 @@ import org.testng.Assert;
 import java.util.List;
 
 /**
- * Created: 05.03.16 3:33
+ * Created: 06.03.16 3:33
  *
- * @author Yury Yakovlev
+ * @author Anastasiya
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes =PersistenceTestCategory.class)
@@ -41,7 +41,7 @@ public class CategoryDaoIT {
         createWithText(QUERY_SEARCH_PRESENT);
         List<Category> foundQueries = categoryDao.getCategoryByTitle(QUERY_SEARCH_PRESENT);
         Assert.assertEquals(1, foundQueries.size());
-        Assert.assertEquals(QUERY_TEXT, foundQueries.get(0).getOwer());
+        Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getTitle());
 
         LOGGER.info("Found queries: " + foundQueries);
 
@@ -54,7 +54,7 @@ public class CategoryDaoIT {
 
         createWithText(QUERY_SEARCH_ABSENT);
 
-        List<Category> foundQueries = categoryDao.getCategoryByTitle(QUERY_SEARCH_PRESENT);
+        List<Category> foundQueries = categoryDao.getCategoryByTitle(QUERY_SEARCH_ABSENT);
         Assert.assertEquals(1, foundQueries.size());
 
         LOGGER.info("Found queries: " + foundQueries);
@@ -69,11 +69,12 @@ public class CategoryDaoIT {
         category.setOwer("some_title");
 
 
-        Category category1 = new Category();
+      //  Category category1 = new Category();
         //Don't set Id - it will be auto generated
-        category1.setTitle("453333");
-        category1.setParent_category("parent");
-        category1.setOwer("ower");
+      //  category1.setTitle("453333");
+      //  category1.setParent_category("parent");
+      //  category1.setOwer("ower");
         return categoryDao.saveAndFlush(category);
+      //  return null;
     }
 }
