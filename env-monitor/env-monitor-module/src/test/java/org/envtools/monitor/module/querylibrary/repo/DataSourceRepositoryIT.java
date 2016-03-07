@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @IntegrationTest
 public class DataSourceRepositoryIT {
 
-    private static final Logger LOGGER = Logger.getLogger(CategoryRepositoryIT.class);
+    private static final Logger LOGGER = Logger.getLogger(DataSourceRepositoryIT.class);
 
     public static final String DATASET = "classpath:/persistence/dbunit/data-source-repo-test.xml";
 
