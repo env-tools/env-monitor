@@ -8,10 +8,10 @@ import javax.persistence.*;
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
-//@Table(name = "LIB_QUERY")
+@Table(name = "QUERY_PARAM")
 public class QueryParam extends AbstractDbIdentifiable {
 
     public QueryParam() {
@@ -21,20 +21,22 @@ public class QueryParam extends AbstractDbIdentifiable {
     private String name;
     private String type;
 
+    public LibQuery getLibQuery() {
+        return libQuery;
+    }
+
+    public void setLibQuery(LibQuery libQuery) {
+        this.libQuery = libQuery;
+    }
+
     @ManyToOne
+
     @JoinColumn(name="QUERY_ID")
-    private Query query;
+    private LibQuery libQuery;
 
-    public Query getQuery() {
-        return query;
-    }
 
-    public void setQuery(Query query) {
-        this.query = query;
-    }
-
-    public String getType() {
-        return type;
+    public enum getType {
+        type
     }
 
     public void setType(String datatype) {

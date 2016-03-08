@@ -8,9 +8,10 @@ import javax.persistence.*;
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
+@Table(name = "DATA_SOURCE_PROPERTIES")
 public class DataSourceProperties extends AbstractDbIdentifiable{
 
     public  DataSourceProperties() {
@@ -20,17 +21,21 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
     private String property;
     private String value;
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
     @ManyToOne
     @JoinColumn(name="DATASOURCE_ID")
     private DataSource dataSource;
+
+   // public DataSource getDataSource() {
+   //     return dataSource;
+   // }
+
+  //  public void setDataSource(DataSource dataSource) {
+  //      this.dataSource = dataSource;
+  //  }
+
+   // @ManyToOne
+   // @JoinColumn(name="DATASOURCE_ID")
+   // private DataSource dataSource;
 
     public String getProperty() {
         return property;
