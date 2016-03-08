@@ -11,3 +11,5 @@
 **/new_app/
 **/env-monitor-ui/src/main/resources/static/scripts.js
 **/env-monitor-ui/src/main/resources/static/styles.css
+**/h2_data.trace.db
+**/h2_data.mv.db
