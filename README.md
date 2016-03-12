@@ -21,7 +21,7 @@ Generic web-based monitoring app for distributed multi-process systems
 
 #How to run:
 *Build web UI:*
-- Install npm
+- Install npm (is part of node js)
 - Install global bower
 ```sh
 npm i bower -g
