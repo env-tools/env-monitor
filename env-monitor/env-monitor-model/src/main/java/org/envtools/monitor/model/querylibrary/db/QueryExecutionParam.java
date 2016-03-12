@@ -51,9 +51,11 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("name", name).
-                append("value", value).
-                toString();
+        return "QueryExecutionParam{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", queryExecution=" + queryExecution +
+                '}';
     }
 }

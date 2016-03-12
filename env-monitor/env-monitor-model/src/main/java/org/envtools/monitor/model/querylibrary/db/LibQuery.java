@@ -75,11 +75,14 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-
-                append("text", text).
-                append("title", title).
-                append("description", description).
-                toString();
+        return "LibQuery{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", queriesParam=" + queriesParam +
+                ", queriesExecution=" + queriesExecution +
+                ", category=" + category +
+                '}';
     }
 }

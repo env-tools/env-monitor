@@ -4,14 +4,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created: 2/23/16 12:30 AM
- *
- * @author Plotnikova Anastasiya
- */
+
 @Entity
 @Table(name = "DATA_SOURCE")
 public class DataSource extends AbstractDbIdentifiable {
@@ -20,7 +18,8 @@ public class DataSource extends AbstractDbIdentifiable {
     }
     @Column(name = "DATASOURCE_ID")
     private Long id;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TypeSource type;
     private String name;
     private String description;
 
@@ -41,13 +40,20 @@ public class DataSource extends AbstractDbIdentifiable {
     }
 
 
-    public enum getType {
-        type
+    public TypeSource getType() {
+        return type;
     }
 
-
-    public void setType(String type) {
+    public void setType(TypeSource type) {
         this.type = type;
+    }
+
+    public List<DataSourceProperties> getDataSourciesProperties() {
+        return dataSourciesProperties;
+    }
+
+    public void setDataSourciesProperties(List<DataSourceProperties> dataSourciesProperties) {
+        this.dataSourciesProperties = dataSourciesProperties;
     }
 
     public String getName() {
@@ -68,10 +74,13 @@ public class DataSource extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("name", name).
-                append("type_code", type).
-                append("description", description).
-                toString();
+        return "DataSource{" +
+                "id=" + id +
+                ", type=" + type +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", dataSourciesProperties=" + dataSourciesProperties +
+                ", queryExecution=" + queryExecution +
+                '}';
     }
 }

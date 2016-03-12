@@ -30,41 +30,37 @@ public class Category extends AbstractDbIdentifiable {
     private List<LibQuery> queries;
 
 
-
     /*Один ко многим к одной таблице*/
-    @OneToMany(mappedBy = "category1")
-    private List<Category> categories;
+    @OneToMany(mappedBy = "parentCategory")
+    private List<Category> childCategories;
 
     @ManyToOne
     // @JoinColumn(name="CATEGORY_ID")
-    private Category category1;
-
-    public List<Category> getChildCategories() {
-        return categories;
-    }
-
-
-   // public void setChildCategories(List<Category> categories) {
-   //     this.categories = categories;
-  //  }
+    private Category parentCategory;
 
     public Category getParentCategory() {
-        return category1;
+        return parentCategory;
     }
 
-    public void setCategory1(Category category1) {
-        this.category1 = category1;
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 
+    public List<Category> getChildCategories() {
+        return childCategories;
+    }
 
+    public void setChildCategories(List<Category> childCategories) {
+        this.childCategories = childCategories;
+    }
 
-  //  public Set<Query> getQuery() {
-  //      return query;
- //   }
+    public List<LibQuery> getQueries() {
+        return queries;
+    }
 
- //   public void setQuery(Set<Query> query) {
- //       this.query = query;
- //   }
+    public void setQueries(List<LibQuery> queries) {
+        this.queries = queries;
+    }
 
     public String getOwner() {
         return owner;
@@ -92,10 +88,13 @@ public class Category extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("owner", owner).
-                append("title", title).
-                append("parent_category", description).
-                toString();
+        return "Category{" +
+                "owner='" + owner + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", queries=" + queries +
+                ", childCategories=" + childCategories +
+                ", parentCategory=" + parentCategory +
+                '}';
     }
 }

@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.dao;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryParam;
+import org.envtools.monitor.model.querylibrary.db.TypeQueryParam;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +82,7 @@ public class QueryParamDaoIT {
         QueryParam queryParam = new QueryParam();
         //Don't set Id - it will be auto generated
         queryParam.setName("dfgdfg");
-        queryParam.setType("123");
+        queryParam.setType(TypeQueryParam.WHERE);
         queryParam.setLibQuery(libQuery1);
         return queryParamDao.saveAndFlush(queryParam);
     }

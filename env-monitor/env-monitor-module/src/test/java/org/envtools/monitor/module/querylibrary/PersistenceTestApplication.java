@@ -1,6 +1,7 @@
 package org.envtools.monitor.module.querylibrary;
 
-import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.*;
+import org.envtools.monitor.model.querylibrary.execution.QueryExecutionException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -15,7 +16,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan(basePackages = "org.envtools.*")
 @EnableJpaRepositories("org.envtools.monitor.module.querylibrary.repo.*")
-@EntityScan(basePackageClasses = LibQuery.class)
+@EntityScan(basePackageClasses = {LibQuery.class, Category.class, DataSource.class, DataSourceProperties.class,
+        QueryExecution.class, QueryExecutionParam.class, QueryExecutionException.class})
 @EnableAutoConfiguration
 public class PersistenceTestApplication {
 }

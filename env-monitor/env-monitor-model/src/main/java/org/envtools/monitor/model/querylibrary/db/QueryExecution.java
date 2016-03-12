@@ -51,13 +51,12 @@ public class QueryExecution extends AbstractDbIdentifiable {
     }
 
 
-
-    public List<QueryExecutionParam> getQueriesExecutionParam() {
-        return queriesExecutionParam;
+    public List<QueryExecutionParam> getQueriesExecutionParams() {
+        return queriesExecutionParams;
     }
 
-    public void setQueriesExecutionParam(List<QueryExecutionParam> queriesExecutionParam) {
-        this.queriesExecutionParam = queriesExecutionParam;
+    public void setQueriesExecutionParams(List<QueryExecutionParam> queriesExecutionParams) {
+        this.queriesExecutionParams = queriesExecutionParams;
     }
 
     @ManyToOne
@@ -66,7 +65,7 @@ public class QueryExecution extends AbstractDbIdentifiable {
     private LibQuery libQuery;
 
     @OneToMany(mappedBy = "queryExecution")
-    private List<QueryExecutionParam> queriesExecutionParam;
+    private List<QueryExecutionParam> queriesExecutionParams;
 
     @OneToMany(mappedBy = "queryExecution")
     private List<DataSource> DataSourcies;
@@ -91,10 +90,14 @@ public class QueryExecution extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("user", user).
-                append("startTimestamp",  startTimestamp.toString()).
-                        append("endTimestamp",  endTimestamp.toString()).
-                toString();
+        return "QueryExecution{" +
+                "id=" + id +
+                ", user='" + user + '\'' +
+                ", startTimestamp=" + startTimestamp +
+                ", endTimestamp=" + endTimestamp +
+                ", libQuery=" + libQuery +
+                ", queriesExecutionParams=" + queriesExecutionParams +
+                ", DataSourcies=" + DataSourcies +
+                '}';
     }
 }

@@ -19,7 +19,8 @@ public class QueryParam extends AbstractDbIdentifiable {
     @Column(name = "QUERYPARAM_ID")
     private Long id;
     private String name;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TypeQueryParam type;
 
     public LibQuery getLibQuery() {
         return libQuery;
@@ -34,13 +35,12 @@ public class QueryParam extends AbstractDbIdentifiable {
     @JoinColumn(name="QUERY_ID")
     private LibQuery libQuery;
 
-
-    public enum getType {
-        type
+    public TypeQueryParam getType() {
+        return type;
     }
 
-    public void setType(String datatype) {
-        this.type = datatype;
+    public void setType(TypeQueryParam type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -54,9 +54,11 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("name", name).
-                append("type", type).
-                toString();
+        return "QueryParam{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", libQuery=" + libQuery +
+                '}';
     }
 }
