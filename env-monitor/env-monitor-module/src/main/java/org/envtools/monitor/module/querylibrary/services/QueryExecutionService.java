@@ -16,7 +16,7 @@ public interface QueryExecutionService {
 
     QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException;
 
-    UUID submitForExecution(QueryExecutionRequest queryExecutionRequest,
+    void submitForExecution(QueryExecutionRequest queryExecutionRequest,
                             QueryExecutionListener listener) throws QueryExecutionException;
 
 }
