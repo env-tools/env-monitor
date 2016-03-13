@@ -2,7 +2,8 @@ package org.envtools.monitor.module.querylibrary.dao;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.module.querylibrary.PersistenceTestCategory;
+
+import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author Anastasiya
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestCategory.class)
+@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
 @TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class CategoryDaoIT {
@@ -66,14 +67,14 @@ public class CategoryDaoIT {
         //Don't set Id - it will be auto generated
         category.setTitle(text);
         category.setDescription("some_description");
-        category.setOwer("some_title");
+        category.setOwner("some_title");
 
 
       //  Category category1 = new Category();
         //Don't set Id - it will be auto generated
       //  category1.setTitle("453333");
       //  category1.setDescription("parent");
-      //  category1.setOwer("ower");
+      //  category1.setOwner("owner");
         return categoryDao.saveAndFlush(category);
       //  return null;
     }

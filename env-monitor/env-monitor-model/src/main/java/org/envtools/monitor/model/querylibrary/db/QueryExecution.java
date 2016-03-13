@@ -4,73 +4,87 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
-public class QueryExecution extends AbstractDbIdentifiable {
+@Table(name = "QUERY_EXECUTION")
+public class QueryExecution extends AbstractDbIdentifiable  implements Serializable {
 
     public QueryExecution() {
     }
     @Column(name = "QUERYEXECUTION_ID")
     private Long id;
+    @Column(name = "USER")
     private String user;
-    private Long start_timestamp;
-    private Long end_timestamp;
+    private String text;
+    private LocalDateTime startTimestamp;
+    private LocalDateTime endTimestamp;
+
+    public LocalDateTime getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(LocalDateTime endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
+
+    public LocalDateTime getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public void setStartTimestamp(LocalDateTime startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public LibQuery getLibQuery() {
+        return libQuery;
+    }
+
+    public void setLibQuery(LibQuery libQuery) {
+        this.libQuery = libQuery;
+    }
+
+
+    public List<QueryExecutionParam> getQueriesExecutionParams() {
+        return queriesExecutionParams;
+    }
+
+    public void setQueriesExecutionParams(List<QueryExecutionParam> queriesExecutionParams) {
+        this.queriesExecutionParams = queriesExecutionParams;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 
     @ManyToOne
     @JoinColumn(name="QUERY_ID")
-    private Query query;
+
+    private LibQuery libQuery;
 
     @OneToMany(mappedBy = "queryExecution")
-    private Set<QueryExecutionParam> queryExecutionParam;
+    @OrderBy(value = "NAME")
+    private List<QueryExecutionParam> queriesExecutionParams;
 
-    @OneToOne(mappedBy = "queryExecution")
+   // @OneToMany(mappedBy = "queryExecution")
+   // private List<DataSource> DataSourcies;
+
+    @ManyToOne
+    @JoinColumn(name="DATASOURCE_ID")
     private DataSource dataSource;
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public Set<QueryExecutionParam> getQueryExecutionParam() {
-        return queryExecutionParam;
-    }
-
-    public void setQueryExecutionParam(Set<QueryExecutionParam> queryExecutionParam) {
-        this.queryExecutionParam = queryExecutionParam;
-    }
-
-    public Query getQuery() {
-        return query;
-    }
-
-    public void setQuery(Query query) {
-        this.query = query;
-    }
-
-    public Long getStart_timestamp() {
-        return start_timestamp;
-    }
-
-    public void setStart_timestamp(Long start_timestamp) {
-        this.start_timestamp = start_timestamp;
-    }
-
-    public Long getEnd_timestamp() {
-        return end_timestamp;
-    }
-
-    public void setEnd_timestamp(Long end_timestamp) {
-        this.end_timestamp = end_timestamp;
-    }
 
     public String getUser() {
         return user;
@@ -82,10 +96,14 @@ public class QueryExecution extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("user", user).
-                append("start_timestamp",  start_timestamp.toString()).
-                        append("end_timestamp",  end_timestamp.toString()).
-                toString();
+        return "QueryExecution{" +
+                "id=" + id +
+                ", user='" + user + '\'' +
+                ", text='" + text + '\'' +
+                ", startTimestamp=" + startTimestamp +
+                ", endTimestamp=" + endTimestamp +
+                ", libQuery=" + libQuery +
+                ", queriesExecutionParams=" + queriesExecutionParams +
+                '}';
     }
 }

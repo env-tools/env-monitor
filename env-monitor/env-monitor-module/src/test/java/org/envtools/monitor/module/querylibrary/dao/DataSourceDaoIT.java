@@ -2,9 +2,9 @@ package org.envtools.monitor.module.querylibrary.dao;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.querylibrary.db.DataProviderType;
 import org.envtools.monitor.model.querylibrary.db.DataSource;
-import org.envtools.monitor.module.querylibrary.PersistenceTestCategory;
-import org.envtools.monitor.module.querylibrary.PersistenceTestDataSource;
+import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by anastasiya on 07.03.16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestDataSource.class)
+@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
 @TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class DataSourceDaoIT {
@@ -66,7 +66,7 @@ public class DataSourceDaoIT {
         //Don't set Id - it will be auto generated
         dataSource.setDescription("123");
         dataSource.setName(text);
-        dataSource.setType("wrwr");
+        dataSource.setType(DataProviderType.JDBC);
 
      //   DataSource  dataSource1 = new  DataSource();
         //Don't set Id - it will be auto generated

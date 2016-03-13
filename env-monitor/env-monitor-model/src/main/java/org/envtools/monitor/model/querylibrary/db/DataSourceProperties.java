@@ -8,29 +8,24 @@ import javax.persistence.*;
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
+@Table(name = "DATA_SOURCE_PROPERTIES")
 public class DataSourceProperties extends AbstractDbIdentifiable{
 
     public  DataSourceProperties() {
     }
     @Column(name = "DATASOURCEPROPERTIES_ID")
     private Long id;
+    @Column(name="PROPERTY")
     private String property;
     private String value;
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     @ManyToOne
     @JoinColumn(name="DATASOURCE_ID")
     private DataSource dataSource;
+
 
     public String getProperty() {
         return property;
@@ -50,9 +45,11 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("param", property).
-                append("value", value).
-                toString();
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("property", property)
+                .append("value", value)
+                .append("dataSource", dataSource)
+                .toString();
     }
 }

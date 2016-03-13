@@ -8,37 +8,39 @@ import javax.persistence.*;
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
-//@Table(name = "LIB_QUERY")
+@Table(name = "QUERY_PARAM")
 public class QueryParam extends AbstractDbIdentifiable {
 
     public QueryParam() {
     }
     @Column(name = "QUERYPARAM_ID")
     private Long id;
+    @Column(name = "NAME")
     private String name;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private DataProviderType type;
+
+    public LibQuery getLibQuery() {
+        return libQuery;
+    }
+
+    public void setLibQuery(LibQuery libQuery) {
+        this.libQuery = libQuery;
+    }
 
     @ManyToOne
     @JoinColumn(name="QUERY_ID")
-    private Query query;
+    private LibQuery libQuery;
 
-    public Query getQuery() {
-        return query;
-    }
-
-    public void setQuery(Query query) {
-        this.query = query;
-    }
-
-    public String getType() {
+    public DataProviderType getType() {
         return type;
     }
 
-    public void setType(String datatype) {
-        this.type = datatype;
+    public void setType(DataProviderType type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -52,9 +54,11 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("name", name).
-                append("type", type).
-                toString();
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("name", name)
+                .append("type", type)
+                .append("libQuery", libQuery)
+                .toString();
     }
 }

@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created: 2/23/16 12:30 AM
@@ -16,10 +17,41 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     public LibQuery() {
     }
-
+    @Column(name = "QUERY_ID")
+    private Long id;
     private String text;
+    @Column(name = "TITLE")
     private String title;
     private String description;
+    //private Long index;
+
+    @OneToMany(mappedBy = "libQuery")
+    @OrderBy(value = "NAME")
+    private List<QueryParam> queriesParam;
+
+    @OneToMany(mappedBy = "libQuery")
+    @OrderBy(value = "USER")
+    private List<QueryExecution> queriesExecution;
+
+    public List<QueryParam> getQueriesParam() {
+        return queriesParam;
+    }
+
+    public void setQueriesParam(List<QueryParam> queriesParam) {
+        this.queriesParam = queriesParam;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="CATEGORY_ID")
+     private Category category;
 
     public String getText() {
         return text;
@@ -47,11 +79,14 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-
-                append("text", text).
-                append("title", title).
-                append("description", description).
-                toString();
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("text", text)
+                .append("title", title)
+                .append("description", description)
+                .append("queriesParam", queriesParam)
+                .append("queriesExecution", queriesExecution)
+                .append("category", category)
+                .toString();
     }
 }

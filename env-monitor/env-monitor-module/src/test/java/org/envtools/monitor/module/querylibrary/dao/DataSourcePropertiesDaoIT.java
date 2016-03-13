@@ -3,8 +3,7 @@ package org.envtools.monitor.module.querylibrary.dao;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.DataSource;
 import org.envtools.monitor.model.querylibrary.db.DataSourceProperties;
-import org.envtools.monitor.module.querylibrary.PersistenceTestDataSource;
-import org.envtools.monitor.module.querylibrary.PersistenceTestDataSourceProperties;
+import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import java.util.List;
  * @author Anastasiya Plotnikova
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestDataSourceProperties.class)
+@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
 @TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class DataSourcePropertiesDaoIT {

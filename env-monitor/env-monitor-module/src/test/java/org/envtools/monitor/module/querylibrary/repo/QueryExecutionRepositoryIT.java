@@ -9,7 +9,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Created: 07.03.16 21:35
+ * Created: 10.03.16 22:12
  *
  * @author Anastasiya Plotnikova
  */
@@ -17,10 +17,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
 @TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
 
-
 @IntegrationTest
-public class DataSourcePropertiesRepositoryIT {
-    private static final Logger LOGGER = Logger.getLogger(DataSourcePropertiesRepositoryIT.class);
+public class QueryExecutionRepositoryIT {
+    private static final Logger LOGGER = Logger.getLogger(QueryExecutionRepositoryIT.class);
 
-    public static final String DATASET = "classpath:/persistence/dbunit/data-source-properties-repo-test.xml";
+    public static final String DATASET = "classpath:/persistence/dbunit/lib-query-repo-test.xml";
 }

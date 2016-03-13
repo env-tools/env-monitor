@@ -2,14 +2,18 @@ package org.envtools.monitor.model.querylibrary.db;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.annotations.IndexColumn;
 
 import javax.persistence.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 /* Category --- Query OneToMany*/
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
 @Table(name = "CATEGORY")
@@ -17,36 +21,58 @@ public class Category extends AbstractDbIdentifiable {
 
     public Category() {
     }
-    @Column(name = "CATEGORY_ID")
-    private Long id;
-    private String ower; //пустое для public
+   // @Column(name = "CATEGORY_ID")
+   // private Long id;
+    private String owner; //пустое для public
+    @Column(name= "TITLE")
     private String title;
     private String description;
+     /*Один ко многим к таблице LibQuery*/
+
     @OneToMany(mappedBy = "category")
-    private Set<Query> query;
+    @OrderBy(value = "TITLE")//по какой калонке будет сохраняться порядок
+    private List<LibQuery> queries;
+
 
     /*Один ко многим к одной таблице*/
-    @OneToMany(mappedBy = "category1")
-    private Set<Category> categoryRelation;
+    @OneToMany(mappedBy = "parentCategory")
+    @OrderBy(value = "TITLE")
+    private List<Category> childCategories;
 
     @ManyToOne
-   // @JoinColumn(name="CATEGORY_ID")
-    private Category category1;
+    // @JoinColumn(name="CATEGORY_ID")
+    private Category parentCategory;
 
-    public Set<Query> getQuery() {
-        return query;
+    public Category getParentCategory() {
+        return parentCategory;
     }
 
-    public void setQuery(Set<Query> query) {
-        this.query = query;
+    public void setParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
     }
 
-    public String getOwer() {
-        return ower;
+    public List<Category> getChildCategories() {
+        return childCategories;
     }
 
-    public void setOwer(String ower) {
-        this.ower = ower;
+    public void setChildCategories(List<Category> childCategories) {
+        this.childCategories = childCategories;
+    }
+
+    public List<LibQuery> getQueries() {
+        return queries;
+    }
+
+    public void setQueries(List<LibQuery> queries) {
+        this.queries = queries;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getDescription() {
@@ -67,10 +93,13 @@ public class Category extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("ower", ower).
-                append("title", title).
-                append("parent_category", description).
-                toString();
+        return new ToStringBuilder(this)
+                .append("owner", owner)
+                .append("title", title)
+                .append("description", description)
+                .append("queries", queries)
+                .append("childCategories", childCategories)
+                .append("parentCategory", parentCategory)
+                .toString();
     }
 }

@@ -8,15 +8,17 @@ import javax.persistence.*;
 /**
  * Created: 2/23/16 12:30 AM
  *
- * @author Yury Yakovlev
+ * @author Plotnikova Anastasiya
  */
 @Entity
+@Table(name = "QUERY_EXECUTION_PARAM")
 public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     public QueryExecutionParam() {
     }
     @Column(name = "QUERYEXECUTIONPARAM_ID")
     private Long id;
+    @Column(name="NAME")
     private String name;
     private String value;
 
@@ -24,6 +26,13 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
     @JoinColumn(name="QUERYEXECUTION_ID")
     private QueryExecution queryExecution;
 
+    public QueryExecution getQueryExecution() {
+        return queryExecution;
+    }
+
+    public void setQueryExecution(QueryExecution queryExecution) {
+        this.queryExecution = queryExecution;
+    }
 
     public String getName() {
         return name;
@@ -43,9 +52,11 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("name", name).
-                append("value", value).
-                toString();
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("name", name)
+                .append("value", value)
+                .append("queryExecution", queryExecution)
+                .toString();
     }
 }
