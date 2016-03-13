@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This DbUnit configuration is not used yet -->
+<dataset>
+    <DATASOURCE id="1" value1="Simplest query" param="SELECT * FROM CATEGORY"  />
+    <DATASOURCE id="2" value1="More complex query" param="SELECT * FROM CATEGORY WHERE title LIKE '%query%'" />
+    <DATASOURCE id="3" value1="Complicated query" param="SELECT id, text FROM CATEGORY ORDER BY ower"  />
+</dataset>
