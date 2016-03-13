@@ -19,32 +19,38 @@ public class DataSource extends AbstractDbIdentifiable {
     @Column(name = "DATASOURCE_ID")
     private Long id;
     @Enumerated(EnumType.STRING)
-    private TypeSource type;
+    private DataProviderType type;
     private String name;
     private String description;
 
     /*dataSource 1 ко многим с таблицей  DataSourceProperties*/
     @OneToMany(mappedBy = "dataSource")
+    @OrderBy(value = "PROPERTY")
     private List<DataSourceProperties> dataSourciesProperties;
 
-    @ManyToOne
-    @JoinColumn(name="QUERYEXECUTION_ID")
-    private QueryExecution queryExecution;
+    @OneToMany(mappedBy = "dataSource")
+    @OrderBy(value = "USER")
+    private List<QueryExecution> queryExecutions;
 
-    public QueryExecution getQueryExecution() {
-        return queryExecution;
+   // @ManyToOne
+   // @JoinColumn(name="QUERYEXECUTION_ID")
+    //private QueryExecution queryExecution;
+
+
+
+    public List<QueryExecution> getQueryExecutions() {
+        return queryExecutions;
     }
 
-    public void setQueryExecution(QueryExecution queryExecution) {
-        this.queryExecution = queryExecution;
+    public void setQueryExecutions(List<QueryExecution> queryExecutions) {
+        this.queryExecutions = queryExecutions;
     }
 
-
-    public TypeSource getType() {
+    public DataProviderType getType() {
         return type;
     }
 
-    public void setType(TypeSource type) {
+    public void setType(DataProviderType type) {
         this.type = type;
     }
 
@@ -74,13 +80,13 @@ public class DataSource extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return "DataSource{" +
-                "id=" + id +
-                ", type=" + type +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", dataSourciesProperties=" + dataSourciesProperties +
-                ", queryExecution=" + queryExecution +
-                '}';
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("type", type)
+                .append("name", name)
+                .append("description", description)
+                .append("dataSourciesProperties", dataSourciesProperties)
+                .append("queryExecutions", queryExecutions)
+                .toString();
     }
 }

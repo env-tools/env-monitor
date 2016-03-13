@@ -4,6 +4,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -15,32 +17,33 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "QUERY_EXECUTION")
-public class QueryExecution extends AbstractDbIdentifiable {
+public class QueryExecution extends AbstractDbIdentifiable  implements Serializable {
 
     public QueryExecution() {
     }
     @Column(name = "QUERYEXECUTION_ID")
     private Long id;
+    @Column(name = "USER")
     private String user;
-    private LocalTime startTimestamp;
+    private String text;
+    private LocalDateTime startTimestamp;
+    private LocalDateTime endTimestamp;
 
-    public LocalTime getEndTimestamp() {
+    public LocalDateTime getEndTimestamp() {
         return endTimestamp;
     }
 
-    public void setEndTimestamp(LocalTime endTimestamp) {
+    public void setEndTimestamp(LocalDateTime endTimestamp) {
         this.endTimestamp = endTimestamp;
     }
 
-    public LocalTime getStartTimestamp() {
+    public LocalDateTime getStartTimestamp() {
         return startTimestamp;
     }
 
-    public void setStartTimestamp(LocalTime startTimestamp) {
+    public void setStartTimestamp(LocalDateTime startTimestamp) {
         this.startTimestamp = startTimestamp;
     }
-
-    private LocalTime endTimestamp;
 
     public LibQuery getLibQuery() {
         return libQuery;
@@ -59,26 +62,29 @@ public class QueryExecution extends AbstractDbIdentifiable {
         this.queriesExecutionParams = queriesExecutionParams;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     @ManyToOne
     @JoinColumn(name="QUERY_ID")
 
     private LibQuery libQuery;
 
     @OneToMany(mappedBy = "queryExecution")
+    @OrderBy(value = "NAME")
     private List<QueryExecutionParam> queriesExecutionParams;
 
-    @OneToMany(mappedBy = "queryExecution")
-    private List<DataSource> DataSourcies;
+   // @OneToMany(mappedBy = "queryExecution")
+   // private List<DataSource> DataSourcies;
 
-    public List<DataSource> getDataSourcies() {
-        return DataSourcies;
-    }
-
-    public void setDataSourcies(List<DataSource> dataSourcies) {
-        DataSourcies = dataSourcies;
-    }
-
-
+    @ManyToOne
+    @JoinColumn(name="DATASOURCE_ID")
+    private DataSource dataSource;
 
     public String getUser() {
         return user;
@@ -93,11 +99,11 @@ public class QueryExecution extends AbstractDbIdentifiable {
         return "QueryExecution{" +
                 "id=" + id +
                 ", user='" + user + '\'' +
+                ", text='" + text + '\'' +
                 ", startTimestamp=" + startTimestamp +
                 ", endTimestamp=" + endTimestamp +
                 ", libQuery=" + libQuery +
                 ", queriesExecutionParams=" + queriesExecutionParams +
-                ", DataSourcies=" + DataSourcies +
                 '}';
     }
 }

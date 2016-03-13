@@ -6,6 +6,6 @@ package org.envtools.monitor.model.querylibrary.db;
  * @author Plotnikova Anastasiya
  */
 
-public enum TypeSource {
+public enum DataProviderType {
     JDBC
 }

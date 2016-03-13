@@ -6,6 +6,7 @@ import org.envtools.monitor.model.querylibrary.db.QueryExecution;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
     }
 
     @Override
-    public List<QueryExecution> getstartTimestamp(LocalTime time) {
+    public List<QueryExecution> getstartTimestamp(LocalDateTime time) {
         return em.createQuery("FROM QueryExecution WHERE startTimestamp LIKE :textFragmentParam")
                 .setParameter("textFragmentParam",createPatternTime(time)).getResultList();
                 //.setParameter("textFragmentParam", createPatternTime(time))
@@ -42,7 +43,7 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
     }
 
     @Override
-    public List<QueryExecution> getEndTimestamp(LocalTime time) {
+    public List<QueryExecution> getEndTimestamp(LocalDateTime time) {
         return em.createQuery("FROM QueryExecution WHERE endTimestamp LIKE :textFragmentParam")
                 .setParameter("textFragmentParam",createPatternTime(time)).getResultList();
     }
@@ -52,7 +53,7 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
         return "%" + text + "%";
     }
 
-    private LocalTime createPatternTime(LocalTime time) {
+    private LocalDateTime createPatternTime(LocalDateTime time) {
         return  time;
     }
 }

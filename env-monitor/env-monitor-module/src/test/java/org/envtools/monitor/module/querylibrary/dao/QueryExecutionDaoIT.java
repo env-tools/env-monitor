@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class QueryExecutionDaoIT {
         Assert.assertTrue(QUERY_TEXT.contains(QUERY_SEARCH_PRESENT));
 
         createWithText(QUERY_SEARCH_PRESENT);
-        LocalTime localTime = LocalTime.of(22, 33);
+        LocalDateTime localTime = LocalDateTime.of(2016,3,22,20,24);
 
         List<QueryExecution> foundQueries = queryExecutionDao.getstartTimestamp(localTime);
         Assert.assertEquals(1, foundQueries.size());
@@ -58,8 +59,6 @@ public class QueryExecutionDaoIT {
 
 
 
-        List<QueryExecution> foundQueries4 = queryExecutionDao.getEndTimestamp(localTime);
-        Assert.assertEquals(1, foundQueries.size());
 
 
 
@@ -75,20 +74,20 @@ public class QueryExecutionDaoIT {
 
         Assert.assertFalse(QUERY_TEXT.contains(QUERY_SEARCH_ABSENT));
         createWithText(QUERY_SEARCH_ABSENT);
-        LocalTime localTime1 = LocalTime.of(21, 33);
+        LocalDateTime localTime1 = LocalDateTime.of(2016,3,22,21,24);
 
-        List<QueryExecution> foundQueries3 = queryExecutionDao.getstartTimestamp(localTime1);
+        List<QueryExecution> foundQueries3 = queryExecutionDao.getstartTimestamp(localTime1                                                                                                                                                                                                                                                                                                                     );
         Assert.assertEquals(0, foundQueries3.size());
 
-        List<QueryExecution> foundQueries2 = queryExecutionDao.getUserByText("Admin");
-        Assert.assertEquals(0, foundQueries2.size());
+      //  List<QueryExecution> foundQueries2 = queryExecutionDao.getUserByText("Admin");
+      //  Assert.assertEquals(0, foundQueries2.size());
 
         List<QueryExecution> foundQueries = queryExecutionDao.getUserByText("Admin");
         Assert.assertEquals(0, foundQueries.size());
 
         LOGGER.info("Found queries: " + foundQueries);
-        LOGGER.info("Found queries: " + foundQueries3);
-        LOGGER.info("Found queries: " + foundQueries2);
+       // LOGGER.info("Found queries: " + foundQueries3);
+       // LOGGER.info("Found queries: " + foundQueries2);
 
     }
 
@@ -101,9 +100,7 @@ public class QueryExecutionDaoIT {
         libQuery1.setTitle("some_title1");
         libQueryDao.saveAndFlush(libQuery1);
 
-        LocalTime localTime = LocalTime.of(22, 33);
-        System.out.println();
-        System.out.println(localTime);
+        LocalDateTime localTime = LocalDateTime.of(2016,3,22,20,24);
         QueryExecution queryExecution = new QueryExecution();
         //Don't set Id - it will be auto generated
         queryExecution.setEndTimestamp(localTime);

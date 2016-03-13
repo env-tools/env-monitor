@@ -18,6 +18,7 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
     }
     @Column(name = "DATASOURCEPROPERTIES_ID")
     private Long id;
+    @Column(name="PROPERTY")
     private String property;
     private String value;
 
@@ -25,17 +26,6 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
     @JoinColumn(name="DATASOURCE_ID")
     private DataSource dataSource;
 
-   // public DataSource getDataSource() {
-   //     return dataSource;
-   // }
-
-  //  public void setDataSource(DataSource dataSource) {
-  //      this.dataSource = dataSource;
-  //  }
-
-   // @ManyToOne
-   // @JoinColumn(name="DATASOURCE_ID")
-   // private DataSource dataSource;
 
     public String getProperty() {
         return property;
@@ -55,11 +45,11 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
 
     @Override
     public String toString() {
-        return "DataSourceProperties{" +
-                "id=" + id +
-                ", property='" + property + '\'' +
-                ", value='" + value + '\'' +
-                ", dataSource=" + dataSource +
-                '}';
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("property", property)
+                .append("value", value)
+                .append("dataSource", dataSource)
+                .toString();
     }
 }

@@ -18,9 +18,10 @@ public class QueryParam extends AbstractDbIdentifiable {
     }
     @Column(name = "QUERYPARAM_ID")
     private Long id;
+    @Column(name = "NAME")
     private String name;
     @Enumerated(EnumType.STRING)
-    private TypeQueryParam type;
+    private DataProviderType type;
 
     public LibQuery getLibQuery() {
         return libQuery;
@@ -31,15 +32,14 @@ public class QueryParam extends AbstractDbIdentifiable {
     }
 
     @ManyToOne
-
     @JoinColumn(name="QUERY_ID")
     private LibQuery libQuery;
 
-    public TypeQueryParam getType() {
+    public DataProviderType getType() {
         return type;
     }
 
-    public void setType(TypeQueryParam type) {
+    public void setType(DataProviderType type) {
         this.type = type;
     }
 
@@ -54,11 +54,11 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return "QueryParam{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", libQuery=" + libQuery +
-                '}';
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("name", name)
+                .append("type", type)
+                .append("libQuery", libQuery)
+                .toString();
     }
 }

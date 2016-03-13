@@ -2,6 +2,7 @@ package org.envtools.monitor.model.querylibrary.db;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.annotations.IndexColumn;
 
 import javax.persistence.*;
 import java.lang.reflect.Array;
@@ -23,15 +24,19 @@ public class Category extends AbstractDbIdentifiable {
    // @Column(name = "CATEGORY_ID")
    // private Long id;
     private String owner; //пустое для public
+    @Column(name= "TITLE")
     private String title;
     private String description;
      /*Один ко многим к таблице LibQuery*/
+
     @OneToMany(mappedBy = "category")
+    @OrderBy(value = "TITLE")//по какой калонке будет сохраняться порядок
     private List<LibQuery> queries;
 
 
     /*Один ко многим к одной таблице*/
     @OneToMany(mappedBy = "parentCategory")
+    @OrderBy(value = "TITLE")
     private List<Category> childCategories;
 
     @ManyToOne
@@ -88,13 +93,13 @@ public class Category extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return "Category{" +
-                "owner='" + owner + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", queries=" + queries +
-                ", childCategories=" + childCategories +
-                ", parentCategory=" + parentCategory +
-                '}';
+        return new ToStringBuilder(this)
+                .append("owner", owner)
+                .append("title", title)
+                .append("description", description)
+                .append("queries", queries)
+                .append("childCategories", childCategories)
+                .append("parentCategory", parentCategory)
+                .toString();
     }
 }

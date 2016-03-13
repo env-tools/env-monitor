@@ -20,13 +20,17 @@ public class LibQuery extends AbstractDbIdentifiable {
     @Column(name = "QUERY_ID")
     private Long id;
     private String text;
+    @Column(name = "TITLE")
     private String title;
     private String description;
+    //private Long index;
 
     @OneToMany(mappedBy = "libQuery")
+    @OrderBy(value = "NAME")
     private List<QueryParam> queriesParam;
 
     @OneToMany(mappedBy = "libQuery")
+    @OrderBy(value = "USER")
     private List<QueryExecution> queriesExecution;
 
     public List<QueryParam> getQueriesParam() {
@@ -75,14 +79,14 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return "LibQuery{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", queriesParam=" + queriesParam +
-                ", queriesExecution=" + queriesExecution +
-                ", category=" + category +
-                '}';
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("text", text)
+                .append("title", title)
+                .append("description", description)
+                .append("queriesParam", queriesParam)
+                .append("queriesExecution", queriesExecution)
+                .append("category", category)
+                .toString();
     }
 }
