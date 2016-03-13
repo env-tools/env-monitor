@@ -6,6 +6,8 @@ gulp.task('stylesheets', function () {
     'vendor/Bootflat/bootflat/css/bootflat.min.css',
     'vendor/Bootflat/css/bootstrap.min.css',
     'vendor/Bootflat/css/site.min.css',
+    'vendor/jqwidgets/jqwidgets/styles/jqx.base.css',
+    'vendor/jqwidgets/jqwidgets/styles/jqx.bootstrap.css',
 
     'css/custom.css',
   ])
@@ -16,12 +18,21 @@ gulp.task('stylesheets', function () {
 gulp.task('javascript', function () {
    return gulp.src([
     'vendor/Bootflat/js/jquery-1.10.1.min.js',
+    'vendor/angular/angular.js',
+    'vendor/jqwidgets/jqwidgets/jqxcore.js',
+    'vendor/jqwidgets/jqwidgets/jqxgrid.js',
+    'vendor/jqwidgets/jqwidgets/jqxdata.js',
+    'vendor/jqwidgets/jqwidgets/jqxscrollbar.js',
+    'vendor/jqwidgets/jqwidgets/jqxbuttons.js',
+    'vendor/jqwidgets/jqwidgets/jqxgrid.selection.js',
+    'vendor/jqwidgets/jqwidgets/jqxgrid.sort.js',
+    'vendor/jqwidgets/jqwidgets/jqxmenu.js',
+    'vendor/jqwidgets/jqwidgets/jqxangular.js',
     'vendor/Bootflat/js/bootstrap.min.js',
     'vendor/Bootflat/js/respond.min.js',
     'vendor/Bootflat/js/site.min.js',
     'vendor/Bootflat/js/html5shiv.js',
     'vendor/Bootflat/js/bootflat/*.js',
-    'vendor/angular/angular.js',
     'vendor/angular-ui-router/release/angular-ui-router.js',
     'vendor/angular-resource/angular-resource.js',
     'vendor/sockjs/sockjs.js',
@@ -35,9 +46,9 @@ gulp.task('javascript', function () {
     'app/app.constant.js',
 
     'app/modules/**/module.js',
+    'app/modules/**/services/*.js',
     'app/modules/**/routes/*.js',
     'app/modules/**/controllers/*.js',
-    'app/modules/**/services/*.js',
     'app/modules/**/directives/*.js',
    ])
     .pipe(concat('scripts.js'))

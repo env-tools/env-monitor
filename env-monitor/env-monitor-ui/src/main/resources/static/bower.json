@@ -6,6 +6,7 @@
     "angular-ui-router": "^0.2.18",
     "angular-resource": "^1.5.0",
     "Bootflat": "^2.0.4",
-    "ng-stomp": "^0.0.2"
+    "ng-stomp": "^0.0.2",
+    "jqwidgets": "^4.0.0"
   }
 }

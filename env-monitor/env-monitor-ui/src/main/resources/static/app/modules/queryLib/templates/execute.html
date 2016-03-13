@@ -1,5 +1,33 @@
-<form action="">
-    <div class="form-group">
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Execute query</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-xs-12">
         <textarea name="" id="" cols="30" rows="10" class="form-control"></textarea>
     </div>
-</form>
+    <div class="form-group col-xs-3">
+        <label for="datasource">Select Datasource</label>
+        <select name="datasource" id="datasource" class="form-control">
+            <option value="">Select</option>
+            <option value="">JDBC 1</option>
+            <option value="">JDBC 2</option>
+            <option value="">JDBC 3</option>
+        </select>
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="timeout">Execution time</label>
+        <input type="text" class="form-control" id="timeout" name="timeout">
+    </div>
+    <div class="form-group col-xs-3">
+        <label for="limit">Row limit</label>
+        <input type="text" class="form-control" id="limit" name="timeout">
+    </div>
+    <div class="form-group col-xs-3" style="margin-top: 25px;">
+        <button data-ng-click="execute()" class="btn btn-default">Execute Query</button>
+    </div>
+    <div class="form-group col-xs-12" data-ng-if="settings">
+        <jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid>
+    </div>
+</div>
