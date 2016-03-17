@@ -18,7 +18,7 @@
     };
 
     $scope.selectedPlatformChanged = function () {
-      var pattern = '/app/modules/M_APPLICATIONS/data/platforms/{platform}/environments';
+      var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platform}/environments';
 
       $stomp.subscribe(pattern.replace("{platform}", $scope.filters.selectedPlatform.id),
         function (msg, headers, res) {
@@ -37,7 +37,7 @@
 
     $scope.selectedEnvironmentChanged = function () {
 
-      var pattern = '/topic/modules/M_APPLICATIONS/data/platforms/{platformId}/environments/{environmentId}/applications';
+      var pattern = '/subscribe/modules/M_APPLICATIONS/data/platforms/{platformId}/environments/{environmentId}/applications';
 
       if (!$scope.filters.selectedPlatform) {
         return;
@@ -74,7 +74,7 @@
 
         //TODO configure TomCat to catch hot code updates immediately
 
-        $stomp.subscribe('/app/modules/M_APPLICATIONS/data/platforms', function (msg, headers, res) {
+        $stomp.subscribe('/call/modules/M_APPLICATIONS/data/platforms', function (msg, headers, res) {
           $scope.$apply(function () {
             $scope.platforms = msg.payload.jsonContent;
             $scope.filters.selectedPlatform = $scope.platforms[0];
@@ -82,7 +82,7 @@
           console.log('Call result for platforms: ' + JSON.stringify(msg.payload.jsonContent));
 
 
-          var pattern = '/app/modules/M_APPLICATIONS/data/platforms/{platformId}/environments'
+          var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platformId}/environments'
           $stomp.subscribe(pattern.replace('{platformId}', $scope.filters.selectedPlatform.id),
             function (msg, headers, res) {
               $scope.$apply(function () {
@@ -98,7 +98,7 @@
 
         }, {});
 
-//                            $stomp.subscribe('/topic/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications',
+//                            $stomp.subscribe('/subscribe/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications',
 //                                    function (msg, headers, res) {
 //                                        $scope.$apply(function () {
 //                                            $scope.applications = msg.payload.jsonContent;

@@ -10,17 +10,11 @@
 
     <context:property-placeholder location="classpath*:application.properties" system-properties-mode="OVERRIDE"/>
 
-    <int:channel id="applications.channel"/>
+    <int:channel id="querylibrary.channel"/>
 
-    <bean id="applications.module" class="org.envtools.monitor.module.applications.ApplicationsModule"/>
+    <bean id="querylibrary.module" class="org.envtools.monitor.module.applications.ApplicationsModule"/>
 
-    <bean id="applications.provider" class="${applications.provider}"/>
+    <bean id="querylibrary.provider" class="${querylibrary.provider}"/>
 
-    <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer" />
-
-    <!-- TODO move to provider context -->
-    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.MemoryDataProvider"/>
-
-    <task:annotation-driven scheduler="messageBrokerSockJsTaskScheduler"/>
 
 </beans>

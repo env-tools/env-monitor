@@ -7,7 +7,7 @@ import org.envtools.monitor.model.applications.ApplicationsData;
  *
  * @author Yury Yakovlev
  */
-public interface ApplicationsModuleDataService {
+public interface ApplicationsModuleStorageService {
 
     String extractSerializedPartBySelector(String selector);
 

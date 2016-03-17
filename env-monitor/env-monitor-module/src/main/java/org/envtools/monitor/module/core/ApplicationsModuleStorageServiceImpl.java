@@ -14,9 +14,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Yury Yakovlev
  */
-public class ApplicationsModuleDataServiceImpl implements ApplicationsModuleDataService{
+public class ApplicationsModuleStorageServiceImpl implements ApplicationsModuleStorageService {
 
-    private static final Logger LOGGER = Logger.getLogger(ApplicationsModuleDataServiceImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(ApplicationsModuleStorageServiceImpl.class);
 
     private String serializedApplicationsData;
 
@@ -29,7 +29,7 @@ public class ApplicationsModuleDataServiceImpl implements ApplicationsModuleData
             SimplePathSelector simplePathSelector = SimplePathSelector.of(selector);
             return extractor.extract(serializedApplicationsData, simplePathSelector);
         } catch (IllegalSelectorException e) {
-            LOGGER.error("ApplicationsModuleDataServiceImpl.extractSerializedPartBySelector - invalid selector, returning empty result: " +
+            LOGGER.error("ApplicationsModuleStorageServiceImpl.extractSerializedPartBySelector - invalid selector, returning empty result: " +
             selector, e);
             return extractor.emptyExtractionResult();
         }

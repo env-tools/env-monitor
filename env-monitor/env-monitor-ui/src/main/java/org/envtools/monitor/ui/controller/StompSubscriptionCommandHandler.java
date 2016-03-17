@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.core.ApplicationsModuleDataService;
+import org.envtools.monitor.module.core.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class StompSubscriptionCommandHandler {
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
     @Autowired
-    ApplicationsModuleDataService applicationsModuleDataService;
+    ApplicationsModuleStorageService applicationsModuleStorageService;
 
     @Autowired
     SubscriptionManager subscriptionManager;
@@ -83,12 +83,12 @@ public class StompSubscriptionCommandHandler {
             }
 
         } else {
-            LOGGER.warn("WebSocketAppController.handleSubscription - destination module not specified or not supported in destination " + destination);
+            LOGGER.warn("StompSubscriptionCommandHandler.handleSubscription - destination module not specified or not supported in destination " + destination);
         }
     }
 
     private void sendDataToSubscriberImmediately(String subscribedDestination) {
-        String contentPart = applicationsModuleDataService.extractSerializedPartBySelector(
+        String contentPart = applicationsModuleStorageService.extractSerializedPartBySelector(
                 DestinationUtil.extractSelector(subscribedDestination));
             ResponseMessage subscriberResponseMessage = new ResponseMessage.Builder()
                     .payload(new ResponsePayload(null,

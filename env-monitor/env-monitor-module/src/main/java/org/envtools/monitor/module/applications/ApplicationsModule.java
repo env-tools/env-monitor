@@ -5,12 +5,10 @@ import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponsePayload;
+import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.messaging.support.GenericMessage;
 
 import org.envtools.monitor.common.serialization.*;
 
@@ -24,8 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Yury Yakovlev
  */
-public class ApplicationsModuleRunner {
-    private static final Logger LOGGER = Logger.getLogger(ApplicationsModuleRunner.class);
+public class ApplicationsModule extends AbstractPluggableModule {
+
+    private static final Logger LOGGER = Logger.getLogger(ApplicationsModule.class);
 
     /**
      * This is incoming channel for APPLICATIONS module
@@ -33,35 +32,24 @@ public class ApplicationsModuleRunner {
     @Resource(name = "applications.channel")
     SubscribableChannel applicationsModuleChannel;
 
-    @Resource(name = "core.channel")
-    MessageChannel coreModuleChannel;
-
     @Resource(name = "applications.provider")
     ApplicationsModuleProvider applicationsModuleProvider;
 
     @Autowired
     private Serializer serializer;
 
-    private MessageHandler incomingMessageHandler = (message) -> handleDataRequestForModule((RequestMessage) message.getPayload());
-
     private AtomicLong responseIdentifier = new AtomicLong(0);
 
     @PostConstruct
     public void init() {
-        LOGGER.info("ApplicationsModuleRunner.init - Initializing ApplicationsModuleRunner...");
-
-        applicationsModuleChannel.subscribe(incomingMessageHandler);
+        LOGGER.info("ApplicationsModule.init - Initializing ApplicationsModule...");
         applicationsModuleProvider.initialize(this::onModelUpdate);
-
-        LOGGER.info("ApplicationsModuleRunner.init - ApplicationsModuleRunner has been initialized");
+        LOGGER.info("ApplicationsModule.init - ApplicationsModule has been initialized");
     }
 
     private void onModelUpdate() {
-
         ResponseMessage updatedModelMessage = createModelUpdateMessage();
-
-        coreModuleChannel.send(new GenericMessage<ResponseMessage>(updatedModelMessage));
-
+        sendMessageToCore(updatedModelMessage);
     }
 
     private ResponseMessage createModelUpdateMessage() {
@@ -76,15 +64,24 @@ public class ApplicationsModuleRunner {
         return updatedModelMessage;
     }
 
-    private void handleDataRequestForModule(RequestMessage requestMessage) {
-        LOGGER.info("ApplicationsModuleRunner.handleDataRequestForModule - requestMessage : " + requestMessage);
+    @Override
+    public void handleIncomingMessage(RequestMessage requestMessage) {
+        LOGGER.info("ApplicationsModule.handleIncomingMessage - requestMessage : " + requestMessage);
         ResponseMessage response = new ResponseMessage(requestMessage.getRequestId(), requestMessage.getSessionId(),
                 requestMessage.getTargetModuleId(), requestMessage.getUsername(),
                 new ResponsePayload(
                         requestMessage.getPayload(),
                         "\"Application module processed this message at " + LocalDateTime.now() + "\""));
-        coreModuleChannel.send(new GenericMessage<ResponseMessage>(response));
+        sendMessageToCore(response);
     }
 
+    @Override
+    protected SubscribableChannel getModuleChannel() {
+        return applicationsModuleChannel;
+    }
 
+    @Override
+    public String getIdentifier() {
+        return ModuleConstants.APPLICATIONS_MODULE_ID;
+    }
 }

@@ -8,6 +8,8 @@ package org.envtools.monitor.module;
 public interface ModuleConstants {
 
     String APPLICATIONS_MODULE_ID = "M_APPLICATIONS";
+    String QUERY_LIBRARY_MODULE_ID = "M_QUERY_LIBRARY";
+
     String CORE_MODULE_ID = "M_CORE";
 
 }

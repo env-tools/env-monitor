@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponsePayload;
+import org.envtools.monitor.module.Module;
+import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,14 @@ import java.util.concurrent.Executors;
  *
  * @author Yury Yakovlev
  */
-public class CoreModuleRunner implements Runnable {
-    private static final Logger LOGGER = Logger.getLogger(CoreModuleRunner.class);
+public class CoreModule implements Module, Runnable {
+    private static final Logger LOGGER = Logger.getLogger(CoreModule.class);
 
     @Autowired
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
     @Autowired
-    ApplicationsModuleDataService applicationsModuleDataService;
+    ApplicationsModuleStorageService applicationsModuleStorageService;
 
     @Autowired
     SubscriptionManager subscriptionManager;
@@ -50,7 +52,7 @@ public class CoreModuleRunner implements Runnable {
 
     @PostConstruct
     public void init() {
-        LOGGER.info("CoreModuleRunner.init - CoreModuleRunner has been initialized,  webSocketClientMessagingTemplate = " + webSocketClientMessagingTemplate);
+        LOGGER.info("CoreModule.init - CoreModule has been initialized,  webSocketClientMessagingTemplate = " + webSocketClientMessagingTemplate);
         requestedDataChannel.subscribe(incomingMessageHandler);
         //threadPool.submit(this);
     }
@@ -61,16 +63,16 @@ public class CoreModuleRunner implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Thread.sleep(10000);
-                LOGGER.info("CoreModuleRunner.run - core module is up and running...");
+                LOGGER.info("CoreModule.run - core module is up and running...");
             } catch (InterruptedException ex) {
-                LOGGER.info("CoreModuleRunner.run - Thread was interrupted");
+                LOGGER.info("CoreModule.run - Thread was interrupted");
                 break;
             }
         }
     }
 
     private void handleModuleResponse(ResponseMessage responseMessage) {
-        //       LOGGER.info("CoreModuleRunner.handleModuleResponse - responseMessage : " + responseMessage);
+        //       LOGGER.info("CoreModule.handleModuleResponse - responseMessage : " + responseMessage);
         String user = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
 
@@ -79,11 +81,11 @@ public class CoreModuleRunner implements Runnable {
                     createUniqueSessionDestinationHeaders(user));
         } else {
             String newContent = responseMessage.getPayload().getJsonContent();
-            applicationsModuleDataService.store(newContent);
+            applicationsModuleStorageService.store(newContent);
 
             for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
 
-                String newContentPart = applicationsModuleDataService.extractSerializedPartBySelector(
+                String newContentPart = applicationsModuleStorageService.extractSerializedPartBySelector(
                         DestinationUtil.extractSelector(subscribedDestination));
 
                 //TODO handle synchronization
@@ -113,6 +115,11 @@ public class CoreModuleRunner implements Runnable {
         headerAccessor.setSessionId(sessionId);
         headerAccessor.setLeaveMutable(true);
         return headerAccessor.getMessageHeaders();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return ModuleConstants.CORE_MODULE_ID;
     }
 }
 
