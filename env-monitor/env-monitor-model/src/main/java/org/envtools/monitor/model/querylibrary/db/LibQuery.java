@@ -17,28 +17,24 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     public LibQuery() {
     }
-    @Column(name = "QUERY_ID")
-    private Long id;
+
     private String text;
-    @Column(name = "TITLE")
     private String title;
     private String description;
-    //private Long index;
 
     @OneToMany(mappedBy = "libQuery")
-    @OrderBy(value = "NAME")
-    private List<QueryParam> queriesParam;
+    @OrderBy(value = "name")
+    private List<QueryParam> queryParams;
 
     @OneToMany(mappedBy = "libQuery")
-    @OrderBy(value = "USER")
-    private List<QueryExecution> queriesExecution;
+    private List<QueryExecution> queryExecutions;
 
-    public List<QueryParam> getQueriesParam() {
-        return queriesParam;
+    public List<QueryParam> getQueryParams() {
+        return queryParams;
     }
 
-    public void setQueriesParam(List<QueryParam> queriesParam) {
-        this.queriesParam = queriesParam;
+    public void setQueryParams(List<QueryParam> queryParams) {
+        this.queryParams = queryParams;
     }
 
     public Category getCategory() {
@@ -50,8 +46,8 @@ public class LibQuery extends AbstractDbIdentifiable {
     }
 
     @ManyToOne
-    @JoinColumn(name="CATEGORY_ID")
-     private Category category;
+    @JoinColumn(name = "CATEGORY_ID")
+    private Category category;
 
     public String getText() {
         return text;
@@ -79,14 +75,13 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("text", text)
                 .append("title", title)
                 .append("description", description)
-                .append("queriesParam", queriesParam)
-                .append("queriesExecution", queriesExecution)
-                .append("category", category)
+                .append("queryParams", queryParams)
+                .append("queryExecutions", queryExecutions)
                 .toString();
     }
 }

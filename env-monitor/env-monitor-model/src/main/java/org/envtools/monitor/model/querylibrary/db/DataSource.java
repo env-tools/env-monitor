@@ -2,13 +2,10 @@ package org.envtools.monitor.model.querylibrary.db;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.querylibrary.DataProviderType;
 
 import javax.persistence.*;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Set;
-
 
 @Entity
 @Table(name = "DATA_SOURCE")
@@ -16,27 +13,20 @@ public class DataSource extends AbstractDbIdentifiable {
 
     public  DataSource() {
     }
-    @Column(name = "DATASOURCE_ID")
-    private Long id;
+
     @Enumerated(EnumType.STRING)
     private DataProviderType type;
+
     private String name;
     private String description;
 
-    /*dataSource 1 ко многим с таблицей  DataSourceProperties*/
+    /*dataSource 1 ко многим с сущностью DataSourceProperty*/
     @OneToMany(mappedBy = "dataSource")
-    @OrderBy(value = "PROPERTY")
-    private List<DataSourceProperties> dataSourciesProperties;
+    @OrderBy(value = "property")
+    private List<DataSourceProperty> dataSourceProperties;
 
     @OneToMany(mappedBy = "dataSource")
-    @OrderBy(value = "USER")
     private List<QueryExecution> queryExecutions;
-
-   // @ManyToOne
-   // @JoinColumn(name="QUERYEXECUTION_ID")
-    //private QueryExecution queryExecution;
-
-
 
     public List<QueryExecution> getQueryExecutions() {
         return queryExecutions;
@@ -54,12 +44,12 @@ public class DataSource extends AbstractDbIdentifiable {
         this.type = type;
     }
 
-    public List<DataSourceProperties> getDataSourciesProperties() {
-        return dataSourciesProperties;
+    public List<DataSourceProperty> getDataSourceProperties() {
+        return dataSourceProperties;
     }
 
-    public void setDataSourciesProperties(List<DataSourceProperties> dataSourciesProperties) {
-        this.dataSourciesProperties = dataSourciesProperties;
+    public void setDataSourceProperties(List<DataSourceProperty> dataSourceProperties) {
+        this.dataSourceProperties = dataSourceProperties;
     }
 
     public String getName() {
@@ -80,12 +70,12 @@ public class DataSource extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("type", type)
                 .append("name", name)
                 .append("description", description)
-                .append("dataSourciesProperties", dataSourciesProperties)
+                .append("dataSourceProperties", dataSourceProperties)
                 .append("queryExecutions", queryExecutions)
                 .toString();
     }

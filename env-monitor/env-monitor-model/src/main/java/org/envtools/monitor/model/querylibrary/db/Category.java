@@ -21,26 +21,22 @@ public class Category extends AbstractDbIdentifiable {
 
     public Category() {
     }
-   // @Column(name = "CATEGORY_ID")
-   // private Long id;
+
     private String owner; //пустое для public
-    @Column(name= "TITLE")
     private String title;
     private String description;
+
      /*Один ко многим к таблице LibQuery*/
-
     @OneToMany(mappedBy = "category")
-    @OrderBy(value = "TITLE")//по какой калонке будет сохраняться порядок
+    @OrderBy(value = "title")  //правило сортировки коллекции
     private List<LibQuery> queries;
-
 
     /*Один ко многим к одной таблице*/
     @OneToMany(mappedBy = "parentCategory")
-    @OrderBy(value = "TITLE")
+    @OrderBy(value = "title")
     private List<Category> childCategories;
 
     @ManyToOne
-    // @JoinColumn(name="CATEGORY_ID")
     private Category parentCategory;
 
     public Category getParentCategory() {
@@ -93,13 +89,12 @@ public class Category extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("owner", owner)
                 .append("title", title)
                 .append("description", description)
                 .append("queries", queries)
                 .append("childCategories", childCategories)
-                .append("parentCategory", parentCategory)
                 .toString();
     }
 }

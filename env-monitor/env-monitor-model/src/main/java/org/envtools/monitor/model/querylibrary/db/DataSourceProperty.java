@@ -12,20 +12,17 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "DATA_SOURCE_PROPERTIES")
-public class DataSourceProperties extends AbstractDbIdentifiable{
+public class DataSourceProperty extends AbstractDbIdentifiable{
 
-    public  DataSourceProperties() {
+    public DataSourceProperty() {
     }
-    @Column(name = "DATASOURCEPROPERTIES_ID")
-    private Long id;
-    @Column(name="PROPERTY")
+
     private String property;
     private String value;
 
     @ManyToOne
     @JoinColumn(name="DATASOURCE_ID")
     private DataSource dataSource;
-
 
     public String getProperty() {
         return property;
@@ -45,11 +42,10 @@ public class DataSourceProperties extends AbstractDbIdentifiable{
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("property", property)
                 .append("value", value)
-                .append("dataSource", dataSource)
                 .toString();
     }
 }

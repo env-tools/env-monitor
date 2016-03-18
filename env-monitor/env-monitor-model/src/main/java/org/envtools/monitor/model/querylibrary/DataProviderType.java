@@ -1,4 +1,4 @@
-package org.envtools.monitor.model.querylibrary.db;
+package org.envtools.monitor.model.querylibrary;
 
 /**
  * Created: 2/23/16 12:30 AM

@@ -16,9 +16,7 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
 
     public QueryExecutionParam() {
     }
-    @Column(name = "QUERYEXECUTIONPARAM_ID")
-    private Long id;
-    @Column(name="NAME")
+
     private String name;
     private String value;
 
@@ -56,7 +54,6 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
                 .append("id", id)
                 .append("name", name)
                 .append("value", value)
-                .append("queryExecution", queryExecution)
                 .toString();
     }
 }

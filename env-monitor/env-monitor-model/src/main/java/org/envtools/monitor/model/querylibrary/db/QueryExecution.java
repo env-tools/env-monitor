@@ -6,9 +6,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created: 2/23/16 12:30 AM
@@ -21,9 +19,7 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
 
     public QueryExecution() {
     }
-    @Column(name = "QUERYEXECUTION_ID")
-    private Long id;
-    @Column(name = "USER")
+
     private String user;
     private String text;
     private LocalDateTime startTimestamp;
@@ -53,13 +49,12 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
         this.libQuery = libQuery;
     }
 
-
-    public List<QueryExecutionParam> getQueriesExecutionParams() {
-        return queriesExecutionParams;
+    public List<QueryExecutionParam> getQueryExecutionParams() {
+        return queryExecutionParams;
     }
 
-    public void setQueriesExecutionParams(List<QueryExecutionParam> queriesExecutionParams) {
-        this.queriesExecutionParams = queriesExecutionParams;
+    public void setQueryExecutionParams(List<QueryExecutionParam> queryExecutionParams) {
+        this.queryExecutionParams = queryExecutionParams;
     }
 
     public String getText() {
@@ -72,15 +67,11 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
 
     @ManyToOne
     @JoinColumn(name="QUERY_ID")
-
     private LibQuery libQuery;
 
     @OneToMany(mappedBy = "queryExecution")
-    @OrderBy(value = "NAME")
-    private List<QueryExecutionParam> queriesExecutionParams;
-
-   // @OneToMany(mappedBy = "queryExecution")
-   // private List<DataSource> DataSourcies;
+    @OrderBy(value = "name")
+    private List<QueryExecutionParam> queryExecutionParams;
 
     @ManyToOne
     @JoinColumn(name="DATASOURCE_ID")
@@ -96,14 +87,13 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
 
     @Override
     public String toString() {
-        return "QueryExecution{" +
-                "id=" + id +
-                ", user='" + user + '\'' +
-                ", text='" + text + '\'' +
-                ", startTimestamp=" + startTimestamp +
-                ", endTimestamp=" + endTimestamp +
-                ", libQuery=" + libQuery +
-                ", queriesExecutionParams=" + queriesExecutionParams +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("user", user).
+                append("text", text).
+                append("startTimestamp", startTimestamp).
+                append("endTimestamp", endTimestamp).
+                append("queryExecutionParams", queryExecutionParams).
+                toString();
     }
+
 }

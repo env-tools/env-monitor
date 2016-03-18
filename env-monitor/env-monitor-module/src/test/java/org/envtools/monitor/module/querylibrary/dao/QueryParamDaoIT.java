@@ -1,7 +1,7 @@
 package org.envtools.monitor.module.querylibrary.dao;
 
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.db.DataProviderType;
+import org.envtools.monitor.model.querylibrary.DataProviderType;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;

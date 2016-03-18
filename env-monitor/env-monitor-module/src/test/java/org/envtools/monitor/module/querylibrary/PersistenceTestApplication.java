@@ -16,8 +16,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan(basePackages = "org.envtools.*")
 @EnableJpaRepositories("org.envtools.monitor.module.querylibrary.repo.*")
-@EntityScan(basePackageClasses = {LibQuery.class, Category.class, DataSource.class, DataSourceProperties.class,
-        QueryExecution.class, QueryExecutionParam.class, QueryExecutionException.class})
+@EntityScan(basePackageClasses = {LibQuery.class, Category.class, DataSource.class, DataSourceProperty.class,
+        QueryExecution.class, QueryExecutionParam.class, QueryParam.class})
 @EnableAutoConfiguration
 public class PersistenceTestApplication {
 }

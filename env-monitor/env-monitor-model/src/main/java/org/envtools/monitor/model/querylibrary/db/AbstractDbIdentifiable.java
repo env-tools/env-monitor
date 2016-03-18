@@ -12,7 +12,7 @@ public class AbstractDbIdentifiable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="QueryLibSeqGenerator")
     @SequenceGenerator(name="QueryLibSeqGenerator",sequenceName="QUERY_LIB_SEQUENCE", allocationSize=1)
     @Column(name ="ID")
-    private Long id;
+    protected Long id;
 
     public AbstractDbIdentifiable() {
     }

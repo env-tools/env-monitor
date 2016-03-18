@@ -2,6 +2,7 @@ package org.envtools.monitor.model.querylibrary.db;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.querylibrary.DataProviderType;
 
 import javax.persistence.*;
 
@@ -16,10 +17,13 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     public QueryParam() {
     }
-    @Column(name = "QUERYPARAM_ID")
-    private Long id;
-    @Column(name = "NAME")
+
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name="QUERY_ID")
+    private LibQuery libQuery;
+
     @Enumerated(EnumType.STRING)
     private DataProviderType type;
 
@@ -30,10 +34,6 @@ public class QueryParam extends AbstractDbIdentifiable {
     public void setLibQuery(LibQuery libQuery) {
         this.libQuery = libQuery;
     }
-
-    @ManyToOne
-    @JoinColumn(name="QUERY_ID")
-    private LibQuery libQuery;
 
     public DataProviderType getType() {
         return type;
@@ -54,11 +54,10 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("name", name)
                 .append("type", type)
-                .append("libQuery", libQuery)
                 .toString();
     }
 }

@@ -1,7 +1,6 @@
 package org.envtools.monitor.module.querylibrary.dao;
 
-import org.envtools.monitor.model.querylibrary.db.DataSourceProperties;
-import org.envtools.monitor.module.querylibrary.dao.impl.AbstractDbDao;
+import org.envtools.monitor.model.querylibrary.db.DataSourceProperty;
 
 import java.util.List;
 
@@ -10,6 +9,6 @@ import java.util.List;
  *
  * @author Anastasiya Plotnikova
  */
-public interface DataSourcePropertiesDao extends Dao<DataSourceProperties, Long > {
-    List<DataSourceProperties> getValueByText(String text);
+public interface DataSourcePropertiesDao extends Dao<DataSourceProperty, Long > {
+    List<DataSourceProperty> getValueByText(String text);
 }

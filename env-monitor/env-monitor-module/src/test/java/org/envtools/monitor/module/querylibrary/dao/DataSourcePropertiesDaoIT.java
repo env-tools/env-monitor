@@ -1,8 +1,7 @@
 package org.envtools.monitor.module.querylibrary.dao;
 
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.db.DataSource;
-import org.envtools.monitor.model.querylibrary.db.DataSourceProperties;
+import org.envtools.monitor.model.querylibrary.db.DataSourceProperty;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +38,11 @@ public class DataSourcePropertiesDaoIT {
 
         Assert.assertTrue(PARAM.contains(VALUE));
         createWithText(VALUE);
-        List<DataSourceProperties> foundQueries = dataSourcePropertiesDao.getValueByText(VALUE);
+        List<DataSourceProperty> foundQueries = dataSourcePropertiesDao.getValueByText(VALUE);
         Assert.assertEquals(1, foundQueries.size());
 
         createWithText(VALUE);
-        List<DataSourceProperties> foundQueries1 = dataSourcePropertiesDao.getValueByText(VALUE);
+        List<DataSourceProperty> foundQueries1 = dataSourcePropertiesDao.getValueByText(VALUE);
         Assert.assertEquals(2, foundQueries1.size());
 
 
@@ -58,19 +57,19 @@ public class DataSourcePropertiesDaoIT {
 
         createWithText(VALUE);
 
-        List<DataSourceProperties> foundQueries = dataSourcePropertiesDao.getValueByText(PARAM);
+        List<DataSourceProperty> foundQueries = dataSourcePropertiesDao.getValueByText(PARAM);
         Assert.assertEquals(0, foundQueries.size());
 
         LOGGER.info("Found queries: " + foundQueries);
 
     }
 
-    private  DataSourceProperties createWithText(String text) {
-        DataSourceProperties dataSourceProperties = new  DataSourceProperties();
+    private DataSourceProperty createWithText(String text) {
+        DataSourceProperty dataSourceProperty = new DataSourceProperty();
         //Don't set Id - it will be auto generated
-        dataSourceProperties.setProperty("dfgdfg");
-        dataSourceProperties.setValue(text);
+        dataSourceProperty.setProperty("dfgdfg");
+        dataSourceProperty.setValue(text);
 
-        return  dataSourcePropertiesDao.saveAndFlush(dataSourceProperties);
+        return  dataSourcePropertiesDao.saveAndFlush(dataSourceProperty);
     }
 }
