@@ -28,26 +28,19 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
     }
 
     @Override
-    public List<QueryExecution> getUserByText(String text) {
+    public List<QueryExecution> getByTextInUserName(String text) {
         return em.createQuery("FROM QueryExecution WHERE user LIKE :textFragmentParam")
                 .setParameter("textFragmentParam", createPatternString(text))
                 .getResultList();
     }
 
     @Override
-    public List<QueryExecution> getstartTimestamp(LocalDateTime time) {
-        return em.createQuery("FROM QueryExecution WHERE startTimestamp LIKE :textFragmentParam")
-                .setParameter("textFragmentParam",createPatternTime(time)).getResultList();
-                //.setParameter("textFragmentParam", createPatternTime(time))
-                //.getResultList();
+    public List<QueryExecution> getByStartTimeInterval(LocalDateTime startTimeFrom, LocalDateTime startTimeTo) {
+        return em.createQuery("FROM QueryExecution WHERE startTimestamp BETWEEN :start AND :end")
+                .setParameter("start",startTimeFrom)
+                .setParameter("end", startTimeTo)
+                .getResultList();
     }
-
-    @Override
-    public List<QueryExecution> getEndTimestamp(LocalDateTime time) {
-        return em.createQuery("FROM QueryExecution WHERE endTimestamp LIKE :textFragmentParam")
-                .setParameter("textFragmentParam",createPatternTime(time)).getResultList();
-    }
-
 
     private String createPatternString(String text) {
         return "%" + text + "%";

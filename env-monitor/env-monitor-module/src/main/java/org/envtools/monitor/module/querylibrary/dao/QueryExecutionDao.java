@@ -12,7 +12,9 @@ import java.util.List;
  * @author Anastasiya Plotnikova
  */
 public interface QueryExecutionDao extends Dao<QueryExecution, Long> {
-    List<QueryExecution> getUserByText(String text);
-    List<QueryExecution> getstartTimestamp(LocalDateTime time);
-    List<QueryExecution> getEndTimestamp(LocalDateTime time);
+
+    List<QueryExecution> getByTextInUserName(String text);
+
+    List<QueryExecution> getByStartTimeInterval(LocalDateTime startTime, LocalDateTime endTime);
+
 }

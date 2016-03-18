@@ -8,5 +8,7 @@ import java.util.List;
  * Created by anastasiya on 07.03.16.
  */
 public interface DataSourceDao extends Dao<DataSource, Long> {
+
     List<DataSource> getNameByText(String text);
+
 }

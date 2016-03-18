@@ -3,7 +3,6 @@ package org.envtools.monitor.module.querylibrary.dao;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryExecution;
-import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -25,7 +23,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class QueryExecutionDaoIT {
     private static final Logger LOGGER = Logger.getLogger(QueryExecutionDaoIT.class);
@@ -45,27 +43,17 @@ public class QueryExecutionDaoIT {
         Assert.assertTrue(QUERY_TEXT.contains(QUERY_SEARCH_PRESENT));
 
         createWithText(QUERY_SEARCH_PRESENT);
-        LocalDateTime localTime = LocalDateTime.of(2016,3,22,20,24);
+        LocalDateTime localTimeFrom = LocalDateTime.of(2016, 3, 22, 20, 23);
+        LocalDateTime localTimeTo = LocalDateTime.of(2016, 3, 22, 20, 25);
 
-        List<QueryExecution> foundQueries = queryExecutionDao.getstartTimestamp(localTime);
+        List<QueryExecution> foundQueries = queryExecutionDao.getByStartTimeInterval(localTimeFrom, localTimeTo);
         Assert.assertEquals(1, foundQueries.size());
 
-
-
-
-
-        List<QueryExecution> foundQueries1 = queryExecutionDao.getUserByText("admin");
-       Assert.assertEquals(1, foundQueries1.size());
-
-
-
-
-
+        List<QueryExecution> foundQueries1 = queryExecutionDao.getByTextInUserName("admin");
+        Assert.assertEquals(1, foundQueries1.size());
 
         LOGGER.info("Found queries: " + foundQueries);
-        LOGGER.info("Found queries: " + foundQueries1);
-
-
+        LOGGER.info("Found queries 1: " + foundQueries1);
 
     }
 
@@ -74,20 +62,16 @@ public class QueryExecutionDaoIT {
 
         Assert.assertFalse(QUERY_TEXT.contains(QUERY_SEARCH_ABSENT));
         createWithText(QUERY_SEARCH_ABSENT);
-        LocalDateTime localTime1 = LocalDateTime.of(2016,3,22,21,24);
+        LocalDateTime localTimeFrom = LocalDateTime.of(2016, 3, 22, 20, 27);
+        LocalDateTime localTimeTo = LocalDateTime.of(2016, 3, 22, 20, 29);
 
-        List<QueryExecution> foundQueries3 = queryExecutionDao.getstartTimestamp(localTime1                                                                                                                                                                                                                                                                                                                     );
+        List<QueryExecution> foundQueries3 = queryExecutionDao.getByStartTimeInterval(localTimeFrom, localTimeTo);
         Assert.assertEquals(0, foundQueries3.size());
 
-      //  List<QueryExecution> foundQueries2 = queryExecutionDao.getUserByText("Admin");
-      //  Assert.assertEquals(0, foundQueries2.size());
-
-        List<QueryExecution> foundQueries = queryExecutionDao.getUserByText("Admin");
+        List<QueryExecution> foundQueries = queryExecutionDao.getByTextInUserName("Admin");
         Assert.assertEquals(0, foundQueries.size());
 
         LOGGER.info("Found queries: " + foundQueries);
-       // LOGGER.info("Found queries: " + foundQueries3);
-       // LOGGER.info("Found queries: " + foundQueries2);
 
     }
 
@@ -100,14 +84,14 @@ public class QueryExecutionDaoIT {
         libQuery1.setTitle("some_title1");
         libQueryDao.saveAndFlush(libQuery1);
 
-        LocalDateTime localTime = LocalDateTime.of(2016,3,22,20,24);
+        LocalDateTime localTime = LocalDateTime.of(2016, 3, 22, 20, 24);
         QueryExecution queryExecution = new QueryExecution();
         //Don't set Id - it will be auto generated
         queryExecution.setEndTimestamp(localTime);
         queryExecution.setStartTimestamp(localTime);
         queryExecution.setLibQuery(libQuery1);
         queryExecution.setUser("admin");
-       // queryExecution.set
+        // queryExecution.set
         return queryExecutionDao.saveAndFlush(queryExecution);
     }
 }

@@ -11,5 +11,7 @@ import java.util.List;
  * @author Anastasiya Plotnikova
  */
 public interface QueryParamDao extends Dao<QueryParam, Long> {
+
     List<QueryParam> getNameQueryParamByText(String text);
+
 }
