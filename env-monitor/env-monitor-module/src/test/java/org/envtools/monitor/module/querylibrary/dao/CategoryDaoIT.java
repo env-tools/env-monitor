@@ -43,6 +43,8 @@ public class CategoryDaoIT {
         List<Category> foundQueries = categoryDao.getCategoryByTitle(QUERY_SEARCH_PRESENT);
         Assert.assertEquals(1, foundQueries.size());
         Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getTitle());
+        List<Category> foundQueries1 = categoryDao.getRootCategories("some_title");
+        Assert.assertEquals(1, foundQueries1.size());
 
         LOGGER.info("Found queries: " + foundQueries);
 
@@ -58,7 +60,17 @@ public class CategoryDaoIT {
         List<Category> foundQueries = categoryDao.getCategoryByTitle(QUERY_SEARCH_ABSENT);
         Assert.assertEquals(1, foundQueries.size());
 
+        List<Category> foundQueries1 = categoryDao.getRootCategories("sdf");
+        Assert.assertEquals(0, foundQueries1.size());
+
+        List<Category> foundQueries2 = categoryDao.getRootCategories(null);
+        Assert.assertEquals(0, foundQueries2.size());
+
+
+
         LOGGER.info("Found queries: " + foundQueries);
+        LOGGER.info("Found queries: " + foundQueries1);
+        LOGGER.info("Found queries: " + foundQueries2);
 
     }
 
