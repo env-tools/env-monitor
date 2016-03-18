@@ -31,11 +31,9 @@ public class CategoryDaoImpl  extends AbstractDbDao<Category, Long> implements C
     }
 
     @Override
-    public List<Category> getRootCategories(String text) {
+    public List<Category> getRootCategories() {
         //owner, пустой для public;
-        return em.createQuery("FROM Category WHERE owner LIKE :titleParam")
-                .setParameter("titleParam", createPatternString(text))
-                .getResultList();
+        return em.createQuery("FROM Category WHERE owner=null").getResultList();
     }
 
     private String createPatternString(String text) {

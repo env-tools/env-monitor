@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface CategoryDao   extends Dao<Category, Long> {
     List<Category> getCategoryByTitle(String title);
-    List<Category> getRootCategories(String text);
+    List<Category> getRootCategories();
 
 }
