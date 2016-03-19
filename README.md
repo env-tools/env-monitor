@@ -11,13 +11,17 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
 
-- Alexander Dodonov
+- Anastasiya Plotnikova (anastasiya14)
 
-*Java developer, I am interested in the modern architectural solutions and in the practical usage of Java 8*
+*Student of LETI University*
 
-- Marsel Maximov (marselmax)
+- Sergey Moldachyov (InnerFlameFact)
 
-*Java developer, interested in participating at development of new project from scratch*
+*Student of LETI University*
+
+- Maksim Fyodorov (jesa29)
+
+*Student of LETI University*
 
 #How to run:
 *Build web UI:*
