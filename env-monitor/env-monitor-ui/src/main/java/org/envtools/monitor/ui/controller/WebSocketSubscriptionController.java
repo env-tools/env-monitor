@@ -1,6 +1,7 @@
 package org.envtools.monitor.ui.controller;
 
 import org.apache.log4j.Logger;
+import org.envtools.monitor.ui.controller.util.StompSubscriptionCommandHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
@@ -19,18 +20,22 @@ public class WebSocketSubscriptionController implements ApplicationListener<Sess
 
     private static final Logger LOGGER = Logger.getLogger(WebSocketSubscriptionController.class);
 
+    /**
+     * This handler is a service responsible for handling all subscription commands to all modules
+     */
     @Autowired
     StompSubscriptionCommandHandler stompSubscriptionCommandHandler;
 
     @Override
     public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
 
+        //Any subscription request from web socket client (with destination started with "/subscribe") will go here
         handleSubscription(sessionSubscribeEvent);
 
     }
 
     /**
-     * This method handles continuous subscriptions from clients
+     * This method handles continuous subscriptions from clients, for all modules
      * Subscriptions must be registered so that data updated could be sent to them
      *
      * @param sessionSubscribeEvent event containing STOMP subscription information

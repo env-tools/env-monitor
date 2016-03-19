@@ -40,6 +40,32 @@ public class ResponsePayload implements Serializable{
         this.jsonContent = jsonContent;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private RequestPayload requestPayload;
+        private String jsonContent;
+
+        private Builder() {
+        }
+
+        public Builder requestPayload(RequestPayload requestPayload) {
+            this.requestPayload = requestPayload;
+            return this;
+        }
+
+        public Builder jsonContent(String jsonContent) {
+            this.jsonContent = jsonContent;
+            return this;
+        }
+
+        public ResponsePayload build() {
+            return new ResponsePayload(requestPayload, jsonContent);
+        }
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).

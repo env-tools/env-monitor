@@ -1,10 +1,11 @@
-package org.envtools.monitor.ui.controller;
+package org.envtools.monitor.ui.controller.util;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.core.ApplicationsModuleStorageService;
+import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
+import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class StompSubscriptionCommandHandler {
     private static final Logger LOGGER = Logger.getLogger(StompSubscriptionCommandHandler.class);
 
     @Autowired
-    private SimpMessagingTemplate webSocketClientMessagingTemplate;
+    private ApplicationsDataPushService applicationsDataPushService;
 
     @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
@@ -52,20 +53,28 @@ public class StompSubscriptionCommandHandler {
     }
 
     public void processSubscriptionCommand(StompCommand stompCommand, StompHeaderAccessor stompHeaderAccessor) {
+
+        //This is unique identifier of browser websocket session
         String sessionId = stompHeaderAccessor.getSessionId();
+
+        //This is unique identifier for single websocket subscription
         String stompSubscriptionId = stompHeaderAccessor.getSubscriptionId();
+
+        //Destination
         String destination = stompHeaderAccessor.getDestination();
-        String selector = DestinationUtil.extractSelector(destination);
 
         LOGGER.info(String.format(
-                "StompSubscriptionCommandHandler.processSubscriptionCommand - %s - session %s with stomp subscription id %s for destination %s (selector %s)",
+                "StompSubscriptionCommandHandler.processSubscriptionCommand - %s - session %s with stomp subscription id %s for destination %s",
                 stompCommand,
                 sessionId,
                 stompSubscriptionId,
-                destination,
-                selector));
+                destination));
 
         if (DestinationUtil.isDestinationForModule(destination, ModuleConstants.APPLICATIONS_MODULE_ID)) {
+
+            String selector = DestinationUtil.extractSelector(destination);
+            LOGGER.info(String.format(
+                    "StompSubscriptionCommandHandler.processSubscriptionCommand - selector =  %s", selector));
 
             if (isSubscribe(stompCommand)) {
                 subscriptionManager.registerSubscription(sessionId, destination);
@@ -88,20 +97,11 @@ public class StompSubscriptionCommandHandler {
     }
 
     private void sendDataToSubscriberImmediately(String subscribedDestination) {
-        String contentPart = applicationsModuleStorageService.extractSerializedPartBySelector(
-                DestinationUtil.extractSelector(subscribedDestination));
-            ResponseMessage subscriberResponseMessage = new ResponseMessage.Builder()
-                    .payload(new ResponsePayload(null,
-                            contentPart
-                    ))
-                    .build();
 
-        LOGGER.info(String.format("StompSubscriptionCommandHandler.sendDataToSubscriberImmediately - sending to destination %s - %s",
-                subscribedDestination, subscriberResponseMessage));
-        webSocketClientMessagingTemplate.convertAndSend(subscribedDestination,
-                    subscriberResponseMessage);
-        LOGGER.info(String.format("StompSubscriptionCommandHandler.sendDataToSubscriberImmediately - message to destination %s sent",
-                subscribedDestination));
+        String contentPart = applicationsModuleStorageService.extractPartBySelector(
+                DestinationUtil.extractSelector(subscribedDestination));
+
+        applicationsDataPushService.pushToSubscribedClient(subscribedDestination, contentPart);
 
     }
 

@@ -3,7 +3,7 @@ package org.envtools.monitor.ui.controller;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponsePayload;
-import org.envtools.monitor.module.core.ApplicationsModuleStorageService;
+import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -26,8 +26,13 @@ public class WebSocketCallController {
     @Autowired
     AbstractMessageBrokerConfiguration configuration;
 
+    // Services for APPLICATIONS module
+
     @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
+
+    // Services for QUERY_LIBRARY module
+    // ...
 
     //TODO clarify whether it is needed
     @PostConstruct
@@ -37,7 +42,7 @@ public class WebSocketCallController {
 
     /**
      * This method supports one-time data request by selector
-     * Clients should subscribe with "/app" prefix
+     * Clients should subscribe with "/call" prefix
      *
      * @param headerAccessor Means to extract request details
      * @return Extracted data matching the selector
@@ -52,17 +57,26 @@ public class WebSocketCallController {
 
         LOGGER.info(String.format("WebSocketCallController.handleApplicationsModuleCall - received call from client %s for destination %s, selector %s",
                 sessId, destination, selector));
+        ResponsePayload responsePayload = ResponsePayload.builder().jsonContent(applicationsModuleStorageService.extractPartBySelector(selector))
+                .build();
         ResponseMessage responseMessage = new ResponseMessage.Builder()
                 .sessionId(sessId)
-                .payload(new ResponsePayload(null, applicationsModuleStorageService.extractSerializedPartBySelector(selector)))
+                .payload(responsePayload)
                 .build();
         return responseMessage;
     }
 
+    /**
+     * This method supports one-time request to Query Library module
+     * Clients should subscribe with "/call" prefix
+     *
+     * Not used yet
+     *
+     */
     @SubscribeMapping("/modules/M_QUERY_LIBRARY/**")
     public ResponseMessage handleQueryLibraryModuleCall(SimpMessageHeaderAccessor headerAccessor
     ) {
-       //TODO implement
+        //TODO implement
         return null;
     }
 

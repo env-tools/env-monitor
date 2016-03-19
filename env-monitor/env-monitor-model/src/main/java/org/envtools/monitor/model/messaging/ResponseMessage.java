@@ -68,6 +68,10 @@ public class ResponseMessage {
         this.payload = payload;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private String requestId;
         private String sessionId;

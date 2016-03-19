@@ -3,9 +3,10 @@ package org.envtools.monitor.module.core;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
-import org.envtools.monitor.model.messaging.ResponsePayload;
 import org.envtools.monitor.module.Module;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
+import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -28,11 +28,15 @@ import java.util.concurrent.Executors;
  *
  * @author Yury Yakovlev
  */
-public class CoreModule implements Module, Runnable {
+public class CoreModule implements Module {
+
     private static final Logger LOGGER = Logger.getLogger(CoreModule.class);
 
+    /**
+     * This service is responsible for pushing applications module data from cache/storage to clients
+     */
     @Autowired
-    private SimpMessagingTemplate webSocketClientMessagingTemplate;
+    ApplicationsDataPushService applicationsDataPushService;
 
     @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
@@ -43,70 +47,49 @@ public class CoreModule implements Module, Runnable {
      * This channel accepts the requested data from all modules
      */
     @Resource(name = "core.channel")
-    SubscribableChannel requestedDataChannel;
+    SubscribableChannel coreModuleChannel;
 
     private ExecutorService threadPool = Executors.newCachedThreadPool();
-    private MessageHandler incomingMessageHandler = (message) -> handleModuleResponse((ResponseMessage) message.getPayload());
+    private MessageHandler incomingMessageHandler = (message) -> handlePluggableModuleResponse((ResponseMessage) message.getPayload());
 
     private Map<String, String> contentBySelector = Maps.newConcurrentMap();
 
     @PostConstruct
     public void init() {
-        LOGGER.info("CoreModule.init - CoreModule has been initialized,  webSocketClientMessagingTemplate = " + webSocketClientMessagingTemplate);
-        requestedDataChannel.subscribe(incomingMessageHandler);
-        //threadPool.submit(this);
+        LOGGER.info("CoreModule.init - CoreModule has been initialized");
+        coreModuleChannel.subscribe(incomingMessageHandler);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                Thread.sleep(10000);
-                LOGGER.info("CoreModule.run - core module is up and running...");
-            } catch (InterruptedException ex) {
-                LOGGER.info("CoreModule.run - Thread was interrupted");
-                break;
-            }
-        }
-    }
+    private void handlePluggableModuleResponse(ResponseMessage responseMessage) {
 
-    private void handleModuleResponse(ResponseMessage responseMessage) {
-        //       LOGGER.info("CoreModule.handleModuleResponse - responseMessage : " + responseMessage);
         String user = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
 
-        if (user != null) {
-            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
-                    createUniqueSessionDestinationHeaders(user));
-        } else {
+//TODO is this branch of logic needed now?
+//        if (user != null) {
+//            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
+//                    createUniqueSessionDestinationHeaders(user));
+//        } else {
             String newContent = responseMessage.getPayload().getJsonContent();
-            applicationsModuleStorageService.store(newContent);
+            applicationsModuleStorageService.storeFull(newContent);
 
             for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
 
-                String newContentPart = applicationsModuleStorageService.extractSerializedPartBySelector(
+                String newContentPart = applicationsModuleStorageService.extractPartBySelector(
                         DestinationUtil.extractSelector(subscribedDestination));
 
                 //TODO handle synchronization
                 if (!contentBySelector.containsKey(subscribedDestination) ||
                         !newContentPart.equals(contentBySelector.get(subscribedDestination))) {
-                    ResponseMessage subscriberResponseMessage = new ResponseMessage.Builder()
-                            .payload(new ResponsePayload(null,
-                                    newContentPart
-                            ))
-                            .build();
-
-                    webSocketClientMessagingTemplate.convertAndSend(subscribedDestination,
-                            subscriberResponseMessage);
+                    applicationsDataPushService.pushToSubscribedClient(subscribedDestination, newContentPart);
                 }
             }
-        }
+//        }
     }
 
     @PreDestroy
     public void destroy() {
-        requestedDataChannel.unsubscribe(incomingMessageHandler);
+        coreModuleChannel.unsubscribe(incomingMessageHandler);
         threadPool.shutdownNow();
     }
 

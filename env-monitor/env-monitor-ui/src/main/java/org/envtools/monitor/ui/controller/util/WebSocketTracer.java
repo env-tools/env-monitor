@@ -1,4 +1,4 @@
-package org.envtools.monitor.ui.controller;
+package org.envtools.monitor.ui.controller.util;
 
 import org.apache.log4j.Logger;
 import org.springframework.messaging.SubscribableChannel;

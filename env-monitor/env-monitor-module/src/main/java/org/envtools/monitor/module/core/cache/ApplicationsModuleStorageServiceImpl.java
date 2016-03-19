@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.core;
+package org.envtools.monitor.module.core.cache;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.module.core.selection.Extractor;
@@ -24,24 +24,24 @@ public class ApplicationsModuleStorageServiceImpl implements ApplicationsModuleS
     private Extractor<String, SimplePathSelector> extractor;
 
     @Override
-    public String extractSerializedPartBySelector(String selector) {
+    public String extractPartBySelector(String selector) {
         try {
             SimplePathSelector simplePathSelector = SimplePathSelector.of(selector);
             return extractor.extract(serializedApplicationsData, simplePathSelector);
         } catch (IllegalSelectorException e) {
-            LOGGER.error("ApplicationsModuleStorageServiceImpl.extractSerializedPartBySelector - invalid selector, returning empty result: " +
+            LOGGER.error("ApplicationsModuleStorageServiceImpl.extractPartBySelector - invalid selector, returning empty result: " +
             selector, e);
             return extractor.emptyExtractionResult();
         }
     }
 
     @Override
-    public void store(String serializedApplicationsData) {
+    public void storeFull(String data) {
 
         Lock lock = new ReentrantLock();
         try {
             lock.lock();
-            this.serializedApplicationsData = serializedApplicationsData;
+            this.serializedApplicationsData = data;
         } finally {
             lock.unlock();
         }

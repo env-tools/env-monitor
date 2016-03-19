@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.core;
+package org.envtools.monitor.module.core.cache;
 
 import org.envtools.monitor.model.applications.ApplicationsData;
 
@@ -9,8 +9,8 @@ import org.envtools.monitor.model.applications.ApplicationsData;
  */
 public interface ApplicationsModuleStorageService {
 
-    String extractSerializedPartBySelector(String selector);
+    String extractPartBySelector(String selector);
 
-    void store(String serializedApplicationsData);
+    void storeFull(String data);
 
 }

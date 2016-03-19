@@ -10,6 +10,6 @@
 
     <bean id="core.module" class="org.envtools.monitor.module.core.CoreModule"/>
 
-    <bean id="applications.service" class = "org.envtools.monitor.module.core.ApplicationsModuleStorageServiceImpl"/>
+    <bean id="applications.service" class = "org.envtools.monitor.module.core.cache.ApplicationsModuleStorageServiceImpl"/>
 
 </beans>
