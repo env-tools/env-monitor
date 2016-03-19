@@ -34,15 +34,15 @@ npm i gulp@3.9.0 -g
 ```sh
 cd env-monitor/env-monitor/env-monitor-ui/src/main/resources/static/
 ```
-- Download npm dependencies
+- Download npm dependencies (required first time)
 ```sh
 npm install
 ```
-- Download bower dependencies
+- Download bower dependencies (required if new js libraries appeared in project)
 ```sh
 bower install
 ```
-- Build project
+- Build project (required if js sources changed)
 ```sh
 gulp dist
 ```
