@@ -15,7 +15,7 @@ public abstract class AbstractPushService implements DataPushService{
 
     protected Logger LOGGER = Logger.getLogger(getClass());
 
-    @Autowired
+    @Autowired(required = false)
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
     @Override
