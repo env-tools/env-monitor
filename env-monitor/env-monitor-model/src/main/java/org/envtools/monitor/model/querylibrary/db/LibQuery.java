@@ -22,11 +22,11 @@ public class LibQuery extends AbstractDbIdentifiable {
     private String title;
     private String description;
 
-    @OneToMany(mappedBy = "libQuery")
+    @OneToMany(mappedBy = "libQuery", cascade = CascadeType.ALL)
     @OrderBy(value = "name")
     private List<QueryParam> queryParams;
 
-    @OneToMany(mappedBy = "libQuery")
+    @OneToMany(mappedBy = "libQuery", cascade = CascadeType.ALL)
     private List<QueryExecution> queryExecutions;
 
     public List<QueryParam> getQueryParams() {

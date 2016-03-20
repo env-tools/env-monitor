@@ -21,11 +21,11 @@ public class DataSource extends AbstractDbIdentifiable {
     private String description;
 
     /*dataSource 1 ко многим с сущностью DataSourceProperty*/
-    @OneToMany(mappedBy = "dataSource")
+    @OneToMany(mappedBy = "dataSource", cascade = CascadeType.ALL)
     @OrderBy(value = "property")
     private List<DataSourceProperty> dataSourceProperties;
 
-    @OneToMany(mappedBy = "dataSource")
+    @OneToMany(mappedBy = "dataSource", cascade = CascadeType.ALL)
     private List<QueryExecution> queryExecutions;
 
     public List<QueryExecution> getQueryExecutions() {
