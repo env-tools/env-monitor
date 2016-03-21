@@ -55,9 +55,11 @@ public class JsonConversionTest extends Assert {
             this.data = data;
         }
 
-        public void setData(Object data) {
-            JSONObject jsonObject = new JSONObject((Map<String, Object>) data);
-            this.data = jsonObject.toString();
+        public void setData(Object data) throws IOException {
+            if (data instanceof Map) {
+                JSONObject jsonObject = new JSONObject((Map<String, Object>) data);
+                this.data = jsonObject.toString();
+            } else throw new IOException("Error in deserialized JSON");
         }
 
         @Override
