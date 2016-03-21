@@ -20,8 +20,8 @@ public class JsonConversionTest extends Assert {
         int a = 7;
         String data = "{\"x\":\"3\",\"y\":\"2\"}";
         TargetClass targetClass = new TargetClass();
-        targetClass.a = a;
-        targetClass.data = data;
+        targetClass.setA(a);
+        targetClass.setDataJson(data);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String output = objectMapper.writeValueAsString(targetClass);
@@ -36,7 +36,7 @@ public class JsonConversionTest extends Assert {
     public static class TargetClass {
         private int a;
 
-        private Object data;
+        private String data;
 
         public int getA() {
             return a;
@@ -48,7 +48,11 @@ public class JsonConversionTest extends Assert {
 
         @JsonRawValue
         public String getData() {
-            return data.toString();
+            return data;
+        }
+
+        public void setDataJson(String data) {
+            this.data = data;
         }
 
         public void setData(Object data) {
