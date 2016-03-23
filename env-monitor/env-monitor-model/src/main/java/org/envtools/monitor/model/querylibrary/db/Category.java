@@ -27,12 +27,12 @@ public class Category extends AbstractDbIdentifiable {
     private String description;
 
      /*Один ко многим к таблице LibQuery*/
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")  //правило сортировки коллекции
     private List<LibQuery> queries;
 
     /*Один ко многим к одной таблице*/
-    @OneToMany(mappedBy = "parentCategory")
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")
     private List<Category> childCategories;
 
