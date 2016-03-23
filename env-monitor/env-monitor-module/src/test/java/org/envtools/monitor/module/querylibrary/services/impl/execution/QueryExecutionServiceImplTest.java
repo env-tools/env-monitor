@@ -41,8 +41,10 @@ public class QueryExecutionServiceImplTest {
         queryParameters.put(":name", "My category");
         queryParameters.put(":desc", "My description");
 
-        dataSourceProperties.put("username", "sa");
+        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
+        dataSourceProperties.put("user", "sa");
         dataSourceProperties.put("password", "sa");
+        dataSourceProperties.put("driverClassName", "org.h2.Driver");
 
 
         QueryExecutionRequest request = requestBuilder
