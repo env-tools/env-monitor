@@ -3,7 +3,7 @@ package org.envtools.monitor.module.querylibrary.services.impl.execution;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
+import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -22,8 +22,8 @@ import org.testng.Assert;
  * Created by sergey on 23.03.2016.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@SpringApplicationConfiguration(classes =QueryExecuteTestApplication.class)
+@TestPropertySource(locations="classpath:/services/application-query-execute-test.properties")
 public class QueryExecutionServiceImplTest {
 
     @Test
