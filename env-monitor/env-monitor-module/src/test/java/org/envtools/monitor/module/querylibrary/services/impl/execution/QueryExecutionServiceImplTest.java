@@ -4,7 +4,9 @@ import org.envtools.monitor.model.querylibrary.DataProviderType;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
+import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,9 +28,12 @@ import org.testng.Assert;
 @TestPropertySource(locations="classpath:/services/application-query-execute-test.properties")
 public class QueryExecutionServiceImplTest {
 
+    @Autowired
+    private QueryExecutionService executionService;
+
     @Test
     public void testExecute() throws Exception {
-        QueryExecutionServiceImpl executionService = new QueryExecutionServiceImpl();
+
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
         String query = "SELECT * FROM CATEGORY WHERE ID = :id AND TITLE = :name OR DESCRIPTION = %:desc%";

@@ -13,7 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "org.envtools.*")
-@EntityScan(basePackageClasses = {JdbcDataSourceService.class, QueryExecutionServiceImpl.class})
 @EnableAutoConfiguration
 public class QueryExecuteTestApplication {
 }
