@@ -69,7 +69,7 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
     @JoinColumn(name="QUERY_ID")
     private LibQuery libQuery;
 
-    @OneToMany(mappedBy = "queryExecution")
+    @OneToMany(mappedBy = "queryExecution", cascade = CascadeType.ALL)
     @OrderBy(value = "name")
     private List<QueryExecutionParam> queryExecutionParams;
 
