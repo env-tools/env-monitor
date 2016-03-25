@@ -71,7 +71,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                             while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
                                 Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
 
-                                for (int iColumn = 0; iColumn < columnCount; iColumn++) {
+                                for (int iColumn = 1; iColumn < columnCount; iColumn++) {
                                     row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
                                 }
                                 rowNum++;

@@ -41,7 +41,7 @@ public class QueryExecutionServiceImplTest {
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
-        int rowCount = 50;
+        int rowCount = 1;                                                    ;
 
         queryParameters.put("name", "ARABIC_JORDAN");
 
@@ -66,6 +66,38 @@ public class QueryExecutionServiceImplTest {
         Assert.assertEquals(1, result.getResultRows().size());
     }
 
+    @Test
+    public void testExecute1() throws Exception {
+        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
+
+        String query = "SELECT * FROM INFORMATION_SCHEMA.CATALOGS WHERE CATALOG_NAME =:name ";
+        Map<String, Object> queryParameters = new HashMap<>();
+        Map<String, String> dataSourceProperties = new HashMap<>();
+        long timeOut = 5000;
+        int rowCount = 100;                                                    ;
+
+        queryParameters.put("name", "UNNAMED");
+
+        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
+        dataSourceProperties.put("user", "sa");
+        dataSourceProperties.put("password", "sa");
+        dataSourceProperties.put("driverClassName", "org.h2.Driver");
+
+
+        QueryExecutionRequest request = requestBuilder
+                .operationId(UUID.randomUUID().toString())
+                .queryType(DataProviderType.JDBC)
+                .query(query)
+                .queryParameters(queryParameters)
+                .dataSourceProperties(dataSourceProperties)
+                .timeOutMs(timeOut)
+                .rowCount(rowCount)
+                .build();
+
+        QueryExecutionResult result = executionService.execute(request);
+
+        Assert.assertEquals(1, result.getResultRows().size());
+    }
     @Test
     public void testExecuteSQLException() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
