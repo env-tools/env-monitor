@@ -1,25 +1,19 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
 
+import com.google.common.collect.Lists;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.DataProviderType;
-import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
+import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.services.DataSourceService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE;
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.annotation.Transactional;
-import javax.sql.DataSource;
+
 import java.sql.*;
 import java.util.*;
 
@@ -31,10 +25,10 @@ import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionRe
  * @author Yury Yakovlev
  */
 public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
-    private static final Logger LOGGER = Logger.getLogger(JdbcQueryExecutionTask.class);
-    private BasicDataSource jdbcDataSource;
-    private static final String selectSql = "SELECT * FROM Category";
 
+    private static final Logger LOGGER = Logger.getLogger(JdbcQueryExecutionTask.class);
+
+    private BasicDataSource jdbcDataSource;
 
     public JdbcQueryExecutionTask(
             QueryExecutionRequest queryExecutionRequest,
@@ -46,15 +40,18 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                         queryExecutionRequest.getDataSourceProperties());
     }
 
+    private static class ResultDTO {
+        public ExecutionStatusE status;
+        public String errorMessage;
+        public Throwable error;
+    }
 
     @Override
     // @Transactional(timeout=queryExecutionRequest.)
     protected QueryExecutionResult doCall() {
-        final ExecutionStatusE[] status = new ExecutionStatusE[1];
-        final Optional<String>[] errorMessage = null;
-        final Optional<Throwable>[] error = null;
-        //TODO implement query execution
-        //TODO prepare result according to request
+
+        final ResultDTO resultDTO = new ResultDTO();
+
         JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
         template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
@@ -69,34 +66,47 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                         int rowNum = 0; //строки
                         try {
                             ResultSetMetaData md = rs.getMetaData();
-                            int columns = md.getColumnCount();
-                            List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+                            int columnCount = md.getColumnCount();
+                            List<Map<String, Object>> rows = new ArrayList<>();
                             while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
-                                Map<String, Object> row = new HashMap<String, Object>(columns);
+                                Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
 
-                                row.put(md.getColumnName(rowNum), rs.getObject(rowNum));
+                                for (int iColumn = 0; iColumn < columnCount; iColumn++) {
+                                    row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
+                                }
                                 rowNum++;
                                 rows.add(row);
                             }
-                            LOGGER.info("Found queries: " + ExecutionStatusE.COMPLETED);
-                            status[0] = ExecutionStatusE.COMPLETED;
+                            LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
+
+                            resultDTO.status = COMPLETED;
+
                             return rows;
-                        } catch (SQLException wx) {
-                            LOGGER.info("Found queries: " + ExecutionStatusE.ERROR + "ErrorMassage: " + wx);
-                            status[0] = ExecutionStatusE.ERROR;
-                            errorMessage[0] = Optional.of(wx.toString());
+
                         } catch (Throwable t) {
-                            error[0] = Optional.of(t);
+                            LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
+
+                            resultDTO.status = ERROR;
+                            resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
+                            resultDTO.error = t;
+
+                            return Lists.newArrayList();
                         }
 
-                        return null;
                     }
                     //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
                     // errorMessage, Optional<Throwable> error
                 });
 
-        //Currently mock
-        return new QueryExecutionResult(status[0], template.getQueryTimeout(), result.size(), result, errorMessage[0], error[0]);
+        return QueryExecutionResult
+                .builder()
+                .status(resultDTO.status)
+                .elapsedTimeMs(200) //TODO count
+                .returnedRowCount(result.size())
+                .resultRows(result)
+                .errorMessage(resultDTO.errorMessage)
+                .error(resultDTO.error)
+                .build();
 
     }
 

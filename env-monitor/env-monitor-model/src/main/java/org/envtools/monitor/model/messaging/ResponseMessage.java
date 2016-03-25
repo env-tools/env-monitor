@@ -79,6 +79,13 @@ public class ResponseMessage {
         private String username;
         private ResponsePayload payload;
 
+        public Builder requestMetaData(RequestMessage requestMessage) {
+            return
+                    requestId(requestMessage.getRequestId())
+                    .sessionId(requestMessage.getSessionId())
+                    .targetModuleId(requestMessage.getTargetModuleId());
+        }
+
         public Builder requestId(String requestId) {
             this.requestId = requestId;
             return this;
@@ -96,6 +103,11 @@ public class ResponseMessage {
 
         public Builder username(String username) {
             this.username = username;
+            return this;
+        }
+
+        public Builder payload(String payload) {
+            this.payload = new ResponsePayload(payload);
             return this;
         }
 

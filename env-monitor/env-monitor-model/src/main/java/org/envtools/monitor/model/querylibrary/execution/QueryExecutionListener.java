@@ -9,6 +9,8 @@ import java.util.UUID;
  */
 public interface QueryExecutionListener {
 
-    void onQueryCompleted(UUID uuid, QueryExecutionResult queryResult);
+    void onQueryCompleted(QueryExecutionResult queryResult);
+
+    void onQueryError(Throwable t);
 
 }

@@ -62,29 +62,47 @@ public class CoreModule implements Module {
 
     private void handlePluggableModuleResponse(ResponseMessage responseMessage) {
 
-        String user = responseMessage.getSessionId();
+        LOGGER.info("CoreModule.handlePluggableModuleResponse - " + responseMessage);
+
+        String sessionId = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
 
-//TODO is this branch of logic needed now?
-//        if (user != null) {
-//            webSocketClientMessagingTemplate.convertAndSendToUser(user, responseWebSocketDestination, responseMessage,
-//                    createUniqueSessionDestinationHeaders(user));
-//        } else {
-            String newContent = responseMessage.getPayload().getJsonContent();
-            applicationsModuleStorageService.storeFull(newContent);
+        String originator = responseMessage.getTargetModuleId();
 
-            for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
+        if (originator == null) {
+            LOGGER.error("CoreModule.handlePluggableModuleResponse - originator is null, skipping");
+            return;
+        }
 
-                String newContentPart = applicationsModuleStorageService.extractPartBySelector(
-                        DestinationUtil.extractSelector(subscribedDestination));
+        switch (originator) {
+            case ModuleConstants.QUERY_LIBRARY_MODULE_ID:
+                throw new UnsupportedOperationException("Not implemented");
+            case ModuleConstants.APPLICATIONS_MODULE_ID:
+                handleApplicationsModuleResponseMessage(responseMessage);
+                break;
+            default:
+                LOGGER.error("CoreModule.handlePluggableModuleResponse - unsupported  originator, skipping : " + originator);
+        }
 
-                //TODO handle synchronization
-                if (!contentBySelector.containsKey(subscribedDestination) ||
-                        !newContentPart.equals(contentBySelector.get(subscribedDestination))) {
-                    applicationsDataPushService.pushToSubscribedClient(subscribedDestination, newContentPart);
-                }
+    }
+
+    private void handleApplicationsModuleResponseMessage(ResponseMessage responseMessage) {
+
+        String newContent = responseMessage.getPayload().getJsonContent();
+        applicationsModuleStorageService.storeFull(newContent);
+
+        for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
+
+            String newContentPart = applicationsModuleStorageService.extractPartBySelector(
+                    DestinationUtil.extractSelector(subscribedDestination));
+
+            //TODO handle synchronization
+            if (!contentBySelector.containsKey(subscribedDestination) ||
+                    !newContentPart.equals(contentBySelector.get(subscribedDestination))) {
+                applicationsDataPushService.pushToSubscribedClients(subscribedDestination, newContentPart);
             }
-//        }
+        }
+
     }
 
     @PreDestroy

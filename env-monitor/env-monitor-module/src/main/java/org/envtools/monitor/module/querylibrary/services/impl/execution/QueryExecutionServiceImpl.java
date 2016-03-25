@@ -1,6 +1,9 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
+import com.google.common.util.concurrent.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionException;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
@@ -21,7 +24,7 @@ import java.util.concurrent.*;
  * @author Yury Yakovlev
  */
 @Service
-public class QueryExecutionServiceImpl implements QueryExecutionService{
+public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     private static final Logger LOGGER = Logger.getLogger(QueryExecutionServiceImpl.class);
 
@@ -29,10 +32,12 @@ public class QueryExecutionServiceImpl implements QueryExecutionService{
     private JdbcDataSourceService jdbcDataSourceService;
 
     private ExecutorService threadPool;
+    private ListeningExecutorService threadPoolWithCallbacks;
 
     @PostConstruct
     public void init() {
         threadPool = Executors.newCachedThreadPool();
+        threadPoolWithCallbacks = MoreExecutors.listeningDecorator(threadPool);
     }
 
     @PreDestroy
@@ -42,38 +47,52 @@ public class QueryExecutionServiceImpl implements QueryExecutionService{
     }
 
     @Override
-    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException{
-        Optional<String> errorMessage = null;
-        Optional<Throwable> error = null;
+    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException {
+
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
+
         Future<QueryExecutionResult> future = threadPool.submit(task);
+
         try {
             return future.get(queryExecutionRequest.getTimeOutMs(), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            //TODO create error result, not null
+        } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("QueryExecutionServiceImpl.execute - error", e);
-            errorMessage= Optional.of(e.toString());
-            return new QueryExecutionResult(QueryExecutionResult.ExecutionStatusE.ERROR, 0, 0, null,errorMessage, error);
-        } catch (ExecutionException e) {
-            //TODO create error result, not null
-            LOGGER.error("QueryExecutionServiceImpl.execute - error", e);
-            errorMessage= Optional.of(e.toString());
-            return new QueryExecutionResult(QueryExecutionResult.ExecutionStatusE.ERROR, 0, 0, null,errorMessage, error);
+            return QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), e);
         } catch (TimeoutException e) {
-            //TODO create timeout result, not null
-            LOGGER.error("QueryExecutionServiceImpl.execute - timeout", e);
-            errorMessage= Optional.of(e.toString());
-            return new QueryExecutionResult(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, 0, 0, null,errorMessage,error);
-        }
-        catch (Throwable t) {
-            error = Optional.of(t);
-            return new QueryExecutionResult(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, 0, 0, null,errorMessage, error);
+            LOGGER.info("QueryExecutionServiceImpl.execute - timeout", e);
+            return QueryExecutionResult
+                    .builder()
+                    .status(QueryExecutionResult.ExecutionStatusE.TIMED_OUT)
+                    .error(e)
+                    .errorMessage(ExceptionReportingUtil.getExceptionMessage(e))
+                    .build();
+        } catch (Throwable t) {
+            return QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), t);
         }
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) {
-        throw new UnsupportedOperationException("submitForExecution not implemented");
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException{
+        AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
+        ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
+
+        Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
+            public void onSuccess(QueryExecutionResult result) {
+                listener.onQueryCompleted(result);
+            }
+
+            public void onFailure(Throwable t) {
+                listener.onQueryError(t);
+            }
+        });
+
+        try {
+            listenableFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new QueryExecutionException(e);
+            //Don't we report the same twice?
+        }
+
     }
 
     private AbstractQueryExecutionTask createExecutionTask(QueryExecutionRequest queryExecutionRequest) {
