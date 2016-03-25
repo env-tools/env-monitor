@@ -1,31 +1,21 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
 
+import com.google.common.collect.Lists;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.DataProviderType;
-import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
+import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.services.DataSourceService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.sql.*;
+import java.util.*;
 
 import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE.*;
 
@@ -34,11 +24,11 @@ import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionRe
  *
  * @author Yury Yakovlev
  */
-public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask{
-    private static final Logger LOGGER = Logger.getLogger(JdbcQueryExecutionTask.class);
-    private BasicDataSource jdbcDataSource;
-    private static final String selectSql = "SELECT * FROM Category";
+public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
+    private static final Logger LOGGER = Logger.getLogger(JdbcQueryExecutionTask.class);
+
+    private BasicDataSource jdbcDataSource;
 
     public JdbcQueryExecutionTask(
             QueryExecutionRequest queryExecutionRequest,
@@ -50,64 +40,74 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask{
                         queryExecutionRequest.getDataSourceProperties());
     }
 
+    private static class ResultDTO {
+        public ExecutionStatusE status;
+        public String errorMessage;
+        public Throwable error;
+    }
+
     @Override
+    // @Transactional(timeout=queryExecutionRequest.)
     protected QueryExecutionResult doCall() {
 
-        DataProviderType  queryType;
-        QueryExecutionRequest queryExecutionRequest=null;
-        QueryExecutionResult  queryExecutionResult=null;
-        final ExecutionStatusE[] status = new ExecutionStatusE[1];
+        final ResultDTO resultDTO = new ResultDTO();
 
-       /* try (Connection connection = jdbcDataSource.getConnection()){
-            //TODO implement query execution
-            //Line below is for testing only
-            ResultSet rs = connection
-                    .createStatement()
-                    .executeQuery("SELECT * FROM LIB_QUERY");
-            boolean hasNext = rs.next();
-
-            //TODO prepare result according to request
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        */
-        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(jdbcDataSource);
-        /*Получим n строк с запросом queryExecutionRequest.getQuery()
+        JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
+        template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
+        /*
+        Получим n строк с запросом queryExecutionRequest.getQuery()
         * с параметрами queryExecutionRequest.getQueryParameters(),
-        * из базы c параметрами jdbcDataSource*/
-        jdbcTemplate.query(queryExecutionRequest.getQuery(),queryExecutionRequest.getQueryParameters(),
-                new ResultSetExtractor<List<Map<String, Object>>>(){
+        * из базы c параметрами jdbcDataSource
+        * */
+        List<Map<String, Object>> result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
+                new ResultSetExtractor<List<Map<String, Object>>>() {
                     public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
                         int rowNum = 0; //строки
                         try {
                             ResultSetMetaData md = rs.getMetaData();
-                            int columns = md.getColumnCount();
-                            List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
-                            while (rs.next()&& queryExecutionRequest.getRowCount()>rowNum){
-                                Map<String, Object> row = new HashMap<String, Object>(columns);
+                            int columnCount = md.getColumnCount();
+                            List<Map<String, Object>> rows = new ArrayList<>();
+                            while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
+                                Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
 
-                                    row.put(md.getColumnName(rowNum), rs.getObject(rowNum));
+                                for (int iColumn = 0; iColumn < columnCount; iColumn++) {
+                                    row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
+                                }
                                 rowNum++;
                                 rows.add(row);
                             }
-                            LOGGER.info("Found queries: " + ExecutionStatusE.COMPLETED);
-                            status[0] =ExecutionStatusE.COMPLETED;
+                            LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
+
+                            resultDTO.status = COMPLETED;
+
                             return rows;
-                        }catch (SQLException wx){
-                            LOGGER.info("Found queries: " + ExecutionStatusE.ERROR);
-                            status[0] =ExecutionStatusE.ERROR;
+
+                        } catch (Throwable t) {
+                            LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
+
+                            resultDTO.status = ERROR;
+                            resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
+                            resultDTO.error = t;
+
+                            return Lists.newArrayList();
                         }
 
-                        return null;
                     }
-  //надо получить время, статус, количество полученных строк,List<Map<String, Object>>resultRows,
+                    //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
                     // errorMessage, Optional<Throwable> error
-        });
-        //Currently mock
-        return queryExecutionResult;
+                });
+
+        return QueryExecutionResult
+                .builder()
+                .status(resultDTO.status)
+                .elapsedTimeMs(200) //TODO count
+                .returnedRowCount(result.size())
+                .resultRows(result)
+                .errorMessage(resultDTO.errorMessage)
+                .error(resultDTO.error)
+                .build();
+
     }
-
-
 
 }

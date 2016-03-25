@@ -1,7 +1,11 @@
 package org.envtools.monitor.module;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.model.messaging.RequestMessage;
+import org.envtools.monitor.model.messaging.RequestPayload;
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.module.exception.MessageFormatException;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
@@ -9,6 +13,8 @@ import org.springframework.messaging.support.GenericMessage;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created: 12.03.16 19:18
@@ -16,6 +22,8 @@ import javax.annotation.Resource;
  * @author Yury Yakovlev
  */
 public abstract class AbstractPluggableModule implements Module {
+
+    private static final Logger LOGGER = Logger.getLogger(AbstractPluggableModule.class);
 
     @Resource(name = "core.channel")
     MessageChannel coreModuleChannel;
@@ -27,7 +35,31 @@ public abstract class AbstractPluggableModule implements Module {
         getModuleChannel().subscribe(incomingMessageHandler);
     }
 
-    public abstract void handleIncomingMessage(RequestMessage requestMessage);
+    public void handleIncomingMessage(RequestMessage requestMessage) {
+
+        RequestPayload requestPayload = requestMessage.getPayload();
+        String payloadType = requestPayload.getPayloadType();
+
+        if (payloadType == null) {
+            LOGGER.error("QueryLibraryModule.handleIncomingMessage - payloadType not specified, ignoring message" + requestMessage);
+            return;
+        }
+
+        Map<String, Class<?>> payloadTypes = getPayloadTypes();
+        Class<?> clazz = payloadTypes.get(payloadType);
+
+        if (clazz == null) {
+            LOGGER.error(String.format("AbstractPluggableModule.handleIncomingMessage - payloadType %s unknown. Supported types : %s",
+                    payloadType,
+                    payloadTypes.keySet()));
+            return;
+        }
+
+        processPayload(parsePayload(requestPayload.getContent(), clazz), requestMessage);
+
+    }
+
+    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage);
 
     public void sendMessageToCore(ResponseMessage responseMessage) {
 
@@ -35,5 +67,17 @@ public abstract class AbstractPluggableModule implements Module {
 
     }
 
-    protected abstract SubscribableChannel getModuleChannel() ;
+    protected abstract SubscribableChannel getModuleChannel();
+
+    protected abstract Map<String, Class<?>> getPayloadTypes();
+
+    protected <T> T parsePayload(String payload, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(payload, clazz);
+        } catch (IOException e) {
+            throw new MessageFormatException(
+                    String.format("Invalid payload %s for type %s", payload, clazz));
+        }
+    }
 }

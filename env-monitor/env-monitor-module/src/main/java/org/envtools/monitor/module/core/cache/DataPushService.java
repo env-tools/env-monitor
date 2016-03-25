@@ -7,6 +7,6 @@ package org.envtools.monitor.module.core.cache;
  */
 public interface DataPushService {
 
-    void pushToSubscribedClient(String destination, String content);
+    void pushToSubscribedClients(String destination, String content);
 
 }

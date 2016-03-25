@@ -19,8 +19,8 @@ public abstract class AbstractPushService implements DataPushService{
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
     @Override
-    public void pushToSubscribedClient(String destination, String content) {
-        LOGGER.info(String.format("AbstractPushService.pushToSubscribedClient - sending to destination %s - %s",
+    public void pushToSubscribedClients(String destination, String content) {
+        LOGGER.info(String.format("AbstractPushService.pushToSubscribedClients - sending to destination %s - %s",
                 destination, content));
 
         ResponsePayload responsePayload = ResponsePayload
