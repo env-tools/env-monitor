@@ -1,9 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services;
 
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionException;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.model.querylibrary.execution.*;
 
 import java.util.UUID;
 
@@ -18,5 +15,7 @@ public interface QueryExecutionService {
 
     void submitForExecution(QueryExecutionRequest queryExecutionRequest,
                             QueryExecutionListener listener) throws QueryExecutionException;
+
+    void cancel(QueryExecutionCancelRequest cancelRequest);
 
 }

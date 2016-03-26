@@ -65,6 +65,11 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
                         int rowNum = 0; //строки
                         try {
+
+                            /*  if (rowNum == 0) {
+                                Thread.sleep(60000); //для теста
+                            }*/
+
                             ResultSetMetaData md = rs.getMetaData();
                             int columnCount = md.getColumnCount();
                             List<Map<String, Object>> rows = new ArrayList<>();
@@ -85,7 +90,6 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
                         } catch (Throwable t) {
                             LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
-
                             resultDTO.status = ERROR;
                             resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
                             resultDTO.error = t;

@@ -25,8 +25,8 @@ import org.junit.Assert;
  * Created by sergey on 23.03.2016.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =QueryExecuteTestApplication.class)
-@TestPropertySource(locations="classpath:/services/application-query-execute-test.properties")
+@SpringApplicationConfiguration(classes = QueryExecuteTestApplication.class)
+@TestPropertySource(locations = "classpath:/services/application-query-execute-test.properties")
 @Transactional
 public class QueryExecutionServiceImplTest {
 
@@ -41,7 +41,8 @@ public class QueryExecutionServiceImplTest {
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
-        int rowCount = 1;                                                    ;
+        int rowCount = 1;
+        ;
 
         queryParameters.put("name", "ARABIC_JORDAN");
 
@@ -64,6 +65,7 @@ public class QueryExecutionServiceImplTest {
         QueryExecutionResult result = executionService.execute(request);
 
         Assert.assertEquals(1, result.getResultRows().size());
+
     }
 
     @Test
@@ -74,7 +76,8 @@ public class QueryExecutionServiceImplTest {
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
-        int rowCount = 100;                                                    ;
+        int rowCount = 100;
+        ;
 
         queryParameters.put("name", "UNNAMED");
 
@@ -95,9 +98,10 @@ public class QueryExecutionServiceImplTest {
                 .build();
 
         QueryExecutionResult result = executionService.execute(request);
-
         Assert.assertEquals(1, result.getResultRows().size());
+        // Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, result.getStatus().TIMED_OUT);
     }
+
     @Test
     public void testExecuteSQLException() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();

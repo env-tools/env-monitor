@@ -4,10 +4,7 @@ import com.google.common.util.concurrent.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionException;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.envtools.monitor.module.querylibrary.services.impl.datasource.JdbcDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +69,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException{
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
         ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
 
@@ -95,6 +92,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     }
 
+
     private AbstractQueryExecutionTask createExecutionTask(QueryExecutionRequest queryExecutionRequest) {
         switch (queryExecutionRequest.getQueryType()) {
             case JDBC:
@@ -105,5 +103,11 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
                 throw new UnsupportedOperationException(
                         String.format("Query type %s not supported", queryExecutionRequest.getQueryType()));
         }
+
+    }
+
+    @Override
+    public void cancel(QueryExecutionCancelRequest cancelRequest) {
+        //TODO impl cancel
     }
 }
