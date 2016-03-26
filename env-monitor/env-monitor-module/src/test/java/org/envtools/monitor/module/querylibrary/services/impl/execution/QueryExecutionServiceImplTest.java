@@ -129,5 +129,6 @@ public class QueryExecutionServiceImplTest {
 
         ExpectedException.none().expect(ExecutionException.class);
         QueryExecutionResult result = executionService.execute(request);
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, result.getStatus().ERROR);
     }
 }
