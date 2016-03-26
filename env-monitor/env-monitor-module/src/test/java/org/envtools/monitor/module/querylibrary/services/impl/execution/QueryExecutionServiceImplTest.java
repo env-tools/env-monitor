@@ -5,7 +5,7 @@ import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
-import org.junit.rules.ExpectedException;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -16,9 +16,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.junit.Assert;
 
 /**
@@ -27,7 +25,6 @@ import org.junit.Assert;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = QueryExecuteTestApplication.class)
 @TestPropertySource(locations = "classpath:/services/application-query-execute-test.properties")
-@Transactional
 public class QueryExecutionServiceImplTest {
 
     @Autowired
@@ -42,7 +39,6 @@ public class QueryExecutionServiceImplTest {
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
         int rowCount = 1;
-        ;
 
         queryParameters.put("name", "ARABIC_JORDAN");
 
@@ -69,7 +65,7 @@ public class QueryExecutionServiceImplTest {
     }
 
     @Test
-    public void testExecute1() throws Exception {
+    public void testExecuteTimedOut() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
         String query = "SELECT * FROM INFORMATION_SCHEMA.CATALOGS WHERE CATALOG_NAME =:name ";
@@ -77,7 +73,6 @@ public class QueryExecutionServiceImplTest {
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 10;
         int rowCount = 100;
-
 
         queryParameters.put("name", "UNNAMED");
 
@@ -98,12 +93,11 @@ public class QueryExecutionServiceImplTest {
                 .build();
 
         QueryExecutionResult result = executionService.execute(request);
-        //Assert.assertEquals(1, result.getResultRows().size());
-         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, result.getStatus().TIMED_OUT);
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, result.getStatus().TIMED_OUT);
     }
 
     @Test
-    public void testExecuteSQLException() throws Exception {
+    public void testExecuteFailSQL() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
         String query = "FAIL SQL";
@@ -127,7 +121,6 @@ public class QueryExecutionServiceImplTest {
                 .rowCount(rowCount)
                 .build();
 
-        ExpectedException.none().expect(ExecutionException.class);
         QueryExecutionResult result = executionService.execute(request);
         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, result.getStatus().ERROR);
     }
