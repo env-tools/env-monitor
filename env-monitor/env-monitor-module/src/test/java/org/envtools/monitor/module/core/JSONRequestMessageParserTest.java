@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Created by jesa on 26.03.2016.
  */
-public class JSONRequestMessageParserTest extends Assert {
+public class JSONRequestMessageParserTest{
 
     public static String INPUT_REQUEST = "{\"requestId\":\"a\",\"sessionId\":\"b\",\"targetModuleId\":\"c\",\"username\":\"d\",\"payload\":{\"payloadType\":\"e\",\"content\":{\"dataOperation\":{\"type\":\"3\",\"y\":\"2\"}}}}",
             INPUT_DATAOPERATON = "{\"type\":\"CREATE\",\"entity\":\"Category\",\"fields\":{\"title\":\"newTitle\",\"owner\":\"Owner1\",\"parentCategoryID\":5}}";
