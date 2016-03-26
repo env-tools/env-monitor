@@ -75,9 +75,9 @@ public class QueryExecutionServiceImplTest {
         String query = "SELECT * FROM INFORMATION_SCHEMA.CATALOGS WHERE CATALOG_NAME =:name ";
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 5000;
+        long timeOut = 10;
         int rowCount = 100;
-        ;
+
 
         queryParameters.put("name", "UNNAMED");
 
@@ -98,8 +98,8 @@ public class QueryExecutionServiceImplTest {
                 .build();
 
         QueryExecutionResult result = executionService.execute(request);
-        Assert.assertEquals(1, result.getResultRows().size());
-        // Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, result.getStatus().TIMED_OUT);
+        //Assert.assertEquals(1, result.getResultRows().size());
+         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, result.getStatus().TIMED_OUT);
     }
 
     @Test
