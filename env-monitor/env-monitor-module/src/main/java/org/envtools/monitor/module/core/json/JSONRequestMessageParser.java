@@ -1,6 +1,7 @@
 package org.envtools.monitor.module.core.json;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.updates.DataOperation;
 
@@ -11,16 +12,16 @@ import java.io.IOException;
  */
 public class JSONRequestMessageParser {
     public static RequestMessage parseRequestMessage(String requestMessageJson) throws IOException {
-        RequestMessage requestMessage = new RequestMessage();
+        RequestMessage requestMessage;
         ObjectMapper objectMapper = new ObjectMapper();
         requestMessage = objectMapper.readValue(requestMessageJson, RequestMessage.class);
         return requestMessage;
     }
 
-    public static DataOperation parsePayload(String payloadJson) throws IOException {
-        DataOperation dataOperation = new DataOperation();
+    public static <T> T parsePayload(String payloadJson, Class<T> type) throws IOException {
+        T dataOperation;
         ObjectMapper objectMapper = new ObjectMapper();
-        dataOperation = objectMapper.readValue(payloadJson, DataOperation.class);
-        return dataOperation;
+        dataOperation = objectMapper.readValue(payloadJson, type);
+        return type.cast(dataOperation);
     }
 }
