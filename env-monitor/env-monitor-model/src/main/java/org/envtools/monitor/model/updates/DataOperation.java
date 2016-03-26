@@ -1,6 +1,7 @@
 package org.envtools.monitor.model.updates;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class DataOperation {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("type", type)
                 .append("entity", entity)
                 .append("fields", fields)
