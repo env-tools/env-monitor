@@ -12,6 +12,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class ResponseMessage {
     private String requestId;
+    private String destination;
     private String sessionId;
     private String targetModuleId;
     private String username;
@@ -20,8 +21,9 @@ public class ResponseMessage {
     public ResponseMessage() {
     }
 
-    public ResponseMessage(String requestId, String sessionId, String targetModuleId, String username, ResponsePayload payload) {
+    public ResponseMessage(String requestId, String destination, String sessionId, String targetModuleId, String username, ResponsePayload payload) {
         this.requestId = requestId;
+        this.destination = destination;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
         this.username = username;
@@ -56,6 +58,14 @@ public class ResponseMessage {
         return username;
     }
 
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -74,6 +84,7 @@ public class ResponseMessage {
 
     public static class Builder {
         private String requestId;
+        private String destination;
         private String sessionId;
         private String targetModuleId;
         private String username;
@@ -83,11 +94,17 @@ public class ResponseMessage {
             return
                     requestId(requestMessage.getRequestId())
                     .sessionId(requestMessage.getSessionId())
+                    .destination(requestMessage.getDestination())
                     .targetModuleId(requestMessage.getTargetModuleId());
         }
 
         public Builder requestId(String requestId) {
             this.requestId = requestId;
+            return this;
+        }
+
+        public Builder destination(String destination) {
+            this.destination = destination;
             return this;
         }
 
@@ -117,7 +134,7 @@ public class ResponseMessage {
         }
 
         public ResponseMessage build() {
-            return new ResponseMessage(requestId, sessionId, targetModuleId, username, payload);
+            return new ResponseMessage(requestId, destination, sessionId, targetModuleId, username, payload);
         }
     }
 
@@ -125,6 +142,7 @@ public class ResponseMessage {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("requestId", requestId).
+                append("destination", destination).
                 append("sessionId", sessionId).
                 append("targetModuleId", targetModuleId).
                 append("username", username).

@@ -70,6 +70,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     @Override
     public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
+        LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
         ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
 

@@ -72,6 +72,7 @@ public abstract class AbstractPluggableModule implements Module {
     protected abstract Map<String, Class<?>> getPayloadTypes();
 
     protected <T> T parsePayload(String payload, Class<T> clazz) {
+        LOGGER.info(String.format("Parse payload %s for %s class", payload, clazz));
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(payload, clazz);

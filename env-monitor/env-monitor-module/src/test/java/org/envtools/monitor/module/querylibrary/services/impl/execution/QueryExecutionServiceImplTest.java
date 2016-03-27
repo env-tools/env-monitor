@@ -38,7 +38,7 @@ public class QueryExecutionServiceImplTest {
         Map<String, Object> queryParameters = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
-        int rowCount = 1;
+        int rowCount = 50;
 
         queryParameters.put("name", "ARABIC_JORDAN");
 

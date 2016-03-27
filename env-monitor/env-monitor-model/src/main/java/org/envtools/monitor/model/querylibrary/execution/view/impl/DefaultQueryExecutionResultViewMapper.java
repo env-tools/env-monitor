@@ -9,8 +9,8 @@ import org.envtools.monitor.model.querylibrary.execution.view.ColumnValueFormatt
 import org.envtools.monitor.model.querylibrary.execution.view.ColumnView;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultViewMapper;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +20,7 @@ import java.util.Map;
  *
  * @author Yury Yakovlev
  */
+@Service
 public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResultViewMapper {
 
     @Autowired

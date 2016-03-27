@@ -7,6 +7,7 @@
     "angular-resource": "^1.5.0",
     "Bootflat": "^2.0.4",
     "ng-stomp": "^0.0.2",
-    "jqwidgets": "^4.0.0"
+    "jqwidgets": "^4.0.0",
+    "angular-uuid-service": "0.1.0"
   }
 }

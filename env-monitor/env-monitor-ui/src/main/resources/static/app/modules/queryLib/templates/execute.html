@@ -5,11 +5,16 @@
 </div>
 <div class="row">
     <div class="form-group col-xs-12">
-        <textarea name="" id="" cols="30" rows="10" class="form-control"></textarea>
+        <div class="alert alert-danger" data-ng-if="errorMessage && error">
+            {{ errorMessage }}
+        </div>
     </div>
-    <div class="form-group col-xs-3">
+    <div class="form-group col-xs-12">
+        <textarea name="query" data-ng-model="params.query" id="paramsQuery" cols="30" rows="10" class="form-control"></textarea>
+    </div>
+    <div class="form-group col-xs-3" style="display: none">
         <label for="datasource">Select Datasource</label>
-        <select name="datasource" id="datasource" class="form-control">
+        <select name="datasource" id="datasource" class="form-control" data-ng-model="params.datasourse">
             <option value="">Select</option>
             <option value="">JDBC 1</option>
             <option value="">JDBC 2</option>
@@ -17,17 +22,18 @@
         </select>
     </div>
     <div class="form-group col-xs-3">
-        <label for="timeout">Execution time</label>
-        <input type="text" class="form-control" id="timeout" name="timeout">
+        <label for="timeout">Execution time (ms)</label>
+        <input type="text" class="form-control" id="timeout" name="timeout" data-ng-model="params.timeout">
     </div>
     <div class="form-group col-xs-3">
         <label for="limit">Row limit</label>
-        <input type="text" class="form-control" id="limit" name="timeout">
+        <input type="text" class="form-control" id="limit" name="rows" data-ng-model="params.rows">
     </div>
     <div class="form-group col-xs-3" style="margin-top: 25px;">
-        <button data-ng-click="execute()" class="btn btn-default">Execute Query</button>
+        <button data-ng-click="execute(params)" class="btn btn-default">Execute Query</button>
     </div>
-    <div class="form-group col-xs-12" data-ng-if="settings">
+
+    <div class="form-group col-xs-12" data-ng-if="settings && !error">
         <jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid>
     </div>
 </div>
