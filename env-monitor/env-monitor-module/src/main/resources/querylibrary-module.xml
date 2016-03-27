@@ -12,7 +12,7 @@
 
     <int:channel id="querylibrary.channel"/>
 
-    <bean id="querylibrary.module" class="org.envtools.monitor.module.applications.ApplicationsModule"/>
+    <bean id="querylibrary.module" class="org.envtools.monitor.module.querylibrary.QueryLibraryModule"/>
 
     <bean id="querylibrary.provider" class="${querylibrary.provider}"/>
 

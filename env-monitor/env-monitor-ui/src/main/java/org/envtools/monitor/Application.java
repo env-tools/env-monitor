@@ -6,10 +6,8 @@ package org.envtools.monitor;
  * @author Yury Yakovlev
  */
 
-import org.envtools.monitor.ui.app.config.QueryLibFillerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -24,8 +22,6 @@ public class Application {
             System.setProperty("spring.profiles.active", "mock");
         }
 
-        ApplicationContext context = SpringApplication.run(Application.class, args);
-        QueryLibFillerImpl filler = (QueryLibFillerImpl) context.getBean("queryLibFillerImpl");
-        filler.createDb();
+        SpringApplication.run(Application.class, args);
     }
 }

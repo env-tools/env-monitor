@@ -37,13 +37,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     };
 
     @Autowired
-    private QueryExecutionService queryExecutionService;
+    QueryExecutionService queryExecutionService;
 
     @Autowired
-    private QueryExecutionResultViewMapper mapper;
+    QueryExecutionResultViewMapper mapper;
 
     @Autowired
-    private Serializer serializer;
+    Serializer serializer;
 
     /**
      * This is incoming channel for QUERY_LIBRARY module
@@ -121,4 +121,5 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     public String getIdentifier() {
         return ModuleConstants.QUERY_LIBRARY_MODULE_ID;
     }
+
 }

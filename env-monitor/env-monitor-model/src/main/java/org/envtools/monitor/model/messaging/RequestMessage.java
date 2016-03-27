@@ -13,6 +13,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class RequestMessage {
 
     private String requestId;
+    private String destination;
     private String sessionId;
     private String targetModuleId;
     private String username;
@@ -24,8 +25,9 @@ public class RequestMessage {
     public RequestMessage() {
     }
 
-    public RequestMessage(String requestId, String sessionId, String targetModuleId, String username, RequestPayload payload) {
+    public RequestMessage(String requestId, String destination, String sessionId, String targetModuleId, String username, RequestPayload payload) {
         this.requestId = requestId;
+        this.destination = destination;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
         this.username = username;
@@ -38,6 +40,14 @@ public class RequestMessage {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
     public String getSessionId() {
@@ -76,6 +86,7 @@ public class RequestMessage {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("requestId", requestId).
+                append("destination", destination).
                 append("sessionId", sessionId).
                 append("targetModuleId", targetModuleId).
                 append("username", username).
