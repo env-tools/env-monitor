@@ -18,13 +18,13 @@ import java.util.Map;
  */
 public class JSONRequestMessageParserTest extends Assert {
 
-    public static String INPUT_REQUEST = "{\"requestId\":\"a\",\"sessionId\":\"b\",\"targetModuleId\":\"c\",\"username\":\"d\",\"payload\":{\"payloadType\":\"e\",\"content\":{\"dataOperation\":{\"type\":\"3\",\"y\":\"2\"}}}}",
+    public static String INPUT_REQUEST = "{\"requestId\":\"a\",\"destination\":\"b\",\"sessionId\":\"c\",\"targetModuleId\":\"d\",\"username\":\"e\",\"payload\":{\"payloadType\":\"f\",\"content\":{\"dataOperation\":{\"type\":\"3\",\"y\":\"2\"}}}}",
             INPUT_DATAOPERATON = "{\"type\":\"CREATE\",\"entity\":\"Category\",\"fields\":{\"title\":\"newTitle\",\"owner\":\"Owner1\",\"parentCategoryID\":5}}";
 
     @Test
     public void testRequestMessageParser() throws IOException {
         RequestMessage requestMessage = JSONRequestMessageParser.parseRequestMessage(INPUT_REQUEST);
-        RequestMessage resultMessage = new RequestMessage("a", "b", "c", "d", new RequestPayload("{\"dataOperation\":{\"y\":\"2\",\"type\":\"3\"}}", "e"));
+        RequestMessage resultMessage = new RequestMessage("a", "b", "c", "d", "e", new RequestPayload("{\"dataOperation\":{\"y\":\"2\",\"type\":\"3\"}}", "f"));
         assertEquals(requestMessage.toString(), resultMessage.toString());
     }
 
