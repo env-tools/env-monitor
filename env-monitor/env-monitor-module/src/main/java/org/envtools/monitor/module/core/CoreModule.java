@@ -7,6 +7,7 @@ import org.envtools.monitor.module.Module;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
 import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
+import org.envtools.monitor.module.core.cache.QueryLibraryDataPushService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class CoreModule implements Module {
      */
     @Autowired
     ApplicationsDataPushService applicationsDataPushService;
+
+    @Autowired
+    QueryLibraryDataPushService queryLibraryDataPushService;
 
     @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
@@ -76,7 +80,7 @@ public class CoreModule implements Module {
 
         switch (originator) {
             case ModuleConstants.QUERY_LIBRARY_MODULE_ID:
-                throw new UnsupportedOperationException("Not implemented");
+                handleQueryLibraryModuleResponseMessage(responseMessage);
             case ModuleConstants.APPLICATIONS_MODULE_ID:
                 handleApplicationsModuleResponseMessage(responseMessage);
                 break;
@@ -84,6 +88,13 @@ public class CoreModule implements Module {
                 LOGGER.error("CoreModule.handlePluggableModuleResponse - unsupported  originator, skipping : " + originator);
         }
 
+    }
+
+    private void handleQueryLibraryModuleResponseMessage(ResponseMessage responseMessage) {
+        String destination = responseMessage.getDestination();
+        String content = responseMessage.getPayload().getJsonContent();
+
+        queryLibraryDataPushService.pushToSubscribedClients(destination, content);
     }
 
     private void handleApplicationsModuleResponseMessage(ResponseMessage responseMessage) {
