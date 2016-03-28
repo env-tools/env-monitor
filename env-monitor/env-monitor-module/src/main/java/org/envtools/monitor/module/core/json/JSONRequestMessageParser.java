@@ -1,9 +1,7 @@
 package org.envtools.monitor.module.core.json;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.envtools.monitor.model.messaging.RequestMessage;
-import org.envtools.monitor.model.updates.DataOperation;
 
 import java.io.IOException;
 
