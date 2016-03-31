@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Yury Yakovlev
  */
+
 public class ApplicationsModule extends AbstractPluggableModule {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationsModule.class);

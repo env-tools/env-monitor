@@ -13,9 +13,17 @@ import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +34,8 @@ import java.util.Map;
  */
 public class QueryLibraryModule extends AbstractPluggableModule {
 
+    @PersistenceContext
+    protected EntityManager entityManager;
     private static final Logger LOGGER = Logger.getLogger(QueryLibraryModule.class);
 
     public static final Map<String, Class<?>> PAYLOAD_TYPES = new HashMap<String, Class<?>>() {
@@ -59,7 +69,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Override
     protected <T> void processPayload(T payload, RequestMessage requestMessage) {
         if (payload instanceof QueryExecutionRequest) {
-            processExecutionRequest((QueryExecutionRequest)payload, requestMessage);
+            processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
             processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
         }
@@ -105,6 +115,25 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     private void processExecutionNextResultRequest(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
                                                    RequestMessage requestMessage) {
 
+    }
+
+    @Autowired
+    @Qualifier("transactionManager")
+    protected PlatformTransactionManager transactionManager;
+    @PostConstruct
+    public void init() {
+        LOGGER.info("ApplicationsModule.init - Initializing ApplicationsModule...");
+        //При инициализации Query Library модуля вычитывается из
+        // базы список корневых категорий (объекты Category)
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                //PUT YOUR CALL TO SERVICE HERE
+
+                entityManager.createQuery("SELECT parentCategory FROM Category");
+            }
+        });
     }
 
     @Override
