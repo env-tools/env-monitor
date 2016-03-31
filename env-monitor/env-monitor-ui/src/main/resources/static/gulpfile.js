@@ -21,6 +21,8 @@ gulp.task('javascript', function () {
     'vendor/angular/angular.js',
     'vendor/jqwidgets/jqwidgets/jqxcore.js',
     'vendor/jqwidgets/jqwidgets/jqxgrid.js',
+    'vendor/jqwidgets/jqwidgets/jqxtree.js',
+    'vendor/jqwidgets/jqwidgets/jqxpanel.js',
     'vendor/jqwidgets/jqwidgets/jqxdata.js',
     'vendor/jqwidgets/jqwidgets/jqxscrollbar.js',
     'vendor/jqwidgets/jqwidgets/jqxbuttons.js',

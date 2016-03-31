@@ -1,0 +1,70 @@
+{
+  "tree": [
+    {
+      "title": "private",
+      "categories": [
+        {
+          "id": 2,
+          "title": "First private category",
+          "queries": [
+            {
+              "id": 1,
+              "title": "Query 1"
+            },
+            {
+              "id": 2,
+              "title": "Query 2"
+            },
+            {
+              "id": 3,
+              "title": "Query 3"
+            }
+          ],
+          "categories": []
+        },
+        {
+          "id": 3,
+          "title": "Second private category",
+          "queries": [],
+          "categories": [
+            {
+              "id": 4,
+              "title": "Third private category",
+              "queries": [],
+              "categories": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "public",
+      "queries": [],
+      "categories": [
+        {
+          "id": 5,
+          "title": "First public category",
+          "categories": [{
+            "id": 6,
+            "title": "Second private category",
+            "queries": [
+              {
+                "id": 1,
+                "title": "Query 1"
+              },
+              {
+                "id": 2,
+                "title": "Query 2"
+              },
+              {
+                "id": 3,
+                "title": "Query 3"
+              }
+            ],
+            "categories": []
+          }]
+        }
+      ]
+    }
+  ]
+}

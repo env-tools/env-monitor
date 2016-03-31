@@ -44,13 +44,18 @@
                 targetModuleId: 'M_QUERY_LIBRARY',
                 payload: {
                     payloadType: 'execute',
-                    content: '{' +
-                        '"query": "' + params.query + '",' +
-                        '"queryType": "JDBC",' +
-                        '"timeOutMs": "' + params.timeout + '",' +
-                        '"rowCount": "' + params.rows + '",' +
-                        '"dataSourceProperties": {"user": "sa", "password": "sa", "url": "jdbc:h2:file:./h2_data;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO", "driverClassName": "org.h2.Driver"}' +
-                    '}'
+                    content: {
+                        query: params.query,
+                        queryType: "JDBC",
+                        timeOutMs: params.timeout,
+                        rowCount: params.rows,
+                        dataSourceProperties: {
+                            user: "sa",
+                            password: "sa",
+                            url: "jdbc:h2:file:./h2_data;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO",
+                            driverClassName: "org.h2.Driver"
+                        }
+                    }
                 }
             };
             $stomp.send(mesDestination, body, {});

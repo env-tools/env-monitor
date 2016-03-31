@@ -11,7 +11,8 @@
     $stateProvider
       .state('query_dashboard', {
         url: "/query/dashboard",
-        templateUrl: "/app/modules/queryLib/templates/dashboard.html"
+        templateUrl: "/app/modules/queryLib/templates/dashboard.html",
+        controller: "Dashboard"
       })
   }
 })();

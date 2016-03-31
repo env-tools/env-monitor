@@ -1,4 +1,9 @@
 <h1>Query dashboard</h1>
-<div>
-    <a data-ui-sref="query_executeQuery" class="btn btn-default">Execute Query</a>
+<div class="row">
+    <div class="col-xs-4" data-ng-if="source">
+        <jqx-tree jqx-settings="settings" id="jqxtree"></jqx-tree>
+    </div>
+    <div class="col-xs-8">
+        <a data-ui-sref="query_executeQuery" class="btn btn-default">Execute Query</a>
+    </div>
 </div>
