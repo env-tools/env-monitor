@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Created: 10/31/15 1:49 AM
@@ -26,12 +30,20 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
 
     @Autowired
     private MemoryDataProvider memoryDataProvider;
-
+    protected PlatformTransactionManager txManager;
     @Override
     public void initialize(UpdateNotificationHandler handler) {
         LOGGER.info("MockApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-
+        //При инициализации Query Library модуля вычитывается из
+        // базы список корневых категорий (объекты Category)
+        TransactionTemplate tmpl = new TransactionTemplate(txManager);
+        tmpl.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                //PUT YOUR CALL TO SERVICE HERE
+            }
+        });
         updateFreeMemory();
         updateMockApplicationsModel();
 
