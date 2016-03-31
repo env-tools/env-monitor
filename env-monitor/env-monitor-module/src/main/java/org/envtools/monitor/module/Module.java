@@ -5,6 +5,7 @@ package org.envtools.monitor.module;
  *
  * @author Yury Yakovlev
  */
+
 public interface Module {
 
     String getIdentifier();

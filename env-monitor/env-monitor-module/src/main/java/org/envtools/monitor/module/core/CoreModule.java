@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
  *
  * @author Yury Yakovlev
  */
+
 public class CoreModule implements Module {
 
     private static final Logger LOGGER = Logger.getLogger(CoreModule.class);

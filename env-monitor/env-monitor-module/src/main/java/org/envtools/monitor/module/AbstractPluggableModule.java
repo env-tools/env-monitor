@@ -21,6 +21,8 @@ import java.util.Map;
  *
  * @author Yury Yakovlev
  */
+
+
 public abstract class AbstractPluggableModule implements Module {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractPluggableModule.class);
