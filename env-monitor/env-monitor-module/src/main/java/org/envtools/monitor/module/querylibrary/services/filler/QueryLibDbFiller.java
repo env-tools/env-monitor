@@ -115,9 +115,11 @@ public class QueryLibDbFiller {
         publicCategoryList.get(2).setParentCategory(publicCategoryList.get(0));
         publicCategoryList.get(3).setParentCategory(publicCategoryList.get(2));
 
+
         privateCategoryList.get(1).setParentCategory(privateCategoryList.get(0));
         privateCategoryList.get(2).setParentCategory(privateCategoryList.get(0));
         privateCategoryList.get(3).setParentCategory(privateCategoryList.get(2));
+
 
         saveCategories(em, privateCategoryList);
         saveCategories(em, publicCategoryList);
@@ -135,6 +137,7 @@ public class QueryLibDbFiller {
     }
 
     public static Category createPublicCategory() {
+
         Category category = new Category();
 
         category.setTitle("Title of " + category.hashCode() + " category.");

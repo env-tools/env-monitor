@@ -131,7 +131,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 //PUT YOUR CALL TO SERVICE HERE
 
-                entityManager.createQuery("SELECT parentCategory FROM Category");
+                entityManager.createQuery("FROM Category WHERE parentCategory=null");
             }
         });
     }
