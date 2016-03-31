@@ -60,17 +60,6 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
     public void initialize(UpdateNotificationHandler handler) {
         LOGGER.info("MockApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-
-        //При инициализации Query Library модуля вычитывается из
-        // базы список корневых категорий (объекты Category)
-
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                entityManager.createQuery("SELECT parentCategory FROM Category");
-            }
-        });
         updateFreeMemory();
         updateMockApplicationsModel();
 
