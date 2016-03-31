@@ -2,5 +2,5 @@
   'use strict';
 
   angular
-    .module('queryLib', ['ui.router', 'jqwidgets', 'uuid']);
+    .module('queryLib', ['ui.router', 'ngResource', 'jqwidgets', 'uuid']);
 })();
