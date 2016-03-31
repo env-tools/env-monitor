@@ -117,24 +117,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     }
 
-    @Autowired
-    @Qualifier("transactionManager")
-    protected PlatformTransactionManager transactionManager;
-    @PostConstruct
-    public void init() {
-        LOGGER.info("ApplicationsModule.init - Initializing ApplicationsModule...");
-        //При инициализации Query Library модуля вычитывается из
-        // базы список корневых категорий (объекты Category)
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                //PUT YOUR CALL TO SERVICE HERE
 
-                entityManager.createQuery("FROM Category WHERE parentCategory=null");
-            }
-        });
-    }
 
     @Override
     protected SubscribableChannel getModuleChannel() {
