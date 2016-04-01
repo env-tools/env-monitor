@@ -3,24 +3,18 @@ package org.envtools.monitor.module.querylibrary;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
-import org.envtools.monitor.model.messaging.RequestPayload;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
-import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultViewMapper;
 import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.PostConstruct;
+
+
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,7 +44,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     QueryExecutionService queryExecutionService;
 
     @Autowired
-    QueryExecutionResultViewMapper mapper;
+    org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper mapper;
 
     @Autowired
     Serializer serializer;

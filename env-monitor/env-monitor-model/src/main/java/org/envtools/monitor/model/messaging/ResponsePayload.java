@@ -3,6 +3,7 @@ package org.envtools.monitor.model.messaging;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import org.envtools.monitor.model.messaging.content.AbstractContent;
 
 import java.io.Serializable;
 
@@ -16,11 +17,18 @@ public class ResponsePayload implements Serializable{
     @JsonRawValue
     private String jsonContent;
 
+    private AbstractContent content;
+
+
     public ResponsePayload() {
     }
 
     public ResponsePayload(String jsonContent) {
         this.jsonContent = jsonContent;
+    }
+
+    public ResponsePayload(AbstractContent content) {
+        this.content = content;
     }
 
     public String getJsonContent() {
@@ -31,18 +39,25 @@ public class ResponsePayload implements Serializable{
         this.jsonContent = jsonContent;
     }
 
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
         private String jsonContent;
+        private AbstractContent<?> abstractContent;
 
         private Builder() {
         }
 
         public Builder jsonContent(String jsonContent) {
             this.jsonContent = jsonContent;
+            return this;
+        }
+
+        public Builder abstractContent(AbstractContent content) {
+             this.abstractContent = content;
             return this;
         }
 
@@ -55,6 +70,7 @@ public class ResponsePayload implements Serializable{
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("jsonContent", jsonContent).
+                append("content", content).
                 toString();
     }
 }

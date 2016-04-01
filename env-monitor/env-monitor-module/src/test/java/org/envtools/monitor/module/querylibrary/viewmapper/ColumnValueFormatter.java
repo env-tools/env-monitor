@@ -1,4 +1,4 @@
-package org.envtools.monitor.model.querylibrary.execution.view;
+package org.envtools.monitor.module.querylibrary.viewmapper;
 
 /**
  * Created: 3/25/16 1:28 AM

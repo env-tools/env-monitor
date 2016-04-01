@@ -2,6 +2,7 @@ package org.envtools.monitor.model.messaging;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.messaging.content.AbstractContent;
 
 /**
  * Created: 10/16/15 10:07 PM
@@ -11,6 +12,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  */
 public class ResponseMessage {
+    private ResponseType type;
     private String requestId;
     private String destination;
     private String sessionId;
@@ -21,13 +23,29 @@ public class ResponseMessage {
     public ResponseMessage() {
     }
 
-    public ResponseMessage(String requestId, String destination, String sessionId, String targetModuleId, String username, ResponsePayload payload) {
+    public ResponseMessage(
+            ResponseType type,
+            String requestId,
+            String destination,
+            String sessionId,
+            String targetModuleId,
+            String username,
+            ResponsePayload payload) {
+        this.type = type;
         this.requestId = requestId;
         this.destination = destination;
         this.sessionId = sessionId;
         this.targetModuleId = targetModuleId;
         this.username = username;
         this.payload = payload;
+    }
+
+    public ResponseType getType() {
+        return type;
+    }
+
+    public void setType(ResponseType type) {
+        this.type = type;
     }
 
     public String getRequestId() {
@@ -83,12 +101,18 @@ public class ResponseMessage {
     }
 
     public static class Builder {
+        private ResponseType type;
         private String requestId;
         private String destination;
         private String sessionId;
         private String targetModuleId;
         private String username;
         private ResponsePayload payload;
+
+        public Builder type(ResponseType type) {
+            this.type = type;
+            return this;
+        }
 
         public Builder requestMetaData(RequestMessage requestMessage) {
             return
@@ -128,19 +152,25 @@ public class ResponseMessage {
             return this;
         }
 
+        public Builder payload(AbstractContent c) {
+            this.payload = new ResponsePayload(c);
+            return this;
+        }
+
         public Builder payload(ResponsePayload payload) {
             this.payload = payload;
             return this;
         }
 
         public ResponseMessage build() {
-            return new ResponseMessage(requestId, destination, sessionId, targetModuleId, username, payload);
+            return new ResponseMessage(type, requestId, destination, sessionId, targetModuleId, username, payload);
         }
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("type", type).
                 append("requestId", requestId).
                 append("destination", destination).
                 append("sessionId", sessionId).

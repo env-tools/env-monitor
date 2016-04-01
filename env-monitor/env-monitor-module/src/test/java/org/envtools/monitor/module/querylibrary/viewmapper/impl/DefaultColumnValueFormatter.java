@@ -1,7 +1,6 @@
-package org.envtools.monitor.model.querylibrary.execution.view.impl;
+package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 
-import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.execution.view.ColumnValueFormatter;
+import org.envtools.monitor.module.querylibrary.viewmapper.ColumnValueFormatter;
 import org.springframework.stereotype.Component;
 
 /**

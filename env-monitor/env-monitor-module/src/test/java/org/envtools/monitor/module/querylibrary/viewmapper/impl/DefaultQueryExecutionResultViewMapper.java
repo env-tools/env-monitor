@@ -1,14 +1,14 @@
-package org.envtools.monitor.model.querylibrary.execution.view.impl;
+package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.model.querylibrary.execution.view.ColumnValueFormatter;
+import org.envtools.monitor.module.querylibrary.viewmapper.ColumnValueFormatter;
 import org.envtools.monitor.model.querylibrary.execution.view.ColumnView;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
-import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultViewMapper;
+import org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

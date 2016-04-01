@@ -67,7 +67,8 @@ public class CoreModule implements Module {
 
     private void handlePluggableModuleResponse(ResponseMessage responseMessage) {
 
-        LOGGER.info("CoreModule.handlePluggableModuleResponse - " + responseMessage);
+        //LOGGER.info("CoreModule.handlePluggableModuleResponse - " + responseMessage);
+        //Temporarily commented out as it pollutes logs
 
         String sessionId = responseMessage.getSessionId();
         String responseWebSocketDestination = "/topic/moduleresponse";
@@ -94,6 +95,7 @@ public class CoreModule implements Module {
     private void handleQueryLibraryModuleResponseMessage(ResponseMessage responseMessage) {
         String destination = responseMessage.getDestination();
         String content = responseMessage.getPayload().getJsonContent();
+        LOGGER.info("CoreModule.handlePluggableModuleResponse - " + responseMessage);
 
         queryLibraryDataPushService.pushToSubscribedClients(destination, content);
     }
