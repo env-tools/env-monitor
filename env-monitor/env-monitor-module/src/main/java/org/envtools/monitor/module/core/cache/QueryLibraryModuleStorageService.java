@@ -7,7 +7,7 @@ package org.envtools.monitor.module.core.cache;
  */
 public interface QueryLibraryModuleStorageService {
 
-    public String getPublicTree();
+    String getPublicTree();
 
-    public String getTreeByOwner(String owner);
+    String getTreeByOwner(String owner);
 }

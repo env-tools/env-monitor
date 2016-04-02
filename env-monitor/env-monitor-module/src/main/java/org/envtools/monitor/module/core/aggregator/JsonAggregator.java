@@ -15,6 +15,6 @@ public class JsonAggregator implements Aggregator {
     public String aggregate(String... parts) {
         String joinedString = StringUtils.join(parts, ',');
 
-        return "{ [" + joinedString + "] }";
+        return "[" + joinedString + "]";
     }
 }

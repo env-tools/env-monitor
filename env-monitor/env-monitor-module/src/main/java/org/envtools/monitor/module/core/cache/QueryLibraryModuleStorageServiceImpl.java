@@ -10,16 +10,78 @@ public class QueryLibraryModuleStorageServiceImpl implements QueryLibraryModuleS
 
     @Override
     public String getPublicTree() {
-        String jsonString = "{\"_public_\": {[{\"title\": \"test\", \"id\": \"12\", " +
-                "\"categories\":[{\"title\": \"testa\"}], \"queries\":[{\"id\":\"15\", \"title\":\"test query\"}]]}}";
+        String jsonString = "{\n" +
+                "      \"title\": \"public\",\n" +
+                "      \"queries\": [],\n" +
+                "      \"categories\": [\n" +
+                "        {\n" +
+                "          \"id\": 5,\n" +
+                "          \"title\": \"First public category\",\n" +
+                "          \"categories\": [{\n" +
+                "            \"id\": 6,\n" +
+                "            \"title\": \"Second private category\",\n" +
+                "            \"queries\": [\n" +
+                "              {\n" +
+                "                \"id\": 1,\n" +
+                "                \"title\": \"Query 1\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"id\": 2,\n" +
+                "                \"title\": \"Query 2\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"id\": 3,\n" +
+                "                \"title\": \"Query 3\"\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"categories\": []\n" +
+                "          }]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }";
 
         return jsonString;
     }
 
     @Override
     public String getTreeByOwner(String owner) {
-        String jsonString = "{\"owner_name\": {[{\"title\": \"test\", \"id\": \"12\", " +
-                "\"categories\":[{\"title\": \"testa\"}], \"queries\":[{\"id\":\"15\", \"title\":\"test query\"}]]}}";
+        String jsonString = "{\n" +
+                "      \"title\": \"private\",\n" +
+                "      \"categories\": [\n" +
+                "        {\n" +
+                "          \"id\": 2,\n" +
+                "          \"title\": \"First private category\",\n" +
+                "          \"queries\": [\n" +
+                "            {\n" +
+                "              \"id\": 1,\n" +
+                "              \"title\": \"Query 1\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"id\": 2,\n" +
+                "              \"title\": \"Query 2\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"id\": 3,\n" +
+                "              \"title\": \"Query 3\"\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"categories\": []\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"id\": 3,\n" +
+                "          \"title\": \"Second private category\",\n" +
+                "          \"queries\": [],\n" +
+                "          \"categories\": [\n" +
+                "            {\n" +
+                "              \"id\": 4,\n" +
+                "              \"title\": \"Third private category\",\n" +
+                "              \"queries\": [],\n" +
+                "              \"categories\": []\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }";
 
         return jsonString;
     }
