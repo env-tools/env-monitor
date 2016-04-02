@@ -122,25 +122,31 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @PostConstruct
     public void init() {
         LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
-        /*При инициализации Query Library Module необходимо выполнить следующее:
-Загрузить все корневые hibernate категории при помощи category dao - готово
-Построить Map корневых категорий: Map<String, Category>, где ключ - это owner
-(или строка "_PUBLIC_" если owner=null) - готово
-Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView> - готово.
-(Map<String, CategoryView> - not impl)*/
+
+        /*
+        При инициализации Query Library Module необходимо выполнить следующее:
+        Загрузить все корневые hibernate категории при помощи category dao - готово
+        Построить Map корневых категорий: Map<String, List<Category>>, где ключ - это owner
+        (или строка "_PUBLIC_" если owner=null) - готово
+        Передать Map<String, List<Category>> в интерфейс CategoryViewMapper и получить Map<String, List<CategoryView>> - готово.
+        (Map<String, List<CategoryView>> - not impl)
+        */
+
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 //PUT YOUR CALL TO SERVICE HERE
-                Map<String, Category> treeMap = new HashMap<String, Category>();
+                Map<String, List<Category>> treeMap = new HashMap<>();
                 List<Category> listCategories = null;
                 listCategories = categoryDao.getRootCategories();
                 for (int i = 0; i < listCategories.size(); i++) {
                     if (listCategories.get(i).getOwner() == null) {
-                        treeMap.put("_PUBLIC_", listCategories.get(i));
+                        //TODO Support list of categories
+                        //treeMap.put("_PUBLIC_", listCategories.get(i));
                     } else {
-                        treeMap.put(listCategories.get(i).getOwner(), listCategories.get(i));
+                        //TODO Support list of categories
+                        //treeMap.put(listCategories.get(i).getOwner(), listCategories.get(i));
                     }
                 }
  /*

@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.viewmapper;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +13,8 @@ import java.util.Map;
  */
 public interface CategoryViewMapper {
 
-   Map<String, CategoryView> mapCategoriesByOwner(Map<String, Category> categoriesByOwner);
-   Map<String, String> mapCategoriesByOwnerToString(Map<String, CategoryView> categoriesByOwner);
+    Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner);
+
+    Map<String, String> mapCategoriesByOwnerToString(Map<String, CategoryView> categoriesByOwner);
 
 }

@@ -5,6 +5,7 @@ import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Map;
 public class DefaultCategoryViewMapper implements CategoryViewMapper{
 
     @Override
-    public Map<String, CategoryView> mapCategoriesByOwner(Map<String, Category> categoriesByOwner) {
+    public Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner) {
         //TODO implement
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
