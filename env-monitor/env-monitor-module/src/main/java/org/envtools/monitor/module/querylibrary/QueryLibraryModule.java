@@ -239,6 +239,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "        }\n" +
                             "      ]\n"
                 );
+                }};
 
                 /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
 Установить нужный тип ResponseMessage
