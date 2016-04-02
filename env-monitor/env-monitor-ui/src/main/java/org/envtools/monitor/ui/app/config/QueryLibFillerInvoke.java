@@ -27,24 +27,8 @@ public class QueryLibFillerInvoke {
 
     @PersistenceContext
     protected EntityManager entityManager;
-    @Autowired
-    @Qualifier("transactionManager")
-    protected PlatformTransactionManager transactionManager;
-    @PostConstruct
-    public void init() {
-        LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
-        //При инициализации Query Library модуля вычитывается из
-        // базы список корневых категорий (объекты Category)
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                //PUT YOUR CALL TO SERVICE HERE
 
-                entityManager.createQuery("FROM Category WHERE parentCategory=null");
-            }
-        });
-    }
+
 
     @Transactional
     public void createDb(boolean createSampleTestHistory) {

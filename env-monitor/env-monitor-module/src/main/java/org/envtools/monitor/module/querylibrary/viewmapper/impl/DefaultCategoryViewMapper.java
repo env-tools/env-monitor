@@ -1,31 +1,29 @@
 package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 
-import com.google.common.collect.Maps;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
-
 
 /**
  * Created: 01.04.16 22:05
  *
  * @author Yury Yakovlev
  */
-public class DefaultCategoryViewMapper implements CategoryViewMapper {
+@Repository
+public class DefaultCategoryViewMapper implements CategoryViewMapper{
 
     @Override
-    public Map<String, CategoryView> mapCategoriesByOwner(Map<String, Category> categoriesByOwner) {
+    public Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner) {
         //TODO implement
-        Map<String, CategoryView> view = Maps.newLinkedHashMap();
-        for (Map.Entry<String, Category> entry : categoriesByOwner.entrySet()) {
-            view.put(entry.getKey(), mapList(entry.getValue()));
-        }
-        return view;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private CategoryView mapList(Category categoryByOwner) {
+    @Override
+    public Map<String, String> mapCategoriesByOwnerToString(Map<String, CategoryView> categoriesByOwner) {
         return null;
     }
 }
