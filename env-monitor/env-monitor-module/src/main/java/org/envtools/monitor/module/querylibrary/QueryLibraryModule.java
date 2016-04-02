@@ -140,24 +140,31 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                 //PUT YOUR CALL TO SERVICE HERE
                 Map<String, List<Category>> treeMap = new HashMap<>();
                 List<Category> listCategories = null;
+
                 listCategories = categoryDao.getRootCategories();
+
                 for (int i = 0; i < listCategories.size(); i++) {
-                    if (listCategories.get(i).getOwner() == null) {
-                        //TODO Support list of categories
-                        treeMap.put(ModuleConstants.OWNER_NULL,
-                                categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
-                    } else {
-                        //TODO Support list of categories
-                        treeMap.put(listCategories.get(i).getOwner(),
-                                categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
+                    List<Category> list = null;
+                    if (!treeMap.containsKey(listCategories.get(i).getOwner())) {
+                        String owner = listCategories.get(i).getOwner();
+                        //Если owner нет в map, то добавляем owner и пустой лист.
+                        if (owner == null) {
+                            owner = ModuleConstants.OWNER_NULL;
+                        }
+                        treeMap.put(owner, list);
+                        //добавим в пустой лист category
+                        list.add(listCategories.get(i));
+                        //добавим в HashMap, с ключом listCategories.get(i).getOwner() list c категорией,
+                        // которую мы сохранили в list
+                        treeMap.put(owner, list);
                     }
                 }
 
                 for (Map.Entry<String, List<Category>> tree : treeMap.entrySet()) {
 
-                    LOGGER.info("\n KEY " + tree.getKey()+"\n");
+                    LOGGER.info("\n KEY " + tree.getKey() + "\n");
                     for (int i = 0; i < tree.getValue().size(); i++) {
-                        LOGGER.info("\n VALUE " + tree.getValue().get(i)+"\n");
+                        LOGGER.info("\n VALUE " + tree.getValue().get(i) + "\n");
                     }
 
                 }
@@ -253,7 +260,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .builder()
                         .payload(MapContent.of(jsonMap))
                         .type(ResponseType.CATEGORY_TREE_DATA)
-                      //  .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
+                        //  .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
                         .build());
 
             }
