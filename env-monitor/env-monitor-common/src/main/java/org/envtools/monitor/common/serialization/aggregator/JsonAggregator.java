@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.core.aggregator;
+package org.envtools.monitor.common.serialization.aggregator;
 
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +15,6 @@ public class JsonAggregator implements Aggregator {
     public String aggregate(String... parts) {
         String joinedString = StringUtils.join(parts, ',');
 
-        return "{ [" + joinedString + "] }";
+        return "[" + joinedString + "]";
     }
 }

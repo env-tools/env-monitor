@@ -2,8 +2,7 @@ package org.envtools.monitor.ui.controller.util;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.core.aggregator.Aggregator;
-import org.envtools.monitor.module.core.aggregator.JsonAggregator;
+import org.envtools.monitor.common.serialization.aggregator.Aggregator;
 import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
 import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.cache.QueryLibraryDataPushService;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
-import scala.util.parsing.combinator.testing.Str;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.Executors;

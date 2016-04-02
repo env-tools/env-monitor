@@ -98,10 +98,5 @@
                 }
             ]
         };
-
-        var resource = $resource('/tree.json');
-        resource.get(function(data){
-            console.log(data);
-        })
     }
 })();
