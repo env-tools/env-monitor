@@ -119,8 +119,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Autowired
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
-
-
+    
     public void init() {
         super.init();
         LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
