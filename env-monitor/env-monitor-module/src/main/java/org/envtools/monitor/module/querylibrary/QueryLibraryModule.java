@@ -1,5 +1,6 @@
 package org.envtools.monitor.module.querylibrary;
 
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
@@ -137,34 +138,29 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                //PUT YOUR CALL TO SERVICE HERE
+
                 Map<String, List<Category>> treeMap = new HashMap<>();
-                List<Category> listCategories = null;
+                List<Category> listCategories = categoryDao.getRootCategories();
 
-                listCategories = categoryDao.getRootCategories();
+                for (Category category : listCategories) {
+                    String owner = category.getOwner();
+                    String ownerKey = owner == null ? ModuleConstants.OWNER_NULL : owner;
 
-                for (int i = 0; i < listCategories.size(); i++) {
-                    List<Category> list = null;
-                    if (!treeMap.containsKey(listCategories.get(i).getOwner())) {
-                        String owner = listCategories.get(i).getOwner();
-                        //Если owner нет в map, то добавляем owner и пустой лист.
-                        if (owner == null) {
-                            owner = ModuleConstants.OWNER_NULL;
-                        }
-                        treeMap.put(owner, list);
-                        //добавим в пустой лист category
-                        list.add(listCategories.get(i));
-                        //добавим в HashMap, с ключом listCategories.get(i).getOwner() list c категорией,
-                        // которую мы сохранили в list
-                        treeMap.put(owner, list);
+                    List<Category> ownerCategories;
+                    if (!treeMap.containsKey(ownerKey)) {
+                        ownerCategories = Lists.newArrayList();
+                        treeMap.put(ownerKey, ownerCategories);
+                    } else {
+                        ownerCategories = treeMap.get(ownerKey);
                     }
+                    ownerCategories.add(category);
                 }
 
                 for (Map.Entry<String, List<Category>> tree : treeMap.entrySet()) {
 
                     LOGGER.info("\n KEY " + tree.getKey() + "\n");
                     for (int i = 0; i < tree.getValue().size(); i++) {
-                        LOGGER.info("\n VALUE " + tree.getValue().get(i) + "\n");
+                        LOGGER.info("\n VALUE #" + i + " " + tree.getValue().get(i) + "\n");
                     }
 
                 }
@@ -180,11 +176,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                 //пока нет реализации
 
                 Map<String, String> jsonMap = new HashMap<String, String>() {{
-                    put("owner", "{\n" +
-                            "  \"tree\": [\n" +
-                            "    {\n" +
-                            "      \"title\": \"private\",\n" +
-                            "      \"categories\": [\n" +
+                    put("sergey", " [\n" +
                             "        {\n" +
                             "          \"id\": 2,\n" +
                             "          \"title\": \"First private category\",\n" +
@@ -217,18 +209,17 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "            }\n" +
                             "          ]\n" +
                             "        }\n" +
-                            "      ]\n" +
-                            "    },\n" +
-                            "    {\n" +
-                            "      \"title\": \"public\",\n" +
-                            "      \"queries\": [],\n" +
-                            "      \"categories\": [\n" +
+                            "      ]");
+
+                    put(ModuleConstants.OWNER_NULL,
+
+                                 " [\n" +
                             "        {\n" +
                             "          \"id\": 5,\n" +
                             "          \"title\": \"First public category\",\n" +
                             "          \"categories\": [{\n" +
                             "            \"id\": 6,\n" +
-                            "            \"title\": \"Second private category\",\n" +
+                            "            \"title\": \"Second public category\",\n" +
                             "            \"queries\": [\n" +
                             "              {\n" +
                             "                \"id\": 1,\n" +
@@ -246,11 +237,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "            \"categories\": []\n" +
                             "          }]\n" +
                             "        }\n" +
-                            "      ]\n" +
-                            "    }\n" +
-                            "  ]\n" +
-                            "}");
-                }};
+                            "      ]\n"
+                );
 
                 /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
 Установить нужный тип ResponseMessage
