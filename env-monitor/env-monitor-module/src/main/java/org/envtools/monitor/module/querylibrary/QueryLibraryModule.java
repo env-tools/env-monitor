@@ -119,8 +119,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
-    @PostConstruct
-    public void init() {
+   // @PostConstruct
+    public void initializing() {
         LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
 
         /*
@@ -151,6 +151,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                                 categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
                     }
                 }
+               // LOGGER.info("sdfsd");
  /*
   Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
  (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
@@ -243,6 +244,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .builder()
                         .payload(MapContent.of(jsonMap))
                         .type(ResponseType.CATEGORY_TREE_DATA)
+                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
                         .build());
 
             }
