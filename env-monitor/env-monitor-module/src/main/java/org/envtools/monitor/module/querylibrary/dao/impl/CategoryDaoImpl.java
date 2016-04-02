@@ -33,8 +33,16 @@ public class CategoryDaoImpl  extends AbstractDbDao<Category, Long> implements C
     @Override
     public List<Category> getRootCategories() {
         //owner, пустой для public;
-        return em.createQuery("FROM Category WHERE owner=null").getResultList();
+        return em.createQuery("FROM Category WHERE parentCategory=null").getResultList();
     }
+
+    @Override
+    public List<Category> getRootCategoriesByOwner(String owner) {
+        //owner, пустой для public;
+
+        return em.createQuery("FROM Category WHERE parentCategory=null and owner="+owner).getResultList();
+    }
+
 
     private String createPatternString(String text) {
         return "%" + text + "%";

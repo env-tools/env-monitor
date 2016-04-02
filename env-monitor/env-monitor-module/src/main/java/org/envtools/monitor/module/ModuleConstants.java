@@ -11,5 +11,6 @@ public interface ModuleConstants {
     String QUERY_LIBRARY_MODULE_ID = "M_QUERY_LIBRARY";
 
     String CORE_MODULE_ID = "M_CORE";
+    String OWNER_NULL="_PUBLIC_";
 
 }

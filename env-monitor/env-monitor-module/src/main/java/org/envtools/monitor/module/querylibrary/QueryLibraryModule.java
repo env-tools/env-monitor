@@ -143,10 +143,12 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                 for (int i = 0; i < listCategories.size(); i++) {
                     if (listCategories.get(i).getOwner() == null) {
                         //TODO Support list of categories
-                        //treeMap.put("_PUBLIC_", listCategories.get(i));
+                        treeMap.put(ModuleConstants.OWNER_NULL,
+                                categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
                     } else {
                         //TODO Support list of categories
-                        //treeMap.put(listCategories.get(i).getOwner(), listCategories.get(i));
+                        treeMap.put(listCategories.get(i).getOwner(),
+                                categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
                     }
                 }
  /*
