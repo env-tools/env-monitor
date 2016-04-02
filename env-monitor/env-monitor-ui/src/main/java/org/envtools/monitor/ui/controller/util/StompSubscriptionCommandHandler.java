@@ -2,14 +2,20 @@ package org.envtools.monitor.ui.controller.util;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.core.aggregator.Aggregator;
+import org.envtools.monitor.module.core.aggregator.JsonAggregator;
 import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
 import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
+import org.envtools.monitor.module.core.cache.QueryLibraryDataPushService;
+import org.envtools.monitor.module.core.cache.QueryLibraryModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
+import org.envtools.monitor.module.core.selection.QueryLibraryDestinationData;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import scala.util.parsing.combinator.testing.Str;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.Executors;
@@ -30,10 +36,19 @@ public class StompSubscriptionCommandHandler {
     private ApplicationsDataPushService applicationsDataPushService;
 
     @Autowired
+    private QueryLibraryDataPushService queryLibraryDataPushService;
+
+    @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
 
     @Autowired
+    QueryLibraryModuleStorageService queryLibraryModuleStorageService;
+
+    @Autowired
     SubscriptionManager subscriptionManager;
+
+    @Autowired
+    Aggregator jsonAggregator;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
 
@@ -105,7 +120,26 @@ public class StompSubscriptionCommandHandler {
     }
 
     private void processQueryLibraryModuleSubscription(String destination, StompCommand stompCommand, String sessionId) {
+        QueryLibraryDestinationData destinationData = DestinationUtil.parseQlDestination(destination);
+        String action = destinationData.getAction();
 
+        switch (action){
+            case "tree":
+                sendTreeDataToSubscriber(destination, destinationData);
+                break;
+            default:
+                LOGGER.warn("StompSubscriptionCommandHandler.processQueryLibraryModuleSubscription - unsupported  action, skipping : " + action);
+                break;
+        }
+    }
+
+    private void sendTreeDataToSubscriber(String subscribedDestination, QueryLibraryDestinationData destinationData) {
+        String publicTree = queryLibraryModuleStorageService.getPublicTree();
+        String privateTree = queryLibraryModuleStorageService.getTreeByOwner(destinationData.getOwner());
+
+        String contentPart = jsonAggregator.aggregate(publicTree, privateTree);
+
+        queryLibraryDataPushService.pushToSubscribedClients(subscribedDestination, contentPart);
     }
 
     private void sendDataToSubscriberImmediately(String subscribedDestination) {

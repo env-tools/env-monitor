@@ -5,9 +5,21 @@
         .module('queryLib')
         .controller('Dashboard', Dashboard);
 
-    Dashboard.$injector = ['$scope', '$resource'];
+    Dashboard.$injector = ['$scope', '$stomp', '$resource'];
 
-    function Dashboard($scope, $resource) {
+    function Dashboard($scope, $stomp, $resource) {
+
+        init();
+
+        function init() {
+            $stomp.connect('/monitor', []).then(function () {
+                var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
+                $stomp.subscribe(subDestination, function (message) {
+                    console.log(message);
+                });
+            });
+        }
+
         $scope.source = {};
         $scope.settings = {
             source: [

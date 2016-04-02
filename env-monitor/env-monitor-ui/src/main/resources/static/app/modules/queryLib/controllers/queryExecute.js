@@ -10,6 +10,7 @@
     function QueryExecute($scope, $stomp, rfc4122) {
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/exec/' + requestId;
+
         $scope.execute = execute;
 
         $scope.params = {
