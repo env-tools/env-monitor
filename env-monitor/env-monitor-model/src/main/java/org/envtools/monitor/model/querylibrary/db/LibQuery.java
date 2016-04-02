@@ -18,6 +18,15 @@ public class LibQuery extends AbstractDbIdentifiable {
     public LibQuery() {
     }
 
+    public LibQuery(String text, String title, String description, List<QueryParam> queryParams, List<QueryExecution> queryExecutions) {
+        this.text = text;
+        this.title = title;
+        this.description = description;
+        this.queryParams = queryParams;
+        this.queryExecutions = queryExecutions;
+    }
+
+
     private String text;
     private String title;
     private String description;

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 /* Category --- Query OneToMany*/
+
 /**
  * Created: 2/23/16 12:30 AM
  *
@@ -22,11 +23,19 @@ public class Category extends AbstractDbIdentifiable {
     public Category() {
     }
 
+    public Category(String owner, String title, String description, List<LibQuery> queries, List<Category> childCategories) {
+        this.owner = owner;
+        this.title = title;
+        this.description = description;
+        this.queries = queries;
+        this.childCategories = childCategories;
+    }
+
     private String owner; //пустое для public
     private String title;
     private String description;
 
-     /*Один ко многим к таблице LibQuery*/
+    /*Один ко многим к таблице LibQuery*/
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")  //правило сортировки коллекции
     private List<LibQuery> queries;

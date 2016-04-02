@@ -3,20 +3,24 @@ package org.envtools.monitor.model.querylibrary.tree.view;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.util.List;
-
 /**
- * Created: 01.04.16 22:01
- *
- * @author Yury Yakovlev
+ * Created by jesa on 02.04.2016.
  */
-public class CategoryView {
+public class QueryView {
+    private String text;
     private String title;
     private String description;
-    private List<QueryView> queries;
-    private List<CategoryView> childCategories;
+    private Long id;
 
-    public CategoryView() {
+    public QueryView() {
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getTitle() {
@@ -35,29 +39,21 @@ public class CategoryView {
         this.description = description;
     }
 
-    public List<QueryView> getQueries() {
-        return queries;
+    public Long getId() {
+        return id;
     }
 
-    public void setQueries(List<QueryView> queries) {
-        this.queries = queries;
-    }
-
-    public List<CategoryView> getChildCategories() {
-        return childCategories;
-    }
-
-    public void setChildCategories(List<CategoryView> childCategories) {
-        this.childCategories = childCategories;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("text", text)
                 .append("title", title)
                 .append("description", description)
-                .append("queries", queries)
-                .append("childCategories", childCategories)
+                .append("id", id)
                 .toString();
     }
 }
