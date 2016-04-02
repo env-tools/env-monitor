@@ -119,8 +119,9 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
-   // @PostConstruct
-    public void initializing() {
+
+    public void init() {
+        super.init();
         LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
 
         /*
@@ -151,15 +152,23 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                                 categoryDao.getRootCategoriesByOwner(listCategories.get(i).getOwner()));
                     }
                 }
-               // LOGGER.info("sdfsd");
+
+                for (Map.Entry<String, List<Category>> tree : treeMap.entrySet()) {
+
+                    LOGGER.info("\n KEY " + tree.getKey()+"\n");
+                    for (int i = 0; i < tree.getValue().size(); i++) {
+                        LOGGER.info("\n VALUE " + tree.getValue().get(i)+"\n");
+                    }
+
+                }
  /*
   Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
  (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
 Передать Map<String, CategoryView> в интерфейс CategoryViewMapper и получить Map<String, String>
 (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
   */
-                //    Map<String,String> jsonMap=categoryViewMapper
-                //            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
+                //  Map<String,String> jsonMap=categoryViewMapper
+                //          .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwnerToString(treeMap));
 
                 //пока нет реализации
 
@@ -244,7 +253,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .builder()
                         .payload(MapContent.of(jsonMap))
                         .type(ResponseType.CATEGORY_TREE_DATA)
-                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
+                      //  .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
                         .build());
 
             }
