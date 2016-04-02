@@ -13,5 +13,6 @@ import java.util.Map;
 public interface CategoryViewMapper {
 
    Map<String, CategoryView> mapCategoriesByOwner(Map<String, Category> categoriesByOwner);
+   Map<String, String> mapCategoriesByOwnerToString(Map<String, CategoryView> categoriesByOwner);
 
 }

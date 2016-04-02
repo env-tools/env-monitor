@@ -4,22 +4,36 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.model.messaging.ResponseType;
+import org.envtools.monitor.model.messaging.content.MapContent;
+import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
 import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider;
+import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
+import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
+import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
-
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created: 12.03.16 19:13
@@ -28,8 +42,7 @@ import java.util.Map;
  */
 public class QueryLibraryModule extends AbstractPluggableModule {
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+
     private static final Logger LOGGER = Logger.getLogger(QueryLibraryModule.class);
 
     public static final Map<String, Class<?>> PAYLOAD_TYPES = new HashMap<String, Class<?>>() {
@@ -48,6 +61,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     @Autowired
     Serializer serializer;
+
+    private AtomicLong responseIdentifier = new AtomicLong(0);
 
     /**
      * This is incoming channel for QUERY_LIBRARY module
@@ -91,6 +106,141 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         }
     }
 
+    @Autowired
+    CategoryDao categoryDao;
+
+    @Autowired
+    CategoryViewMapper categoryViewMapper;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
+
+    @Autowired
+    @Qualifier("transactionManager")
+    protected PlatformTransactionManager transactionManager;
+
+    @PostConstruct
+    public void init() {
+        LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
+        /*При инициализации Query Library Module необходимо выполнить следующее:
+Загрузить все корневые hibernate категории при помощи category dao - готово
+Построить Map корневых категорий: Map<String, Category>, где ключ - это owner
+(или строка "_PUBLIC_" если owner=null) - готово
+Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView> - готово.
+(Map<String, CategoryView> - not impl)*/
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                //PUT YOUR CALL TO SERVICE HERE
+                Map<String, Category> treeMap = new HashMap<String, Category>();
+                List<Category> listCategories = null;
+                listCategories = categoryDao.getRootCategories();
+                for (int i = 0; i < listCategories.size(); i++) {
+                    if (listCategories.get(i).getOwner() == null) {
+                        treeMap.put("_PUBLIC_", listCategories.get(i));
+                    } else {
+                        treeMap.put(listCategories.get(i).getOwner(), listCategories.get(i));
+                    }
+                }
+ /*
+  Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
+ (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
+Передать Map<String, CategoryView> в интерфейс CategoryViewMapper и получить Map<String, String>
+(это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
+  */
+                //    Map<String,String> jsonMap=categoryViewMapper
+                //            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
+
+                //пока нет реализации
+
+                Map<String, String> jsonMap = new HashMap<String, String>() {{
+                    put("owner", "{\n" +
+                            "  \"tree\": [\n" +
+                            "    {\n" +
+                            "      \"title\": \"private\",\n" +
+                            "      \"categories\": [\n" +
+                            "        {\n" +
+                            "          \"id\": 2,\n" +
+                            "          \"title\": \"First private category\",\n" +
+                            "          \"queries\": [\n" +
+                            "            {\n" +
+                            "              \"id\": 1,\n" +
+                            "              \"title\": \"Query 1\"\n" +
+                            "            },\n" +
+                            "            {\n" +
+                            "              \"id\": 2,\n" +
+                            "              \"title\": \"Query 2\"\n" +
+                            "            },\n" +
+                            "            {\n" +
+                            "              \"id\": 3,\n" +
+                            "              \"title\": \"Query 3\"\n" +
+                            "            }\n" +
+                            "          ],\n" +
+                            "          \"categories\": []\n" +
+                            "        },\n" +
+                            "        {\n" +
+                            "          \"id\": 3,\n" +
+                            "          \"title\": \"Second private category\",\n" +
+                            "          \"queries\": [],\n" +
+                            "          \"categories\": [\n" +
+                            "            {\n" +
+                            "              \"id\": 4,\n" +
+                            "              \"title\": \"Third private category\",\n" +
+                            "              \"queries\": [],\n" +
+                            "              \"categories\": []\n" +
+                            "            }\n" +
+                            "          ]\n" +
+                            "        }\n" +
+                            "      ]\n" +
+                            "    },\n" +
+                            "    {\n" +
+                            "      \"title\": \"public\",\n" +
+                            "      \"queries\": [],\n" +
+                            "      \"categories\": [\n" +
+                            "        {\n" +
+                            "          \"id\": 5,\n" +
+                            "          \"title\": \"First public category\",\n" +
+                            "          \"categories\": [{\n" +
+                            "            \"id\": 6,\n" +
+                            "            \"title\": \"Second private category\",\n" +
+                            "            \"queries\": [\n" +
+                            "              {\n" +
+                            "                \"id\": 1,\n" +
+                            "                \"title\": \"Query 1\"\n" +
+                            "              },\n" +
+                            "              {\n" +
+                            "                \"id\": 2,\n" +
+                            "                \"title\": \"Query 2\"\n" +
+                            "              },\n" +
+                            "              {\n" +
+                            "                \"id\": 3,\n" +
+                            "                \"title\": \"Query 3\"\n" +
+                            "              }\n" +
+                            "            ],\n" +
+                            "            \"categories\": []\n" +
+                            "          }]\n" +
+                            "        }\n" +
+                            "      ]\n" +
+                            "    }\n" +
+                            "  ]\n" +
+                            "}");
+                }};
+
+                /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
+Установить нужный тип ResponseMessage
+Отправить сообщение в core module*/
+
+                sendMessageToCore(ResponseMessage
+                        .builder()
+                        .payload(MapContent.of(jsonMap))
+                        .type(ResponseType.CATEGORY_TREE_DATA)
+                        .build());
+
+            }
+        });
+    }
+
     private void sendResultMessage(QueryExecutionResultView resultView, RequestMessage requestMessage) {
         String resultViewAsJson = serializer.serialize(resultView);
 
@@ -110,7 +260,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                                                    RequestMessage requestMessage) {
 
     }
-
 
 
     @Override
