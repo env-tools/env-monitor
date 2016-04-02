@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.core.aggregator;
+package org.envtools.monitor.common.serialization.aggregator;
 
 /**
  * Created: 02.04.2016
