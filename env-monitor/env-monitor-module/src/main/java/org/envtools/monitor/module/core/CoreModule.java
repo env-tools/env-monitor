@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponseType;
 import org.envtools.monitor.model.messaging.content.AbstractContent;
+import org.envtools.monitor.model.messaging.content.MapContent;
 import org.envtools.monitor.module.Module;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
@@ -111,7 +112,13 @@ public class CoreModule implements Module {
                 break;
             case CATEGORY_TREE_DATA:
                 AbstractContent content = responseMessage.getPayload().getContent();
-                queryLibraryModuleStorageService.storeFull(content);
+                if (content != null && content instanceof MapContent && content.getValue() != null) {
+                    Map<String, String> categoryTreesPerUser = (Map<String, String>) content.getValue();
+                    queryLibraryModuleStorageService.storeFull(categoryTreesPerUser);
+                } else {
+                    LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - empty tree data");
+                }
+
                 break;
             default:
                 LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - undefined response type: " + type);

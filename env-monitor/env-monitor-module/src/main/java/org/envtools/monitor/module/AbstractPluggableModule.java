@@ -34,7 +34,7 @@ public abstract class AbstractPluggableModule implements Module {
     private MessageHandler incomingMessageHandler = (message) -> handleIncomingMessage((RequestMessage) message.getPayload());
 
     @PostConstruct
-    public void init() throws SQLException {
+    public void init() throws Exception {
         getModuleChannel().subscribe(incomingMessageHandler);
     }
 

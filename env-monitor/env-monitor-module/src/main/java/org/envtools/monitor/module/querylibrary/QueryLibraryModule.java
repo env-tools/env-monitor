@@ -123,7 +123,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
-    public void init() throws SQLException {
+    public void init() throws Exception {
         super.init();
         Connection connection = dataSource.getConnection();
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");

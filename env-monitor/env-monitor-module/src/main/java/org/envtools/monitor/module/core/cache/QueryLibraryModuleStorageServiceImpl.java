@@ -1,11 +1,8 @@
 package org.envtools.monitor.module.core.cache;
 
-import org.envtools.monitor.model.messaging.content.AbstractContent;
-import org.envtools.monitor.model.messaging.content.MapContent;
 import org.envtools.monitor.module.ModuleConstants;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,24 +11,20 @@ import java.util.Map;
 @Service
 public class QueryLibraryModuleStorageServiceImpl implements QueryLibraryModuleStorageService {
 
-    private MapContent serializedQueryLibraryData;
+    private Map<String, String> serializedQueryLibraryData;
 
     @Override
     public String getPublicTree() {
-        Map<String, String> mc = (HashMap<String, String>) serializedQueryLibraryData.getValue();
-
-        return mc.get(ModuleConstants.OWNER_NULL);
+        return serializedQueryLibraryData.get(ModuleConstants.OWNER_NULL);
     }
 
     @Override
     public String getTreeByOwner(String owner) {
-        Map<String, String> mc = (HashMap<String, String>) serializedQueryLibraryData.getValue();
-
-        return mc.get(owner);
+        return serializedQueryLibraryData.get(owner);
     }
 
     @Override
-    public void storeFull(AbstractContent data) {
-        this.serializedQueryLibraryData = (MapContent) data;
+    public void storeFull(Map<String, String> data) {
+        this.serializedQueryLibraryData = data;
     }
 }
