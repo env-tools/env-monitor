@@ -1,6 +1,8 @@
 package org.envtools.monitor.module.querylibrary;
 
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -16,6 +18,7 @@ import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
+import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
@@ -25,11 +28,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,17 +116,18 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Autowired
     CategoryViewMapper categoryViewMapper;
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+    @Autowired
+    DataSource dataSource;
 
     @Autowired
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
-    @PostConstruct
-    public void init() {
-        LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
-
+    public void init() throws Exception {
+        super.init();
+        Connection connection = dataSource.getConnection();
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
+        RunScript.execute(connection, new InputStreamReader(stream));
         /*
         При инициализации Query Library Module необходимо выполнить следующее:
         Загрузить все корневые hibernate категории при помощи category dao - готово
@@ -136,18 +141,31 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                //PUT YOUR CALL TO SERVICE HERE
+
                 Map<String, List<Category>> treeMap = new HashMap<>();
-                List<Category> listCategories = null;
-                listCategories = categoryDao.getRootCategories();
-                for (int i = 0; i < listCategories.size(); i++) {
-                    if (listCategories.get(i).getOwner() == null) {
-                        //TODO Support list of categories
-                        //treeMap.put("_PUBLIC_", listCategories.get(i));
+                List<Category> listCategories = categoryDao.getRootCategories();
+
+                for (Category category : listCategories) {
+                    String owner = category.getOwner();
+                    String ownerKey = owner == null ? ModuleConstants.OWNER_NULL : owner;
+
+                    List<Category> ownerCategories;
+                    if (!treeMap.containsKey(ownerKey)) {
+                        ownerCategories = Lists.newArrayList();
+                        treeMap.put(ownerKey, ownerCategories);
                     } else {
-                        //TODO Support list of categories
-                        //treeMap.put(listCategories.get(i).getOwner(), listCategories.get(i));
+                        ownerCategories = treeMap.get(ownerKey);
                     }
+                    ownerCategories.add(category);
+                }
+
+                for (Map.Entry<String, List<Category>> tree : treeMap.entrySet()) {
+
+                    LOGGER.info("\n KEY " + tree.getKey() + "\n");
+                    for (int i = 0; i < tree.getValue().size(); i++) {
+                        LOGGER.info("\n VALUE #" + i + " " + tree.getValue().get(i) + "\n");
+                    }
+
                 }
  /*
   Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
@@ -155,17 +173,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 Передать Map<String, CategoryView> в интерфейс CategoryViewMapper и получить Map<String, String>
 (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
   */
-                //    Map<String,String> jsonMap=categoryViewMapper
-                //            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
+                //  Map<String,String> jsonMap=categoryViewMapper
+                //          .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwnerToString(treeMap));
 
                 //пока нет реализации
 
                 Map<String, String> jsonMap = new HashMap<String, String>() {{
-                    put("owner", "{\n" +
-                            "  \"tree\": [\n" +
-                            "    {\n" +
-                            "      \"title\": \"private\",\n" +
-                            "      \"categories\": [\n" +
+                    put("sergey", " [\n" +
                             "        {\n" +
                             "          \"id\": 2,\n" +
                             "          \"title\": \"First private category\",\n" +
@@ -198,18 +212,17 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "            }\n" +
                             "          ]\n" +
                             "        }\n" +
-                            "      ]\n" +
-                            "    },\n" +
-                            "    {\n" +
-                            "      \"title\": \"public\",\n" +
-                            "      \"queries\": [],\n" +
-                            "      \"categories\": [\n" +
+                            "      ]");
+
+                    put(ModuleConstants.OWNER_NULL,
+
+                                 " [\n" +
                             "        {\n" +
                             "          \"id\": 5,\n" +
                             "          \"title\": \"First public category\",\n" +
                             "          \"categories\": [{\n" +
                             "            \"id\": 6,\n" +
-                            "            \"title\": \"Second private category\",\n" +
+                            "            \"title\": \"Second public category\",\n" +
                             "            \"queries\": [\n" +
                             "              {\n" +
                             "                \"id\": 1,\n" +
@@ -227,10 +240,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "            \"categories\": []\n" +
                             "          }]\n" +
                             "        }\n" +
-                            "      ]\n" +
-                            "    }\n" +
-                            "  ]\n" +
-                            "}");
+                            "      ]\n"
+                );
                 }};
 
                 /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
@@ -241,6 +252,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .builder()
                         .payload(MapContent.of(jsonMap))
                         .type(ResponseType.CATEGORY_TREE_DATA)
+                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
                         .build());
 
             }
@@ -253,6 +265,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         sendMessageToCore(ResponseMessage
                 .builder()
                 .requestMetaData(requestMessage)
+                .type(ResponseType.QUERY_EXECUTION_RESULT)
                 .payload(resultViewAsJson)
                 .build());
     }

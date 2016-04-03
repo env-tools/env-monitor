@@ -44,10 +44,16 @@ public class CategoryDaoIT {
         Assert.assertEquals(1, foundQueries.size());
         Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getTitle());
         List<Category> foundQueries1 = categoryDao.getRootCategories();
-        Assert.assertEquals(2, foundQueries1.size());
+        Assert.assertEquals(1, foundQueries1.size());
+       // List<Category> foundQueries2 = categoryDao.getRootCategoriesByOwner("owner");
+      //  Assert.assertEquals(1, foundQueries2.size());
+        List<Category> foundQueries3 = categoryDao.getRootCategoriesByOwner(null);
+        Assert.assertEquals(1, foundQueries3.size());
 
         LOGGER.info("Found queries: " + foundQueries);
         LOGGER.info("Found queries: " + foundQueries1);
+        //LOGGER.info("Found queries: " + foundQueries2);
+       // LOGGER.info("Found queries: " + foundQueries3);
 
     }
 
@@ -69,13 +75,15 @@ public class CategoryDaoIT {
         //Don't set Id - it will be auto generated
         category.setTitle(text);
         category.setDescription("some_description");
-        //category.setOwner(null);
+        category.setOwner(null);
 
         Category category1 = new Category();
         //Don't set Id - it will be auto generated
         category1.setTitle("453333");
         category1.setDescription("parent");
-      //  category1.setOwner("owner");
+        category1.setOwner(null);
+
+        category.setParentCategory(category1);
         categoryDao.saveAndFlush(category1);
         return categoryDao.saveAndFlush(category);
     }
