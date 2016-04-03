@@ -5,9 +5,13 @@
         .module('queryLib')
         .controller('Dashboard', Dashboard);
 
-    Dashboard.$injector = ['$scope', '$stomp', '$resource'];
+    Dashboard.$injector = ['$scope', '$stomp'];
 
-    function Dashboard($scope, $stomp, $resource) {
+    function Dashboard($scope, $stomp) {
+        $scope.source = {};
+        $scope.settings = {
+            source: $scope.source
+        };
 
         init();
 
@@ -15,88 +19,67 @@
             $stomp.connect('/monitor', []).then(function () {
                 var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
                 $stomp.subscribe(subDestination, function (message) {
-                    console.log(message);
+                    var publicTree = [];
+                    angular.forEach(message.payload.jsonContent[0], function (category) {
+                        publicTree.push(createTree(category));
+                    });
+
+                    var privateTree = [];
+                    angular.forEach(message.payload.jsonContent[1], function (category) {
+                        privateTree.push(createTree(category));
+                    });
+
+                    $scope.$apply(function() {
+                        $scope.source = [
+                            {
+                                label: "Public categories",
+                                icon: "/images/treeWidget/folder.png",
+                                items: publicTree
+                            },
+                            {
+                                label: "Private categories (sergey)",
+                                icon: "/images/treeWidget/folder.png",
+                                items: privateTree
+                            }
+                        ];
+                    });
                 });
             });
         }
 
-        $scope.source = {};
-        $scope.settings = {
-            source: [
-                {
-                    label: "Private categories",
-                    expanded: true,
-                    items: [
-                        {
-                            id: 1,
-                            label: "First private category",
-                            items: [
-                                {
-                                    id: 2,
-                                    label: "Second private category",
-                                    items: [
-                                        {
-                                            id: 3,
-                                            label: "Third private category"
-                                        },
-                                        {
-                                            id: 1,
-                                            label: "Query 1",
-                                            html: '<div data-ng-click="executeQuery(1)"></div>'
-                                        },
-                                        {
-                                            id: 2,
-                                            label: "Query 2",
-                                            html: '<div data-ng-click="executeQuery(2)"></div>'
-                                        },
-                                        {
-                                            id: 3,
-                                            html: '<div data-ng-click="executeQuery(3)">Query 3</div>'
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    label: "Public categories",
-                    expanded: true,
-                    items: [
-                        {
-                            id: 4,
-                            label: "First public category",
-                            items: [
-                                {
-                                    id: 5,
-                                    label: "Second public category",
-                                    items: [
-                                        {
-                                            id: 6,
-                                            label: "Third public category"
-                                        },
-                                        {
-                                            id: 4,
-                                            label: "Query 1",
-                                            html: '<div data-ng-click="executeQuery(4)"></div>'
-                                        },
-                                        {
-                                            id: 5,
-                                            label: "Query 2",
-                                            html: '<div data-ng-click="executeQuery(5)"></div>'
-                                        },
-                                        {
-                                            id: 6,
-                                            label: "Query 3",
-                                            html: '<div data-ng-click="executeQuery(6)"></div>'
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
+        function createTree(category) {
+            var result = {
+                html: '<div title="' + category.description + '" style="padding-right: 20px;">' + category.title + '</div>',
+                icon: "/images/treeWidget/folder.png",
+                items: []
+            };
+            var categories = [];
+            var queries = getQueryArray(category.queries);
+
+            if (category.hasOwnProperty("childCategories") && category["childCategories"].length > 0) {
+                angular.forEach(category["childCategories"], function (category) {
+                    categories.push(createTree(category));
+                });
+            }
+
+            if (categories || queries) {
+                result["items"] = categories.concat(queries);
+            }
+
+            return result;
+        }
+
+        function getQueryArray(queries) {
+            var result = [];
+            angular.forEach(queries, function(query) {
+                var _query = {
+                    html: '<div id="query_' + query.id + '" title="' + query.description + '" style="padding-right: 20px;">' + query.title + '</div>',
+                    icon: "/images/treeWidget/sql.png",
+                };
+                result.push(_query);
+            });
+
+            return result;
+        }
     }
 })();

@@ -20,7 +20,8 @@ public class QueryLibraryModuleStorageServiceImpl implements QueryLibraryModuleS
 
     @Override
     public String getTreeByOwner(String owner) {
-        return serializedQueryLibraryData.get(owner);
+        String categories = serializedQueryLibraryData.get(owner);
+        return categories != null ? categories : "{}";
     }
 
     @Override
