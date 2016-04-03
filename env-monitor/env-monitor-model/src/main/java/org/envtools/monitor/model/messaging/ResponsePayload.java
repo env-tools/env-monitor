@@ -39,6 +39,13 @@ public class ResponsePayload implements Serializable{
         this.jsonContent = jsonContent;
     }
 
+    public AbstractContent getContent() {
+        return content;
+    }
+
+    public void setContent(AbstractContent content) {
+        this.content = content;
+    }
 
     public static Builder builder() {
         return new Builder();

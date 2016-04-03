@@ -3,11 +3,14 @@ package org.envtools.monitor.module.core;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.model.messaging.ResponseType;
+import org.envtools.monitor.model.messaging.content.AbstractContent;
 import org.envtools.monitor.module.Module;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.core.cache.ApplicationsDataPushService;
 import org.envtools.monitor.module.core.cache.ApplicationsModuleStorageService;
 import org.envtools.monitor.module.core.cache.QueryLibraryDataPushService;
+import org.envtools.monitor.module.core.cache.QueryLibraryModuleStorageService;
 import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,9 @@ public class CoreModule implements Module {
 
     @Autowired
     ApplicationsModuleStorageService applicationsModuleStorageService;
+
+    @Autowired
+    QueryLibraryModuleStorageService queryLibraryModuleStorageService;
 
     @Autowired
     SubscriptionManager subscriptionManager;
@@ -93,11 +99,24 @@ public class CoreModule implements Module {
     }
 
     private void handleQueryLibraryModuleResponseMessage(ResponseMessage responseMessage) {
-        String destination = responseMessage.getDestination();
-        String content = responseMessage.getPayload().getJsonContent();
-        LOGGER.info("CoreModule.handlePluggableModuleResponse - " + responseMessage);
+        LOGGER.info("CoreModule.handleQueryLibraryModuleResponseMessage - message: " + responseMessage);
+        ResponseType type = responseMessage.getType() ;
 
-        queryLibraryDataPushService.pushToSubscribedClients(destination, content);
+        switch (type) {
+            case QUERY_EXECUTION_RESULT:
+                String destination = responseMessage.getDestination();
+                String jsonContent = responseMessage.getPayload().getJsonContent();
+
+                queryLibraryDataPushService.pushToSubscribedClients(destination, jsonContent);
+                break;
+            case CATEGORY_TREE_DATA:
+                AbstractContent content = responseMessage.getPayload().getContent();
+                queryLibraryModuleStorageService.storeFull(content);
+                break;
+            default:
+                LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - undefined response type: " + type);
+        }
+
     }
 
     private void handleApplicationsModuleResponseMessage(ResponseMessage responseMessage) {

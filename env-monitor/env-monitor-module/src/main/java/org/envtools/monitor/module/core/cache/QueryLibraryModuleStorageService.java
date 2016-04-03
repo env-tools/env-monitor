@@ -1,5 +1,8 @@
 package org.envtools.monitor.module.core.cache;
 
+import org.envtools.monitor.model.messaging.content.AbstractContent;
+import org.envtools.monitor.model.messaging.content.MapContent;
+
 /**
  * Created: 02/04/16
  *
@@ -10,4 +13,6 @@ public interface QueryLibraryModuleStorageService {
     String getPublicTree();
 
     String getTreeByOwner(String owner);
+
+    void storeFull(AbstractContent data);
 }
