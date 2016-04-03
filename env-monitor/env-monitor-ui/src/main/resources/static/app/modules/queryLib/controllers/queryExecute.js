@@ -1,4 +1,4 @@
-(function () {
+(function ($) {
     'use strict';
 
     angular
@@ -29,7 +29,6 @@
         function init() {
             $stomp.connect('/monitor', []).then(function () {
                 $stomp.subscribe(subDestination, function (message) {
-                    console.log(message);
                     $scope.$apply(getExecuteResult(message.payload.jsonContent))
                 });
             });
@@ -53,7 +52,7 @@
                         dataSourceProperties: {
                             user: "sa",
                             password: "sa",
-                            url: "jdbc:h2:file:./h2_data;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO",
+                            url: "jdbc:h2:file:./h2_data",
                             driverClassName: "org.h2.Driver"
                         }
                     }
@@ -100,5 +99,9 @@
 
             return columns;
         }
+
+        $(document).on('dblclick', '[id^=query_]', function() {
+            $scope.params['query'] = $(this).data('text');
+        });
     }
-})();
+})(window.jQuery);

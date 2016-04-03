@@ -1,9 +1,8 @@
-<h1>Query dashboard</h1>
 <div class="row">
     <div class="col-xs-4" data-ng-if="source">
         <jqx-tree jqx-settings="settings" id="jqxtree"></jqx-tree>
     </div>
     <div class="col-xs-8">
-        <a data-ui-sref="query_executeQuery" class="btn btn-default">Execute Query</a>
+        <ng-include data-ng-controller="QueryExecute" src="'/app/modules/queryLib/templates/execute.html'"></ng-include>
     </div>
 </div>

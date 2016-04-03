@@ -1,11 +1,6 @@
 <div class="row">
-    <div class="col-xs-12">
-        <h1>Execute query</h1>
-    </div>
-</div>
-<div class="row">
-    <div class="form-group col-xs-12">
-        <div class="alert alert-danger" data-ng-if="errorMessage && error">
+    <div class="form-group col-xs-12" data-ng-if="errorMessage && error">
+        <div class="alert alert-danger">
             {{ errorMessage }}
         </div>
     </div>

@@ -73,7 +73,7 @@
             var result = [];
             angular.forEach(queries, function(query) {
                 var _query = {
-                    html: '<div id="query_' + query.id + '" title="' + query.description + '" style="padding-right: 20px;">' + query.title + '</div>',
+                    html: '<div data-text="' + query.text + '" id="query_' + query.id + '" title="' + query.description + '" style="padding-right: 20px;">' + query.title + '</div>',
                     icon: "/images/treeWidget/sql.png",
                 };
                 result.push(_query);
