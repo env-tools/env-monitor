@@ -2,6 +2,7 @@ package org.envtools.monitor.module.querylibrary;
 
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -17,6 +18,7 @@ import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
+import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
@@ -26,11 +28,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,18 +116,18 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Autowired
     CategoryViewMapper categoryViewMapper;
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+    @Autowired
+    DataSource dataSource;
 
     @Autowired
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
-
-    public void init() {
+    public void init() throws Exception {
         super.init();
-        LOGGER.info("Initializing QueryLibFillerInvoke, using entityManager : " + entityManager);
-
+        Connection connection = dataSource.getConnection();
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
+        RunScript.execute(connection, new InputStreamReader(stream));
         /*
         При инициализации Query Library Module необходимо выполнить следующее:
         Загрузить все корневые hibernate категории при помощи category dao - готово
@@ -249,7 +252,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .builder()
                         .payload(MapContent.of(jsonMap))
                         .type(ResponseType.CATEGORY_TREE_DATA)
-                        //  .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
+                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
                         .build());
 
             }
@@ -262,6 +265,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         sendMessageToCore(ResponseMessage
                 .builder()
                 .requestMetaData(requestMessage)
+                .type(ResponseType.QUERY_EXECUTION_RESULT)
                 .payload(resultViewAsJson)
                 .build());
     }

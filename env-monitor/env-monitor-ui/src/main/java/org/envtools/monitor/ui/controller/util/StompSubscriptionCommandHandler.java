@@ -123,7 +123,9 @@ public class StompSubscriptionCommandHandler {
 
         switch (action){
             case "tree":
-                sendTreeDataToSubscriber(destination, destinationData);
+                executor.schedule(() -> {
+                    sendTreeDataToSubscriber(destination, destinationData);
+                }, 100, TimeUnit.MILLISECONDS);
                 break;
             default:
                 LOGGER.warn("StompSubscriptionCommandHandler.processQueryLibraryModuleSubscription - unsupported  action, skipping : " + action);
