@@ -15,6 +15,13 @@ public class QueryView {
     public QueryView() {
     }
 
+    public QueryView(String text, String title, String description, Long id) {
+        this.text = text;
+        this.title = title;
+        this.description = description;
+        this.id = id;
+    }
+
     public String getText() {
         return text;
     }

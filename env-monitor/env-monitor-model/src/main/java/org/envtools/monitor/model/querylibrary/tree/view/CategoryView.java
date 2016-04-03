@@ -19,6 +19,11 @@ public class CategoryView {
     public CategoryView() {
     }
 
+    public CategoryView(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
     public String getTitle() {
         return title;
     }

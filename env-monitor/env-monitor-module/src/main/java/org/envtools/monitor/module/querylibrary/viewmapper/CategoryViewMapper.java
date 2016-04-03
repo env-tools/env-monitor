@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.viewmapper;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,6 @@ public interface CategoryViewMapper {
 
     Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner);
 
-    Map<String, String> mapCategoriesByOwnerToString(Map<String, CategoryView> categoriesByOwner);
+    public Map<String, String> mapCategoriesByOwnerToString(Map<String, List<CategoryView>> categoriesByOwner) throws IOException;
 
 }
