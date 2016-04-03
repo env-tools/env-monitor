@@ -51,11 +51,16 @@ bower install
 gulp dist
 ```
 
-*To run the prototype standalone (from command line):*
+*To run the prototype standalone (from command line, using java):*
 - Build with maven 3
 - Take jar from env-monitor-ui/target
-- Run with java -jar &lt;jarfile&gt;. 
+- Run with java -jar &lt;jarfile&gt;
 - In command line, use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
+
+*To run the prototype standalone (from command line, using maven):*
+- Build with maven 3
+- cd env-monitor-ui
+- Run with mvn spring-boot:run
 
 *To run the prototype from your IDE*
 - Import root maven pom.xml into your project
