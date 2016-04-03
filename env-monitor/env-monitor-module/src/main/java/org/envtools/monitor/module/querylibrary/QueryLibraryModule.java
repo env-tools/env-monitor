@@ -30,6 +30,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -173,12 +174,17 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 Передать Map<String, CategoryView> в интерфейс CategoryViewMapper и получить Map<String, String>
 (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
   */
-                //  Map<String,String> jsonMap=categoryViewMapper
-                //          .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwnerToString(treeMap));
+                Map<String, String> jsonMap = null;
+                try {
+                    jsonMap = categoryViewMapper
+                            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 //пока нет реализации
 
-                Map<String, String> jsonMap = new HashMap<String, String>() {{
+                /*Map<String, String> jsonMap = new HashMap<String, String>() {{
                     put("sergey", " [\n" +
                             "        {\n" +
                             "          \"id\": 2,\n" +
@@ -242,7 +248,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             "        }\n" +
                             "      ]\n"
                 );
-                }};
+                }};*/
 
                 /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
 Установить нужный тип ResponseMessage
