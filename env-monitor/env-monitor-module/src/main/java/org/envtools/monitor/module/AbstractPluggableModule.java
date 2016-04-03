@@ -14,6 +14,7 @@ import org.springframework.messaging.support.GenericMessage;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -33,7 +34,7 @@ public abstract class AbstractPluggableModule implements Module {
     private MessageHandler incomingMessageHandler = (message) -> handleIncomingMessage((RequestMessage) message.getPayload());
 
     @PostConstruct
-    public void init() {
+    public void init() throws SQLException {
         getModuleChannel().subscribe(incomingMessageHandler);
     }
 
