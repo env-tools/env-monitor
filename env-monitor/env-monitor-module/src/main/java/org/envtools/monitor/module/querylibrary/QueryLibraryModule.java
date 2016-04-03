@@ -168,6 +168,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                     }
 
                 }
+
  /*
   Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
  (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
@@ -253,7 +254,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                 /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
 Установить нужный тип ResponseMessage
 Отправить сообщение в core module*/
-
                 sendMessageToCore(ResponseMessage
                         .builder()
                         .payload(MapContent.of(jsonMap))
