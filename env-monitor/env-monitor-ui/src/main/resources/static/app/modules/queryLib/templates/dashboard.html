@@ -1,6 +1,6 @@
 <div class="row">
-    <div class="col-xs-4" data-ng-if="source">
-        <jqx-tree jqx-settings="settings" id="jqxtree"></jqx-tree>
+    <div class="col-xs-4">
+        <ng-include data-ng-controller="Tree" src="'/app/modules/queryLib/templates/tree.html'"></ng-include>
     </div>
     <div class="col-xs-8">
         <ng-include data-ng-controller="QueryExecute" src="'/app/modules/queryLib/templates/execute.html'"></ng-include>

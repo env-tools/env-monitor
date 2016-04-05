@@ -5,9 +5,9 @@
         .module('queryLib')
         .controller('QueryExecute', QueryExecute);
 
-    QueryExecute.$injector = ['$scope', '$stomp', 'rfc4122'];
+    QueryExecute.$injector = ['$scope', '$stomp', 'rfc4122', 'Stomp'];
 
-    function QueryExecute($scope, $stomp, rfc4122) {
+    function QueryExecute($scope, $stomp, rfc4122, Stomp) {
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/exec/' + requestId;
 
@@ -24,13 +24,22 @@
         $scope.error = false;
         $scope.errorMessage = '';
 
+        var subscribes = {};
+
         init();
 
         function init() {
-            $stomp.connect('/monitor', []).then(function () {
-                $stomp.subscribe(subDestination, function (message) {
-                    $scope.$apply(getExecuteResult(message.payload.jsonContent))
-                });
+            Stomp.connect('/monitor');
+
+            $scope.$on('stomp::connect', function (event, data) {
+                if (data["endpoint"] == "/monitor") {
+                    if (!subscribes[subDestination]) {
+                        var sub = $stomp.subscribe(subDestination, function (message) {
+                            $scope.$apply(getExecuteResult(message.payload.jsonContent))
+                        });
+                        subscribes[subDestination] = sub;
+                    }
+                }
             });
         }
 
@@ -101,7 +110,10 @@
         }
 
         $(document).on('dblclick', '[id^=query_]', function() {
-            $scope.params['query'] = $(this).data('text');
+            var text = $(this).data('text');
+            $scope.$apply(function() {
+                $scope.params['query'] = text;
+            });
         });
     }
 })(window.jQuery);
