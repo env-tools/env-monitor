@@ -49,12 +49,13 @@
                     {
                         label: "Public categories",
                         icon: "/images/treeWidget/folder.png",
-                        items: publicTree
+                        items: publicTree,
+                        expanded: true,
                     },
                     {
                         label: "Private categories (sergey)",
                         icon: "/images/treeWidget/folder.png",
-                        items: privateTree
+                        items: privateTree,
                     }
                 ];
             });
@@ -64,6 +65,7 @@
             var result = {
                 html: '<div title="' + category.description + '" style="padding-right: 20px;">' + category.title + '</div>',
                 icon: "/images/treeWidget/folder.png",
+                expanded: true,
                 items: []
             };
             var categories = [];

@@ -12,7 +12,7 @@
         <link href="styles.css" rel="stylesheet">
     </head>
     <body>
-        <div id="wrapper" class="toggled">
+        <div id="wrapper" class="">
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -22,11 +22,17 @@
                             </a>
                         </div>
                     </li>
-                    <li>
-                        <a data-ui-sref="applications_applicationsPage">Applications</a>
+                    <li data-ui-sref-active="active">
+                        <a data-ui-sref="applications_applicationsPage">
+                            <span class="glyphicon glyphicon-cog"></span>
+                            Applications
+                        </a>
                     </li>
-                    <li>
-                        <a data-ui-sref="query_dashboard">Query Library</a>
+                    <li data-ui-sref-active="active">
+                        <a data-ui-sref="query_dashboard">
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                            Query Library
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -38,7 +44,6 @@
                                 <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
                                     <ul class="nav navbar-nav">
                                         <li><a href="javascript:void(0)" id="menu-toggle" class="menu-link glyphicon glyphicon-align-justify"></a></li>
-                                        <li><a data-ui-sref="query_executeQuery" class="menu-link">Execute Query</a></li>
                                     </ul>
                                 </div>
                             </div>

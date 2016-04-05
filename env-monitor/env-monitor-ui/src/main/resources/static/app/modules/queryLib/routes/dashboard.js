@@ -10,7 +10,7 @@
   function routersConfig($stateProvider) {
     $stateProvider
       .state('query_dashboard', {
-        url: "/query/dashboard",
+        url: "/",
         templateUrl: "/app/modules/queryLib/templates/dashboard.html"
       })
   }
