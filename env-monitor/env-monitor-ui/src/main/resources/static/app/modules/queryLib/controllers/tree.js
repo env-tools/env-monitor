@@ -5,9 +5,9 @@
         .module('queryLib')
         .controller('Tree', Tree);
 
-    Tree.$injector = ['$scope', '$stomp'];
+    Tree.$injector = ['$scope', '$stomp', 'Stomp'];
 
-    function Tree($scope, $stomp) {
+    function Tree($scope, $stomp, Stomp) {
         $scope.source = {};
         $scope.settings = {
             width: 300,
@@ -19,8 +19,8 @@
         init();
 
         function init() {
+            Stomp.connect('/monitor');
             $scope.$on('stomp::connect', function (event, data) {
-                console.log(data);
                 if (data["endpoint"] == "/monitor") {
                     var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
                     if (!subscribes[subDestination]) {
