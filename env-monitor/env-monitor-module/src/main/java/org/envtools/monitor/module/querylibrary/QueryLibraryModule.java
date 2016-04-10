@@ -169,12 +169,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
                 }
 
- /*
-  Передать Map<String, Category> в интерфейс CategoryViewMapper и получить Map<String, CategoryView>
- (это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
-Передать Map<String, CategoryView> в интерфейс CategoryViewMapper и получить Map<String, String>
-(это точка интеграции с кодом Максима, до момента интеграции код может быть закомментирован)
-  */
                 Map<String, String> jsonMap = null;
                 try {
                     jsonMap = categoryViewMapper
@@ -183,77 +177,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                     e.printStackTrace();
                 }
 
-                //пока нет реализации
-
-                /*Map<String, String> jsonMap = new HashMap<String, String>() {{
-                    put("sergey", " [\n" +
-                            "        {\n" +
-                            "          \"id\": 2,\n" +
-                            "          \"title\": \"First private category\",\n" +
-                            "          \"queries\": [\n" +
-                            "            {\n" +
-                            "              \"id\": 1,\n" +
-                            "              \"title\": \"Query 1\"\n" +
-                            "            },\n" +
-                            "            {\n" +
-                            "              \"id\": 2,\n" +
-                            "              \"title\": \"Query 2\"\n" +
-                            "            },\n" +
-                            "            {\n" +
-                            "              \"id\": 3,\n" +
-                            "              \"title\": \"Query 3\"\n" +
-                            "            }\n" +
-                            "          ],\n" +
-                            "          \"categories\": []\n" +
-                            "        },\n" +
-                            "        {\n" +
-                            "          \"id\": 3,\n" +
-                            "          \"title\": \"Second private category\",\n" +
-                            "          \"queries\": [],\n" +
-                            "          \"categories\": [\n" +
-                            "            {\n" +
-                            "              \"id\": 4,\n" +
-                            "              \"title\": \"Third private category\",\n" +
-                            "              \"queries\": [],\n" +
-                            "              \"categories\": []\n" +
-                            "            }\n" +
-                            "          ]\n" +
-                            "        }\n" +
-                            "      ]");
-
-                    put(ModuleConstants.OWNER_NULL,
-
-                                 " [\n" +
-                            "        {\n" +
-                            "          \"id\": 5,\n" +
-                            "          \"title\": \"First public category\",\n" +
-                            "          \"categories\": [{\n" +
-                            "            \"id\": 6,\n" +
-                            "            \"title\": \"Second public category\",\n" +
-                            "            \"queries\": [\n" +
-                            "              {\n" +
-                            "                \"id\": 1,\n" +
-                            "                \"title\": \"Query 1\"\n" +
-                            "              },\n" +
-                            "              {\n" +
-                            "                \"id\": 2,\n" +
-                            "                \"title\": \"Query 2\"\n" +
-                            "              },\n" +
-                            "              {\n" +
-                            "                \"id\": 3,\n" +
-                            "                \"title\": \"Query 3\"\n" +
-                            "              }\n" +
-                            "            ],\n" +
-                            "            \"categories\": []\n" +
-                            "          }]\n" +
-                            "        }\n" +
-                            "      ]\n"
-                );
-                }};*/
-
-                /*Построить ResponseMessage, используя для payload конструкцию payload(MapContent.of(jsonMap))
-Установить нужный тип ResponseMessage
-Отправить сообщение в core module*/
                 sendMessageToCore(ResponseMessage
                         .builder()
                         .payload(MapContent.of(jsonMap))
