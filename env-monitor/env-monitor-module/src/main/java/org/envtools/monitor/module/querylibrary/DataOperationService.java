@@ -2,14 +2,22 @@ package org.envtools.monitor.module.querylibrary;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
+import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.DataOperationInterface;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Created: 10.04.16 12:18
@@ -24,48 +32,80 @@ public class DataOperationService extends DataOperation implements DataOperation
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
 
     @Override
-    public QueryExecutionResult create(String entity) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
-        entity = entity.replace("(", "").replace(")", "");
-        //разбиваем полученную строку по запятым
-        String[] str = entity.split(",");
+    public void dataOperations(DataOperation dataOperation) {
+        /*
+        TODO взависимости от типа выбираем операцию, реализую позже
+         */
+    }
 
-        //property - хранит свойства и значения
-        String[] property = null;
-
-        //propertyID - хранит свойства и значения c ID
-        Map<String, String> propertyID = null;
-
-        //propertyNotID - хранит остальные свойства и значения
-        Map<String, String> propertyNotID = null;
-
-
-        //Object bean = str[0].replaceAll("\"").getClass();
+    @Override
+    public QueryExecutionResult create(DataOperation dataOperation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
+        String entity = dataOperation.getEntity();
         /* Найдем все поля, имя которых заканчивается на "_id" */
-        for (int i = 1; i < str.length; i++) {
-            property = str[i].split(":");
-            if (property[0].endsWith(ID)) {
-                //propertyID.put(property[0].replace(ID, ""), property[1]);
-                // LOGGER.info("Свойства с _id  " + propertyID.get(property[0].replace(ID, "")));
-            } else {
-                // propertyNotID.put(property[0], property[0]);
-                //LOGGER.info("Класс в котором содержится свойство:  " + property[0].getClass());
+        Map<String, String> fields = dataOperation.getFields();
 
+        //получаем все ключи, необходимые для нахождения свойств
+        List<String> keyFields = new ArrayList<String>((fields.keySet()));
+
+        //получаем все значения
+        List<String> valuesFields = new ArrayList<String>((fields.values()));
+
+        List<String> propertyID=new ArrayList<String>();
+
+        List<String> property=new ArrayList<String>();
+
+        //Содержит все методы и их возвр значения
+        Map<Method,Class[]> propertyDataID=new HashMap<Method,Class[]>();
+        Map<Method,Class[]> propertyData=new HashMap<Method,Class[]>();
+        for (int i = 0; i < keyFields.size(); i++) {
+            if (keyFields.get(i).endsWith(ID)) {
+                keyFields.set(i, keyFields.get(i).replace(ID, ""));
+                propertyID.add(keyFields.get(i));
             }
+            else{
+                property.add(keyFields.get(i));
+            }
+            LOGGER.info("field:  " + keyFields.get(i));
+            LOGGER.info("field value:  " + valuesFields.get(i));
 
         }
-        Class c = Class.forName(path + str[0].replaceAll("\"", "").trim());
-        //   BeanUtils.populate(str[0].replaceAll("\"","").trim(),propertyID);
-        LOGGER.info("Полученный класс:  " + c.getName());
+        Class entityClass = Class.forName(path + entity);
+        Field field;
+        //Object target;
+       /*TODO Научиться получать методы и их входные параметры*/
+       for(int i = 0; i <propertyID.size(); i++) {
+           Method[] methods = entityClass.getMethods();
+           for (Method method : methods) {
+               System.out.println("Имя: " + method.getName());
+               System.out.println("Возвращаемый тип: " + method.getReturnType().getName());
+
+               Class[] paramTypes = method.getParameterTypes();
+               System.out.print("Типы параметров: ");
+               for (Class paramType : paramTypes) {
+                   System.out.print(" " + paramType.getName());
+               }
+               System.out.println();
+           }
+       }
+
+        for(int i = 0; i <property.size(); i++){
+            field= ReflectionUtils.findField(entityClass,"set" + property.get(i).
+                    replaceFirst(property.get(i).substring(0, 1), property.get(i)
+                            .substring(0, 1).toUpperCase()));
+        }
+
+
+        LOGGER.info("Полученный класс:  " + entityClass.getName());
         return null;
     }
 
     @Override
-    public void update(Long id, String entity) {
+    public void update(Long id, DataOperation dataOperation) {
 
     }
 
     @Override
-    public void delete(Long id, String entity) {
+    public void delete(Long id, DataOperation dataOperation) {
 
     }
 }

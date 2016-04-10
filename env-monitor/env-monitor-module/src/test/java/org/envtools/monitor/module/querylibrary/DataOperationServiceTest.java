@@ -2,6 +2,8 @@ package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.model.updates.DataOperationType;
 import org.envtools.monitor.module.DataOperationInterface;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.junit.Before;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created: 10.04.16 14:45
@@ -38,16 +42,46 @@ public class DataOperationServiceTest {
     @Autowired
     DataOperationInterface dataOperationInterface;
 
+    @Autowired
+    DataOperation dataOperation;
+
     private static final String QUERY_TEXT = "SELECT * FROM T WHERE a = '123'";
     private static final String QUERY_SEARCH_PRESENT = "WHERE";
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
     @Test
-    public void testDataOperationServiceContains() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException {
+    public void testDataOperationServiceContains() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
 
         createWithText(QUERY_SEARCH_PRESENT);
-        dataOperationInterface.create("(\"Category\" ,title:\"t1\")");
+        Map<String,String> fields = new HashMap<String,String>();
+        fields.put("title","t1");
+        fields.put("description","test");
+        fields.put("owner","sergey");
+        fields.put("parentCategory_id","55");
 
-        dataOperationInterface.create("(\"LibQuery\" ,title:\"t1\")");
+        dataOperation.setEntity("Category");
+        dataOperation.setType(DataOperationType.UPDATE);
+        dataOperation.setFields(fields);
+        dataOperationInterface.create(dataOperation);
+
+    }
+
+
+
+    @Test
+    public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
+
+        createWithText(QUERY_SEARCH_PRESENT);
+
+        Map<String,String> fields1 = new HashMap<String,String>();
+        fields1.put("text","text");
+        fields1.put("description","test");
+        fields1.put("title","sssergey");
+        fields1.put("category_id","77");
+
+        dataOperation.setEntity("LibQuery");
+        dataOperation.setType(DataOperationType.UPDATE);
+        dataOperation.setFields(fields1);
+        dataOperationInterface.create(dataOperation);
 
     }
 

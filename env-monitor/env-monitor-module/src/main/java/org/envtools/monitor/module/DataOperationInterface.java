@@ -1,6 +1,7 @@
 package org.envtools.monitor.module;
 
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.model.updates.DataOperation;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -10,8 +11,9 @@ import java.lang.reflect.InvocationTargetException;
  * @author Anastasiya Plotnikova
  */
 public interface DataOperationInterface {
-    QueryExecutionResult create(String entity) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException;
-    void update(Long id,String entity);
-    void delete(Long id,String entity);
+    void dataOperations(DataOperation dataOperation);
+    QueryExecutionResult create(DataOperation dataOperation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, NoSuchFieldException;
+    void update(Long id,DataOperation dataOperation);
+    void delete(Long id,DataOperation dataOperation);
 
 }

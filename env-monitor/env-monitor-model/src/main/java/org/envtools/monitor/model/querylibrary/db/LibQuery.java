@@ -38,6 +38,10 @@ public class LibQuery extends AbstractDbIdentifiable {
     @OneToMany(mappedBy = "libQuery", cascade = CascadeType.ALL)
     private List<QueryExecution> queryExecutions;
 
+    @ManyToOne
+    @JoinColumn(name = "CATEGORY_ID")
+    private Category category;
+
     public List<QueryParam> getQueryParams() {
         return queryParams;
     }
@@ -54,9 +58,7 @@ public class LibQuery extends AbstractDbIdentifiable {
         this.category = category;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CATEGORY_ID")
-    private Category category;
+
 
     public String getText() {
         return text;

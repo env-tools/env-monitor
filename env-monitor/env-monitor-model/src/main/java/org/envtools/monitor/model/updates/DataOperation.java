@@ -2,12 +2,14 @@ package org.envtools.monitor.model.updates;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 
 /**
  * Created by jesa on 18.03.2016.
  */
+@Repository
 public class DataOperation {
     private DataOperationType type; //available types of operations
     private String entity;
