@@ -5,9 +5,9 @@
         .module('queryLib')
         .controller('QueryExecute', QueryExecute);
 
-    QueryExecute.$injector = ['$scope', '$stomp', 'rfc4122', 'Stomp'];
+    QueryExecute.$injector = ['$scope', '$rootScope', '$stomp', 'rfc4122', 'Stomp'];
 
-    function QueryExecute($scope, $stomp, rfc4122, Stomp) {
+    function QueryExecute($scope, $rootScope, $stomp, rfc4122, Stomp) {
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/exec/' + requestId;
 
@@ -109,11 +109,8 @@
             return columns;
         }
 
-        $(document).on('dblclick', '[id^=query_]', function() {
-            var text = $(this).data('text');
-            $scope.$apply(function() {
-                $scope.params['query'] = text;
-            });
-        });
+        $rootScope.$on('setQuery', function(event, data) {
+            $scope.params.query = data.text;
+        })
     }
 })(window.jQuery);

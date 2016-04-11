@@ -11,6 +11,7 @@ import java.util.List;
  * @author Yury Yakovlev
  */
 public class CategoryView {
+    private Long id;
     private String title;
     private String description;
     private List<QueryView> queries;
@@ -19,9 +20,18 @@ public class CategoryView {
     public CategoryView() {
     }
 
-    public CategoryView(String title, String description) {
+    public CategoryView(Long id, String title, String description) {
+        this.id = id;
         this.title = title;
         this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
