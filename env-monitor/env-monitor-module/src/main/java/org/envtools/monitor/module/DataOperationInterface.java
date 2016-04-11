@@ -1,7 +1,7 @@
 package org.envtools.monitor.module;
 
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 
 import java.lang.reflect.InvocationTargetException;
 

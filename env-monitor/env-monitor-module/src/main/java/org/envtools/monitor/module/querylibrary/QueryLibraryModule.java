@@ -12,8 +12,7 @@ import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
 import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider;
-import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
-import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
@@ -30,12 +29,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.envtools.monitor.model.updates;
+package org.envtools.monitor.model.querylibrary.updates;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;

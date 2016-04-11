@@ -1,17 +1,13 @@
 package org.envtools.monitor.module.querylibrary.services;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;

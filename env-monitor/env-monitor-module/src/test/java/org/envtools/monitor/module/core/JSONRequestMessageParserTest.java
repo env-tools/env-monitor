@@ -2,14 +2,13 @@ package org.envtools.monitor.module.core;
 
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.RequestPayload;
-import org.envtools.monitor.model.updates.DataOperation;
-import org.envtools.monitor.model.updates.DataOperationType;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
+import org.envtools.monitor.model.querylibrary.updates.DataOperationType;
 import org.envtools.monitor.module.core.json.JSONRequestMessageParser;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

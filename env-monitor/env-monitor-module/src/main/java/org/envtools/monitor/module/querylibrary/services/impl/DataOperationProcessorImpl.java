@@ -1,6 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services.impl;
 
-import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.querylibrary.services.DataOperationProcessor;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;

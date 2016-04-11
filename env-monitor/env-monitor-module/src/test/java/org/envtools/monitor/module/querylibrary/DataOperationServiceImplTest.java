@@ -2,9 +2,7 @@ package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.updates.DataOperation;
-import org.envtools.monitor.model.updates.DataOperationType;
-import org.envtools.monitor.module.DataOperationInterface;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.junit.Test;
