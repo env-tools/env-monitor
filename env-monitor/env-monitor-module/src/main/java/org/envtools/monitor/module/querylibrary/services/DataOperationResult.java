@@ -1,22 +1,22 @@
-package org.envtools.monitor.model.querylibrary.execution;
+package org.envtools.monitor.module.querylibrary.services;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
+import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created: 27.02.16 3:31
+ * Created: 11.04.16 16:00
  *
- * @author Yury Yakovlev
+ * @author Anastasiya Plotnikova
  */
-public class QueryExecutionResult {
+public class DataOperationResult {
 
-    public enum ExecutionStatusE {
-        COMPLETED, HAS_MORE_DATA, ERROR, TIMED_OUT
+
+    public enum DataOperationStatusE {
+        COMPLETED, ERROR
     }
 
     private final String executionId;
@@ -24,24 +24,7 @@ public class QueryExecutionResult {
     /**
      * What was the outcome of query execution
      */
-    private final ExecutionStatusE status;
-
-
-    /**
-     * How much time it took to execute lastly
-     * Say: executed 20 sec initially (1st stage, returned 50 rows) ,
-     *  3 sec when user requested more rows (2nd stage, returned 24 rows).
-     *  So there will be first result with elapsedTimeMs = 20000,
-     *  and for the second request there will be second result with elapsedTimeMs = 3000
-     */
-    private final long elapsedTimeMs;
-
-    /**
-     * How many rows returned for this stage.
-     * For the example above 2 results will be produced,
-     * with returnedRowCount=50 for 1st stage and returnedRowCount=24 for 2nd stage
-     */
-    private final long returnedRowCount;
+    private final DataOperationStatusE status;
 
     /**
      * Result rows as provided by the ResultSet object
@@ -58,11 +41,9 @@ public class QueryExecutionResult {
      */
     private final Optional<Throwable> error;
 
-    public QueryExecutionResult(String executionId, ExecutionStatusE status, long elapsedTimeMs, long returnedRowCount, List<Map<String, Object>> resultRows, Optional<String> errorMessage, Optional<Throwable> error) {
+    public DataOperationResult(String executionId, DataOperationStatusE status, List<Map<String, Object>> resultRows, Optional<String> errorMessage, Optional<Throwable> error) {
         this.executionId = executionId;
         this.status = status;
-        this.elapsedTimeMs = elapsedTimeMs;
-        this.returnedRowCount = returnedRowCount;
         this.resultRows = resultRows;
         this.errorMessage = errorMessage;
         this.error = error;
@@ -72,17 +53,10 @@ public class QueryExecutionResult {
         return executionId;
     }
 
-    public ExecutionStatusE getStatus() {
+    public DataOperationStatusE getStatus() {
         return status;
     }
 
-    public long getElapsedTimeMs() {
-        return elapsedTimeMs;
-    }
-
-    public long getReturnedRowCount() {
-        return returnedRowCount;
-    }
 
     public List<Map<String, Object>> getResultRows() {
         return resultRows;
@@ -102,7 +76,7 @@ public class QueryExecutionResult {
 
     public static class Builder {
         private  String executionId;
-        private  ExecutionStatusE status;
+        private  DataOperationStatusE status;
         private  long elapsedTimeMs;
         private  long returnedRowCount;
         private  List<Map<String, Object>> resultRows;
@@ -114,7 +88,7 @@ public class QueryExecutionResult {
             return this;
         }
 
-        public Builder status(ExecutionStatusE status) {
+        public Builder status(DataOperationStatusE status) {
             this.status = status;
             return this;
         }
@@ -144,28 +118,23 @@ public class QueryExecutionResult {
             return this;
         }
 
-        public QueryExecutionResult build() {
-            return new QueryExecutionResult(
+        public DataOperationResult build() {
+            return new DataOperationResult(
                     executionId,
                     status,
-                    elapsedTimeMs,
-                    returnedRowCount,
                     resultRows,
                     errorMessage == null ? Optional.<String>empty() : Optional.of(errorMessage),
                     error == null ? Optional.<Throwable>empty() : Optional.of(error));
         }
-
-
-
     }
 
-    public static QueryExecutionResult ofError(String executionId, Throwable t) {
-         return QueryExecutionResult
-                 .builder()
-                 .executionId(executionId)
-                 .status(ExecutionStatusE.ERROR)
-                 .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
-                 .error(t)
-                 .build();
+    public static DataOperationResult ofError(String executionId, Throwable t) {
+        return DataOperationResult
+                .builder()
+                .executionId(executionId)
+                .status(DataOperationStatusE.ERROR)
+                .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
+                .error(t)
+                .build();
     }
 }

@@ -11,9 +11,13 @@ import java.lang.reflect.InvocationTargetException;
  * @author Anastasiya Plotnikova
  */
 public interface DataOperationInterface {
+
     void dataOperations(DataOperation dataOperation);
+
     QueryExecutionResult create(DataOperation dataOperation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, NoSuchFieldException;
+
     void update(Long id,DataOperation dataOperation);
+
     void delete(Long id,DataOperation dataOperation);
 
 }
