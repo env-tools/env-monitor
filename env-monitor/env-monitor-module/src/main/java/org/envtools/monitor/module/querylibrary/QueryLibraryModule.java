@@ -13,6 +13,7 @@ import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
 import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider;
 import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
+import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
@@ -55,6 +56,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             put("execute", QueryExecutionRequest.class);
             put("executeNext", QueryExecutionNextResultRequest.class);
             put("cancel", QueryExecutionCancelRequest.class);
+            put("dataOperation", DataOperation.class);
         }
     };
 
@@ -86,6 +88,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
             processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
+        } else if (payload instanceof DataOperation) {
+            processDataOperationRequest((DataOperation) payload, requestMessage);
         }
     }
 
@@ -129,14 +133,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         Connection connection = dataSource.getConnection();
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
         RunScript.execute(connection, new InputStreamReader(stream));
-        /*
-        При инициализации Query Library Module необходимо выполнить следующее:
-        Загрузить все корневые hibernate категории при помощи category dao - готово
-        Построить Map корневых категорий: Map<String, List<Category>>, где ключ - это owner
-        (или строка "_PUBLIC_" если owner=null) - готово
-        Передать Map<String, List<Category>> в интерфейс CategoryViewMapper и получить Map<String, List<CategoryView>> - готово.
-        (Map<String, List<CategoryView>> - not impl)
-        */
 
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -202,6 +198,17 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     private void sendResultMessage(QueryExecutionResult queryResult, RequestMessage requestMessage) {
         QueryExecutionResultView resultView = mapper.map(queryResult);
         sendResultMessage(resultView, requestMessage);
+    }
+
+    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) {
+        String result = "{}";
+
+        sendMessageToCore(ResponseMessage
+                .builder()
+                .requestMetaData(requestMessage)
+                .type(ResponseType.DATA_OPERATION_RESULT)
+                .payload(result)
+                .build());
     }
 
     private void processExecutionNextResultRequest(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
