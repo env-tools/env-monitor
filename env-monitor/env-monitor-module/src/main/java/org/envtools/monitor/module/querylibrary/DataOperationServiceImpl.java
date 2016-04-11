@@ -1,22 +1,15 @@
 package org.envtools.monitor.module.querylibrary;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.DataProviderType;
-import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
 import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.DataOperationInterface;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -25,9 +18,9 @@ import java.util.*;
  * @author Anastasiya Plotnikova
  */
 @Service
-public class DataOperationService extends DataOperation implements DataOperationInterface {
+public class DataOperationServiceImpl extends DataOperation implements DataOperationInterface {
 
-    private static final Logger LOGGER = Logger.getLogger(DataOperationService.class);
+    private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID = "_id";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
 

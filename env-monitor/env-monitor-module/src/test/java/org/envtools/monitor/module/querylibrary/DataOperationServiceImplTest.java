@@ -6,22 +6,16 @@ import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.model.updates.DataOperationType;
 import org.envtools.monitor.module.DataOperationInterface;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.testng.Assert;
-import org.envtools.monitor.model.querylibrary.db.Category;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +27,8 @@ import java.util.Map;
 @SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
 @TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
 @Transactional
-public class DataOperationServiceTest {
-    private static final Logger LOGGER = Logger.getLogger(DataOperationServiceTest.class);
+public class DataOperationServiceImplTest {
+    private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImplTest.class);
 
     @Autowired
     CategoryDao categoryDao;
