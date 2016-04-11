@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.DataOperationInterface;
+import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
+import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,20 +20,20 @@ import java.util.*;
  * @author Anastasiya Plotnikova
  */
 @Service
-public class DataOperationServiceImpl extends DataOperation implements DataOperationInterface {
+public class DataOperationServiceImpl extends DataOperation implements DataOperationService<Long> {
 
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID = "_id";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
 
-    @Override
+   // @Override
     public void dataOperations(DataOperation dataOperation) {
         /*
         TODO взависимости от типа выбираем операцию, реализую позже
          */
     }
 
-    @Override
+   // @Override
     public QueryExecutionResult create(DataOperation dataOperation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
         String entity = dataOperation.getEntity();
         /* Найдем все поля, имя которых заканчивается на "_id" */
@@ -92,13 +94,28 @@ public class DataOperationServiceImpl extends DataOperation implements DataOpera
         return null;
     }
 
-    @Override
+  //  @Override
     public void update(Long id, DataOperation dataOperation) {
 
     }
 
-    @Override
+  //  @Override
     public void delete(Long id, DataOperation dataOperation) {
 
+    }
+
+    @Override
+    public DataOperationResult create(String entity, Map<String, String> fields) {
+        return null;
+    }
+
+    @Override
+    public DataOperationResult update(String entity, Long id, Map<String, String> fields) {
+        return null;
+    }
+
+    @Override
+    public DataOperationResult delete(String entity, Long id) {
+        return null;
     }
 }
