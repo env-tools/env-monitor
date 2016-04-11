@@ -120,6 +120,9 @@ public class CoreModule implements Module {
                 }
 
                 break;
+            case DATA_OPERATION_RESULT:
+                queryLibraryDataPushService.pushToSubscribedClients(responseMessage.getDestination(), responseMessage.getPayload().getJsonContent());
+                break;
             default:
                 LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - undefined response type: " + type);
         }

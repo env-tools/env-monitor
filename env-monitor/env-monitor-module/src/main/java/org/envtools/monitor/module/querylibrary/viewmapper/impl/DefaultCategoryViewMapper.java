@@ -36,7 +36,7 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         List<CategoryView> categoryViews = Lists.newArrayList();
 
         for (Category entry : categoriesByOwner) {
-            CategoryView categoryView = new CategoryView(entry.getTitle(),
+            CategoryView categoryView = new CategoryView(entry.getId(), entry.getTitle(),
                     entry.getDescription());
             if (entry.getQueries() != null) {
                 List<QueryView> queryViewList = Lists.newArrayList();

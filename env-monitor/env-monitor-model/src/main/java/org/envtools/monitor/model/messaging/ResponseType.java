@@ -14,6 +14,7 @@ public enum ResponseType {
     //Query Library module types
 
     QUERY_EXECUTION_RESULT,
-    CATEGORY_TREE_DATA
+    CATEGORY_TREE_DATA,
+    DATA_OPERATION_RESULT
 
 }
