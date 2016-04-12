@@ -75,11 +75,11 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                      * Узнали какие параметры принимает наш метод.
                      * Теперь необходимо достать связный объект
                      * */
-
+List<Object> object = new ArrayList<Object>();
                         for (int k = 0; k < clazz.length; k++) {
                             LOGGER.info("Тип параметра принимаемого методом " + Class.forName(clazz[k].getName()));
-                            Object object = entityManager.find(Class.forName(clazz[k].getName()), Long.valueOf(fields.get(propertyId.get(j) + ID)));
-                            LOGGER.info("Object - связный объект" + object.getClass());
+                            object.add(entityManager.find(Class.forName(clazz[k].getName()), Long.valueOf(fields.get(propertyId.get(j) + ID))));
+                            LOGGER.info("Object - связный объект" + object.get(k).getClass());
                         }
 
 
