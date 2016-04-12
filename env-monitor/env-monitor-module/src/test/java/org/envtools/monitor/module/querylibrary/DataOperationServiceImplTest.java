@@ -49,10 +49,11 @@ public class DataOperationServiceImplTest {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String,String> fields = new HashMap<String,String>();
-        fields.put("title","t1");
-        fields.put("description","test");
-        fields.put("owner","sergey");
-        fields.put("parentCategory_id","55");
+
+        fields.put("Title","t1");
+        fields.put("Description","test");
+        fields.put("Owner","sergey");
+        fields.put("ParentCategory_id","1");
 
         //dataOperation.setEntity("Category");
        // dataOperation.setType(DataOperationType.UPDATE);
@@ -93,9 +94,9 @@ public class DataOperationServiceImplTest {
         category1.setTitle("453333");
         category1.setDescription("parent");
         category1.setOwner(null);
-
         category.setParentCategory(category1);
         categoryDao.saveAndFlush(category1);
+        LOGGER.info("parentCategory id "+category1.getId());
         return categoryDao.saveAndFlush(category);
     }
 }
