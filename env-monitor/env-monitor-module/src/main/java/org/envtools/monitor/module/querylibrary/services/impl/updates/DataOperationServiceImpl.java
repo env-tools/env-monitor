@@ -1,17 +1,15 @@
-package org.envtools.monitor.module.querylibrary.services;
+package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.model.updates.DataOperation;
+import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
+import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -22,7 +20,7 @@ import java.util.*;
  * @author Anastasiya Plotnikova
  */
 @Service
-public class DataOperationServiceImpl extends DataOperation implements DataOperationService<Long> {
+public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID = "_id";
