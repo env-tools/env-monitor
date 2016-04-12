@@ -19,7 +19,7 @@ import static org.envtools.monitor.common.util.PropertyUtil.getRequiredValue;
  * @author Yury Yakovlev
  */
 @Service
-public class JdbcDataSourceService extends AbstractDataSourceService<BasicDataSource>{
+public class JdbcDataSourceService extends AbstractDataSourceService<BasicDataSource> {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractDataSourceService.class);
 
@@ -60,9 +60,9 @@ public class JdbcDataSourceService extends AbstractDataSourceService<BasicDataSo
         try {
             dataSource.close();
         } catch (SQLException e) {
-             LOGGER.error(String.format(
-                     "Could not close data source %s",
-                     ToStringBuilder.reflectionToString(dataSource)), e);
+            LOGGER.error(String.format(
+                    "Could not close data source %s",
+                    ToStringBuilder.reflectionToString(dataSource)), e);
         }
     }
 }

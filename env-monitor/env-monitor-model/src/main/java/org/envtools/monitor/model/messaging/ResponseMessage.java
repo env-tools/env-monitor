@@ -8,8 +8,7 @@ import org.envtools.monitor.model.messaging.content.AbstractContent;
  * Created: 10/16/15 10:07 PM
  *
  * @author Yury Yakovlev
- *  This class represents a one-time or periodic data pushed by a module to the data requestor (subscriber)
- *
+ *         This class represents a one-time or periodic data pushed by a module to the data requestor (subscriber)
  */
 public class ResponseMessage {
     private ResponseType type;
@@ -117,9 +116,9 @@ public class ResponseMessage {
         public Builder requestMetaData(RequestMessage requestMessage) {
             return
                     requestId(requestMessage.getRequestId())
-                    .sessionId(requestMessage.getSessionId())
-                    .destination(requestMessage.getDestination())
-                    .targetModuleId(requestMessage.getTargetModuleId());
+                            .sessionId(requestMessage.getSessionId())
+                            .destination(requestMessage.getDestination())
+                            .targetModuleId(requestMessage.getTargetModuleId());
         }
 
         public Builder requestId(String requestId) {

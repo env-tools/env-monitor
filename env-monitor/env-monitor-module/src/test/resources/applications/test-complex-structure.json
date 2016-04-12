@@ -1,57 +1,58 @@
-{"data": {
+{
+  "data": {
     "platforms": [
-        {
-            "id": "ID_MCS_PRIME",
-            "name": "Prime MCS",
-            "environments": [
-                {
-                    "id": "ID_DEV1",
-                    "name": "Regular DEV",
-                    "applications": [
-                        {
-                            "id": "ID_MCAT_mcslnx1u-phys_18333",
-                            "name": "MCAT for Config",
-                            "status": "RUNNING"
-                        },
-                        {
-                            "id": "ID_MCAT_mcslnx1d_18333",
-                            "name": "MCAT for Submit",
-                            "status": "RUNNING"
-                        },
-                        {
-                            "id": "ID_PD_mcslnx1d_9012",
-                            "name": "Primedriver",
-                            "status": "RUNNING"
-                        }
-                    ]
-                },
-                {
-                    "id": "ID_DEV9",
-                    "name": "DEV9",
-                    "applications": [
-                        {
-                            "id": "ID_MCAT_mcslnx1u-phys_18333",
-                            "name": "MCAT for Config",
-                            "status": "RUNNING"
-                        },
-                        {
-                            "id": "ID_MCAT_mcslnx1d_18334",
-                            "name": "MCAT for Config",
-                            "status": "RUNNING"
-                        },
-                        {
-                            "id": "ID_PD_mcslnx1d_10012",
-                            "name": "Primedriver",
-                            "status": "RUNNING"
-                        }
-                    ]
-                }
+      {
+        "id": "ID_MCS_PRIME",
+        "name": "Prime MCS",
+        "environments": [
+          {
+            "id": "ID_DEV1",
+            "name": "Regular DEV",
+            "applications": [
+              {
+                "id": "ID_MCAT_mcslnx1u-phys_18333",
+                "name": "MCAT for Config",
+                "status": "RUNNING"
+              },
+              {
+                "id": "ID_MCAT_mcslnx1d_18333",
+                "name": "MCAT for Submit",
+                "status": "RUNNING"
+              },
+              {
+                "id": "ID_PD_mcslnx1d_9012",
+                "name": "Primedriver",
+                "status": "RUNNING"
+              }
             ]
-        },
-        {
-            "id": "ID_MCS_CPM",
-            "name": "CPM MCS"
-        }
+          },
+          {
+            "id": "ID_DEV9",
+            "name": "DEV9",
+            "applications": [
+              {
+                "id": "ID_MCAT_mcslnx1u-phys_18333",
+                "name": "MCAT for Config",
+                "status": "RUNNING"
+              },
+              {
+                "id": "ID_MCAT_mcslnx1d_18334",
+                "name": "MCAT for Config",
+                "status": "RUNNING"
+              },
+              {
+                "id": "ID_PD_mcslnx1d_10012",
+                "name": "Primedriver",
+                "status": "RUNNING"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ID_MCS_CPM",
+        "name": "CPM MCS"
+      }
     ]
-}
+  }
 }

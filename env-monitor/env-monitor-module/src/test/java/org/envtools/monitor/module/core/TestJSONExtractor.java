@@ -32,8 +32,8 @@ public class TestJSONExtractor {
         String json = extractor.extract(
                 "{\"items\" : [ {\"id\":\"1\"}, {\"id\":\"2\"}] }",
                 SimplePathSelector.of("items/1"));
-       // LOGGER.info("TestJSONExtractor.testCollectionItemById - json = " + json);
-       // Assert.assertEquals("[{\"id\":\"1\"}][0]", json);
+        // LOGGER.info("TestJSONExtractor.testCollectionItemById - json = " + json);
+        // Assert.assertEquals("[{\"id\":\"1\"}][0]", json);
     }
 
     @Test()
@@ -41,8 +41,8 @@ public class TestJSONExtractor {
         String json = extractor.extract(
                 "{\"item\":{\"id\":\"1\",\"name\":\"test\"} }",
                 SimplePathSelector.of("item/name"));
-       // LOGGER.info("TestJSONExtractor.testNestedProperty - json = " + json);
-       // Assert.assertEquals("test", json);
+        // LOGGER.info("TestJSONExtractor.testNestedProperty - json = " + json);
+        // Assert.assertEquals("test", json);
     }
 
     @Test()
@@ -51,8 +51,8 @@ public class TestJSONExtractor {
         String json = extractor.extract(
                 source,
                 SimplePathSelector.of("data/platforms/ID_MCS_PRIME/environments/ID_DEV9/applications"));
-       // LOGGER.info("TestJSONExtractor.testComplexStructure - json = " + json);
-       // Assert.assertEquals("test", json);
+        // LOGGER.info("TestJSONExtractor.testComplexStructure - json = " + json);
+        // Assert.assertEquals("test", json);
     }
 
 }

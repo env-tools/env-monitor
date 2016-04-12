@@ -87,7 +87,7 @@ public class MockApplicationsDataCreator {
     }
 
     private static Double randomMemory() {
-         return Double.valueOf(ThreadLocalRandom.current().nextInt(512, 16384));
+        return Double.valueOf(ThreadLocalRandom.current().nextInt(512, 16384));
     }
 
 }

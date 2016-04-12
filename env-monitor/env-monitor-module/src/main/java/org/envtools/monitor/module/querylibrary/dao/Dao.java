@@ -10,10 +10,8 @@ import java.util.List;
  * Created: 05.03.16 1:55
  *
  * @author Yury Yakovlev
- *
- * @see  org.springframework.data.repository.CrudRepository
+ * @see org.springframework.data.repository.CrudRepository
  * @see org.springframework.data.jpa.repository.JpaRepository
- *
  */
 
 public interface Dao<T, ID extends Serializable> {
@@ -30,9 +28,9 @@ public interface Dao<T, ID extends Serializable> {
 
     <S extends T> S save(S entity);
 
-    void delete(T entity) ;
+    void delete(T entity);
 
-    void deleteById(ID id) ;
+    void deleteById(ID id);
 
     @Nullable
     T getOne(ID id);

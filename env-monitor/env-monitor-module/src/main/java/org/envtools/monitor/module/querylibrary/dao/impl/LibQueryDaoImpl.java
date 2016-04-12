@@ -13,7 +13,7 @@ import java.util.List;
  * @author Yury Yakovlev
  */
 @Repository
-public class LibQueryDaoImpl  extends AbstractDbDao<LibQuery, Long> implements LibQueryDao {
+public class LibQueryDaoImpl extends AbstractDbDao<LibQuery, Long> implements LibQueryDao {
 
     private static final Logger LOGGER = Logger.getLogger(LibQueryDaoImpl.class);
 

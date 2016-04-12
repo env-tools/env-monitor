@@ -37,7 +37,7 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
     @Override
     public List<QueryExecution> getByStartTimeInterval(LocalDateTime startTimeFrom, LocalDateTime startTimeTo) {
         return em.createQuery("FROM QueryExecution WHERE startTimestamp BETWEEN :start AND :end")
-                .setParameter("start",startTimeFrom)
+                .setParameter("start", startTimeFrom)
                 .setParameter("end", startTimeTo)
                 .getResultList();
     }
@@ -47,6 +47,6 @@ public class QueryExecutionDaoImpl extends AbstractDbDao<QueryExecution, Long> i
     }
 
     private LocalDateTime createPatternTime(LocalDateTime time) {
-        return  time;
+        return time;
     }
 }

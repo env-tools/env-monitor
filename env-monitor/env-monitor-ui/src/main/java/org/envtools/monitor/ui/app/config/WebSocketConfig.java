@@ -5,6 +5,7 @@ package org.envtools.monitor.ui.app.config;
  *
  * @author Yury Yakovlev
  */
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

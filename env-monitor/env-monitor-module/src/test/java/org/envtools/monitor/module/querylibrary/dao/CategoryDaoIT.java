@@ -21,8 +21,8 @@ import java.util.List;
  * @author Anastasiya
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class CategoryDaoIT {
 
@@ -45,13 +45,13 @@ public class CategoryDaoIT {
         Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getTitle());
         List<Category> foundQueries1 = categoryDao.getRootCategories();
         Assert.assertEquals(1, foundQueries1.size());
-       // List<Category> foundQueries2 = categoryDao.getRootCategoriesByOwner("owner");
-      //  Assert.assertEquals(1, foundQueries2.size());
+        // List<Category> foundQueries2 = categoryDao.getRootCategoriesByOwner("owner");
+        //  Assert.assertEquals(1, foundQueries2.size());
 
         LOGGER.info("Found queries: " + foundQueries);
         LOGGER.info("Found queries: " + foundQueries1);
         //LOGGER.info("Found queries: " + foundQueries2);
-       // LOGGER.info("Found queries: " + foundQueries3);
+        // LOGGER.info("Found queries: " + foundQueries3);
 
     }
 

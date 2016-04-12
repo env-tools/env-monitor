@@ -6,5 +6,5 @@ package org.envtools.monitor.common.messaging.broker.simple;
  * @author Yury Yakovlev
  */
 public enum ConnectionTypeEnum {
-   PRODUCER, CONSUMER;
+    PRODUCER, CONSUMER;
 }

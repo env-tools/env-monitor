@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "DATA_SOURCE")
 public class DataSource extends AbstractDbIdentifiable {
 
-    public  DataSource() {
+    public DataSource() {
     }
 
     @Enumerated(EnumType.STRING)

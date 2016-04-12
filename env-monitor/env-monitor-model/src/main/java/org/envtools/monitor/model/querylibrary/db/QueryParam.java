@@ -21,7 +21,7 @@ public class QueryParam extends AbstractDbIdentifiable {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="QUERY_ID")
+    @JoinColumn(name = "QUERY_ID")
     private LibQuery libQuery;
 
     @Enumerated(EnumType.STRING)

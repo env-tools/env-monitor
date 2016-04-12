@@ -93,13 +93,13 @@ public class SocketConnectionHandler implements Runnable {
     }
 
     private void terminateConnection() {
-       if (socket != null) {
-           try {
-               socket.close();
-               LOGGER.info("SocketConnectionHandler.terminateConnection - connection to " + socket.getInetAddress() + " closed.");
-           } catch (IOException e) {
-               LOGGER.info("SocketConnectionHandler.terminateConnection - could not close connection to " + socket.getInetAddress());
-           }
-       }
+        if (socket != null) {
+            try {
+                socket.close();
+                LOGGER.info("SocketConnectionHandler.terminateConnection - connection to " + socket.getInetAddress() + " closed.");
+            } catch (IOException e) {
+                LOGGER.info("SocketConnectionHandler.terminateConnection - could not close connection to " + socket.getInetAddress());
+            }
+        }
     }
 }

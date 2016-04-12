@@ -30,7 +30,7 @@ public class ApplicationsModuleStorageServiceImpl implements ApplicationsModuleS
             return extractor.extract(serializedApplicationsData, simplePathSelector);
         } catch (IllegalSelectorException e) {
             LOGGER.error("ApplicationsModuleStorageServiceImpl.extractPartBySelector - invalid selector, returning empty result: " +
-            selector, e);
+                    selector, e);
             return extractor.emptyExtractionResult();
         }
     }

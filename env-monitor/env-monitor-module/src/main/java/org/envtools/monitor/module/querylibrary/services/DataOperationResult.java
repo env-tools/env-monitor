@@ -75,13 +75,13 @@ public class DataOperationResult {
     }
 
     public static class Builder {
-        private  String executionId;
-        private  DataOperationStatusE status;
-        private  long elapsedTimeMs;
-        private  long returnedRowCount;
-        private  List<Map<String, Object>> resultRows;
-        private  String errorMessage;
-        private  Throwable error;
+        private String executionId;
+        private DataOperationStatusE status;
+        private long elapsedTimeMs;
+        private long returnedRowCount;
+        private List<Map<String, Object>> resultRows;
+        private String errorMessage;
+        private Throwable error;
 
         public Builder executionId(String executionId) {
             this.executionId = executionId;

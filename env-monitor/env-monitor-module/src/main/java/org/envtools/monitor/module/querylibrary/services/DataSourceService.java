@@ -7,7 +7,7 @@ import java.util.Map;
  *
  * @author Yury Yakovlev
  */
-public interface DataSourceService <T> {
+public interface DataSourceService<T> {
 
     T getDataSourceForParams(Map<String, String> params);
 

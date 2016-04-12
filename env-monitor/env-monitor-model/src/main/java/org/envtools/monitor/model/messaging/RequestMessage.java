@@ -7,8 +7,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * Created: 9/20/15 12:56 AM
  *
  * @author Yury Yakovlev
- *
- * This class represents a request (subscription) for some data, addressed to a specific module
+ *         <p>
+ *         This class represents a request (subscription) for some data, addressed to a specific module
  */
 public class RequestMessage {
 

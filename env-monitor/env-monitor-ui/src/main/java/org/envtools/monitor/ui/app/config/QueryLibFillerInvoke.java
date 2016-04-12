@@ -29,7 +29,6 @@ public class QueryLibFillerInvoke {
     protected EntityManager entityManager;
 
 
-
     @Transactional
     public void createDb(boolean createSampleTestHistory) {
         QueryLibDbFiller.fillDatabase(entityManager, createSampleTestHistory);

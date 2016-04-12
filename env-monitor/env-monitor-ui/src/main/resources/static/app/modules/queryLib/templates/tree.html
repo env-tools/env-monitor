@@ -29,18 +29,24 @@
                     </div>
                     <div class="form-group">
                         <label for="query_description">Description</label>
-                        <input id="query_description" type="text" class="form-control" data-ng-model="query.description">
+                        <input id="query_description" type="text" class="form-control"
+                               data-ng-model="query.description">
                     </div>
                     <div class="form-group">
                         <label for="query_text">Text</label>
-                        <textarea id="query_text" class="form-control" cols="30" rows="10" data-ng-model="query.text"></textarea>
+                        <textarea id="query_text" class="form-control" cols="30" rows="10"
+                                  data-ng-model="query.text"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!query.id" type="button" class="btn btn-success" data-ng-click="create(query)">Create</button>
-                <button data-ng-if="query.id" type="button" class="btn btn-success" data-ng-click="update(query)">Update</button>
+                <button data-ng-if="!query.id" type="button" class="btn btn-success" data-ng-click="create(query)">
+                    Create
+                </button>
+                <button data-ng-if="query.id" type="button" class="btn btn-success" data-ng-click="update(query)">
+                    Update
+                </button>
             </div>
         </div>
 
@@ -67,8 +73,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!category.id" type="button" class="btn btn-success" data-ng-click="create(category)">Create</button>
-                <button data-ng-if="category.id" type="button" class="btn btn-success" data-ng-click="update(category)">Update</button>
+                <button data-ng-if="!category.id" type="button" class="btn btn-success"
+                        data-ng-click="create(category)">Create
+                </button>
+                <button data-ng-if="category.id" type="button" class="btn btn-success" data-ng-click="update(category)">
+                    Update
+                </button>
             </div>
         </div>
 

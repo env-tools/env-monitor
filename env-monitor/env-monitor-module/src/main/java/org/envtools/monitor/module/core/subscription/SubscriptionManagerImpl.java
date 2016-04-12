@@ -14,7 +14,7 @@ import java.util.Set;
  * @author Yury Yakovlev
  */
 @Component
-public class SubscriptionManagerImpl implements SubscriptionManager{
+public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private static final Logger LOGGER = Logger.getLogger(SubscriptionManagerImpl.class);
 

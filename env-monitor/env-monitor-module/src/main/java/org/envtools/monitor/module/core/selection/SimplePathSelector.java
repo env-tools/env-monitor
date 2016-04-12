@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * @author Yury Yakovlev
  */
-public class SimplePathSelector implements Iterable<String>{
+public class SimplePathSelector implements Iterable<String> {
 
     private static final String SEGMENT_PATTERN = "^[a-zA-Z0-9\\-_]*$";
     private static final String DEFAULT_SEGMENT_SEPARATOR = "/";
@@ -34,19 +34,19 @@ public class SimplePathSelector implements Iterable<String>{
         validateSegments();
     }
 
-    public static SimplePathSelector of(String selectorString) throws IllegalSelectorException{
+    public static SimplePathSelector of(String selectorString) throws IllegalSelectorException {
         return new SimplePathSelector(selectorString, DEFAULT_SEGMENT_SEPARATOR);
     }
 
     private void validateSegments() throws IllegalSelectorException {
-       for (String segment : this) {
-           if (!segment.matches(SEGMENT_PATTERN)) {
-               throw new IllegalSelectorException(
-                       String.format(
-                               "Selector %s: segment '%s' is not valid (must match pattern %s)",
-                       selectorStr, segment, SEGMENT_PATTERN));
-           }
-       }
+        for (String segment : this) {
+            if (!segment.matches(SEGMENT_PATTERN)) {
+                throw new IllegalSelectorException(
+                        String.format(
+                                "Selector %s: segment '%s' is not valid (must match pattern %s)",
+                                selectorStr, segment, SEGMENT_PATTERN));
+            }
+        }
     }
 
     public String getSelectorStr() {

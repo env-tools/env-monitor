@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Anastasiya Plotnikova
  */
-public interface QueryExecutionParamDao extends Dao<QueryExecutionParam,Long> {
+public interface QueryExecutionParamDao extends Dao<QueryExecutionParam, Long> {
 
     List<QueryExecutionParam> getNameByText(String text);
 

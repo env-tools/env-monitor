@@ -59,7 +59,6 @@ public class LibQuery extends AbstractDbIdentifiable {
     }
 
 
-
     public String getText() {
         return text;
     }

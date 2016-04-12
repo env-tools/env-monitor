@@ -89,7 +89,7 @@
                     source: result.result,
                     columns: columns
                 };
-            } else if(result.status == "ERROR") {
+            } else if (result.status == "ERROR") {
                 $scope.error = true;
                 $scope.errorMessage = result.message;
             }
@@ -109,7 +109,7 @@
             return columns;
         }
 
-        $rootScope.$on('setQuery', function(event, data) {
+        $rootScope.$on('setQuery', function (event, data) {
             $scope.params.query = data.text;
         })
     }

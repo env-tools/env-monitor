@@ -3,15 +3,16 @@ package org.envtools.monitor.model.querylibrary.db;
 /**
  * Created by jesa on 25.02.2016.
  */
+
 import javax.persistence.*;
 
 
 @MappedSuperclass
 public class AbstractDbIdentifiable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="QueryLibSeqGenerator")
-    @SequenceGenerator(name="QueryLibSeqGenerator",sequenceName="QUERY_LIB_SEQUENCE", allocationSize=1)
-    @Column(name ="ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "QueryLibSeqGenerator")
+    @SequenceGenerator(name = "QueryLibSeqGenerator", sequenceName = "QUERY_LIB_SEQUENCE", allocationSize = 1)
+    @Column(name = "ID")
     protected Long id;
 
     public AbstractDbIdentifiable() {

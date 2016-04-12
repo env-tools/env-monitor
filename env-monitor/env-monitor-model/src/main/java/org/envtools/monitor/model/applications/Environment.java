@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Environment extends AbstractNamedIdentifiable<String> {
 
-   private List<Application> applications;
+    private List<Application> applications;
 
     public List<Application> getApplications() {
         return applications;

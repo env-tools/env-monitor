@@ -24,7 +24,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class QueryExecutionParamDaoIT {
     private static final Logger LOGGER = Logger.getLogger(QueryExecutionDaoIT.class);
@@ -79,14 +79,14 @@ public class QueryExecutionParamDaoIT {
         QueryExecution queryExecution = new QueryExecution();
         //Don't set Id - it will be auto generated
 
-    queryExecution.setUser("Андрейко");
-       queryExecutionDao.saveAndFlush(queryExecution);
+        queryExecution.setUser("Андрейко");
+        queryExecutionDao.saveAndFlush(queryExecution);
 
         QueryExecutionParam queryExecutionParam = new QueryExecutionParam();
         //Don't set Id - it will be auto generated
         queryExecutionParam.setName("Андрейко");
         queryExecutionParam.setValue("public");
-       // queryExecutionParam.setQueryExecution();
+        // queryExecutionParam.setQueryExecution();
 
         // queryExecution.set
         return queryExecutionParamDao.saveAndFlush(queryExecutionParam);

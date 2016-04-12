@@ -16,7 +16,7 @@
 
     <bean id="applications.provider" class="${applications.provider}"/>
 
-    <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer" />
+    <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer"/>
 
     <!-- TODO move to provider context -->
     <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.MemoryDataProvider"/>

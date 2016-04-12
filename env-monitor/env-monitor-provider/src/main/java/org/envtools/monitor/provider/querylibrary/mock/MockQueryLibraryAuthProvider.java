@@ -9,7 +9,7 @@ import java.util.UUID;
  *
  * @author Yury Yakovlev
  */
-public class MockQueryLibraryAuthProvider implements QueryLibraryAuthProvider{
+public class MockQueryLibraryAuthProvider implements QueryLibraryAuthProvider {
     @Override
     public String login(String user, String password) {
         return UUID.randomUUID().toString();

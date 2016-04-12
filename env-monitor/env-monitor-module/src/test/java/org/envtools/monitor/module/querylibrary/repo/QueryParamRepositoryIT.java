@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 
 @IntegrationTest
 public class QueryParamRepositoryIT {

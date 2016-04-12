@@ -30,6 +30,6 @@ public class JacksonJSONSerializer implements Serializer {
 
     @Override
     public Serializable deserialize(String serializedForm) {
-       throw new UnsupportedOperationException("deserialize not implemented in JacksonJSONSerializer");
+        throw new UnsupportedOperationException("deserialize not implemented in JacksonJSONSerializer");
     }
 }

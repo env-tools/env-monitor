@@ -69,9 +69,8 @@ public class WebSocketCallController {
     /**
      * This method supports one-time request to Query Library module
      * Clients should subscribe with "/call" prefix
-     *
+     * <p>
      * Not used yet
-     *
      */
     @SubscribeMapping("/modules/M_QUERY_LIBRARY/**")
     public ResponseMessage handleQueryLibraryModuleCall(SimpMessageHeaderAccessor headerAccessor

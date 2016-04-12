@@ -27,21 +27,21 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
 
     @PostConstruct
     public void init() {
-       LOGGER.info("Initializing AbstractDbDao, using entityManager : " + em);
+        LOGGER.info("Initializing AbstractDbDao, using entityManager : " + em);
     }
 
-    public void setClazz( Class< T > clazzToSet ){
+    public void setClazz(Class<T> clazzToSet) {
         this.clazz = clazzToSet;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<T> findAll(Iterable<ID> ids) {
-       List<T> result = Lists.newArrayList();
+        List<T> result = Lists.newArrayList();
         for (ID id : ids) {
             T entity = em.find(clazz, id);
             if (entity != null) {
-               result.add(entity);
+                result.add(entity);
             }
         }
         return result;
@@ -85,7 +85,7 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
     @Override
     @SuppressWarnings("unchecked")
     public List<T> findAll() {
-        return em.createQuery( "from " + clazz.getName() )
+        return em.createQuery("from " + clazz.getName())
                 .getResultList();
     }
 

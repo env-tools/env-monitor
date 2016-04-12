@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "QUERY_EXECUTION")
-public class QueryExecution extends AbstractDbIdentifiable  implements Serializable {
+public class QueryExecution extends AbstractDbIdentifiable implements Serializable {
 
     public QueryExecution() {
     }
@@ -66,7 +66,7 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
     }
 
     @ManyToOne
-    @JoinColumn(name="QUERY_ID")
+    @JoinColumn(name = "QUERY_ID")
     private LibQuery libQuery;
 
     @OneToMany(mappedBy = "queryExecution", cascade = CascadeType.ALL)
@@ -74,7 +74,7 @@ public class QueryExecution extends AbstractDbIdentifiable  implements Serializa
     private List<QueryExecutionParam> queryExecutionParams;
 
     @ManyToOne
-    @JoinColumn(name="DATASOURCE_ID")
+    @JoinColumn(name = "DATASOURCE_ID")
     private DataSource dataSource;
 
     public String getUser() {

@@ -2,12 +2,12 @@
  * Application constants
  */
 (function () {
-  'use strict';
+    'use strict';
 
-  /*angular
-    .module('app')
-    .constant('API_SETTINGS', {
-      API_DIR: '/api/',
-      API_VERSION: 'v1',
-    })*/
+    /*angular
+     .module('app')
+     .constant('API_SETTINGS', {
+     API_DIR: '/api/',
+     API_VERSION: 'v1',
+     })*/
 })();

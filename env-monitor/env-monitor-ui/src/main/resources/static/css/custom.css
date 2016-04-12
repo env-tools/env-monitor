@@ -23,7 +23,7 @@
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-    box-shadow: 15px 0px 30px rgba(0,0,0,0.5);
+    box-shadow: 15px 0px 30px rgba(0, 0, 0, 0.5);
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -67,7 +67,7 @@
 .sidebar-nav li.active a {
     text-decoration: none;
     color: #fff;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-nav li a:active,
@@ -102,7 +102,7 @@
     background: none;
 }
 
-@media(min-width:768px) {
+@media (min-width: 768px) {
     #wrapper {
         padding-left: 250px;
     }

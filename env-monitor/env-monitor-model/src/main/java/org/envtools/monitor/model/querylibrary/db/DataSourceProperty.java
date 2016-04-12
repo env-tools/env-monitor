@@ -12,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "DATA_SOURCE_PROPERTIES")
-public class DataSourceProperty extends AbstractDbIdentifiable{
+public class DataSourceProperty extends AbstractDbIdentifiable {
 
     public DataSourceProperty() {
     }
@@ -21,7 +21,7 @@ public class DataSourceProperty extends AbstractDbIdentifiable{
     private String value;
 
     @ManyToOne
-    @JoinColumn(name="DATASOURCE_ID")
+    @JoinColumn(name = "DATASOURCE_ID")
     private DataSource dataSource;
 
     public String getProperty() {

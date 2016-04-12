@@ -1,19 +1,19 @@
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module('queryLib')
-    .config(routersConfig);
+    angular
+        .module('queryLib')
+        .config(routersConfig);
 
-  routersConfig.$inject = ['$stateProvider'];
+    routersConfig.$inject = ['$stateProvider'];
 
-  function routersConfig($stateProvider) {
-    $stateProvider
-      .state('query_executeQuery', {
-        url: "/query/execute",
-        templateUrl: "/app/modules/queryLib/templates/execute.html",
-        controller: "QueryExecute",
-        controllerAs: "queryExecute"
-      })
-  }
+    function routersConfig($stateProvider) {
+        $stateProvider
+            .state('query_executeQuery', {
+                url: "/query/execute",
+                templateUrl: "/app/modules/queryLib/templates/execute.html",
+                controller: "QueryExecute",
+                controllerAs: "queryExecute"
+            })
+    }
 })();

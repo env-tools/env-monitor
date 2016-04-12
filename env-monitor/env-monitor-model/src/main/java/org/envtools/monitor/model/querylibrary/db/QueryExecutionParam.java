@@ -12,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "QUERY_EXECUTION_PARAM")
-public class QueryExecutionParam  extends AbstractDbIdentifiable{
+public class QueryExecutionParam extends AbstractDbIdentifiable {
 
     public QueryExecutionParam() {
     }
@@ -21,7 +21,7 @@ public class QueryExecutionParam  extends AbstractDbIdentifiable{
     private String value;
 
     @ManyToOne
-    @JoinColumn(name="QUERYEXECUTION_ID")
+    @JoinColumn(name = "QUERYEXECUTION_ID")
     private QueryExecution queryExecution;
 
     public QueryExecution getQueryExecution() {

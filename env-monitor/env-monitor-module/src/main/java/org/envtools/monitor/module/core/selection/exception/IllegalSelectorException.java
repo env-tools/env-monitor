@@ -5,7 +5,7 @@ package org.envtools.monitor.module.core.selection.exception;
  *
  * @author Yury Yakovlev
  */
-public class IllegalSelectorException extends Exception{
+public class IllegalSelectorException extends Exception {
     public IllegalSelectorException() {
     }
 

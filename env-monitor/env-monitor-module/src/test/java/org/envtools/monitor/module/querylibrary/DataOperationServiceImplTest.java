@@ -26,8 +26,8 @@ import java.util.Map;
  * @author Anastasiya Plotnikova
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class DataOperationServiceImplTest {
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImplTest.class);
@@ -44,45 +44,45 @@ public class DataOperationServiceImplTest {
     private static final String QUERY_TEXT = "SELECT * FROM T WHERE a = '123'";
     private static final String QUERY_SEARCH_PRESENT = "WHERE";
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
+
     @Test
     public void testDataOperationServiceContains() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
 
         createWithText(QUERY_SEARCH_PRESENT);
-        Map<String,String> fields = new HashMap<String,String>();
+        Map<String, String> fields = new HashMap<String, String>();
 
-        fields.put("Title","t1");
-        fields.put("Description","test");
-        fields.put("Owner","sergey");
-        fields.put("ParentCategory_id","1");
+        fields.put("Title", "t1");
+        fields.put("Description", "test");
+        fields.put("Owner", "sergey");
+        fields.put("ParentCategory_id", "1");
 
         //dataOperation.setEntity("Category");
-       // dataOperation.setType(DataOperationType.UPDATE);
-       // dataOperation.setFields(fields);
-        dataOperationService.create("Category",fields);
+        // dataOperation.setType(DataOperationType.UPDATE);
+        // dataOperation.setFields(fields);
+        dataOperationService.create("Category", fields);
 
     }
-
 
 
     @Test
     public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
 
-       // createWithText(QUERY_SEARCH_PRESENT);
+        // createWithText(QUERY_SEARCH_PRESENT);
 
-       // Map<String,String> fields1 = new HashMap<String,String>();
-       // fields1.put("text","text");
-      //  fields1.put("description","test");
-      //  fields1.put("title","sssergey");
-       // fields1.put("category_id","77");
+        // Map<String,String> fields1 = new HashMap<String,String>();
+        // fields1.put("text","text");
+        //  fields1.put("description","test");
+        //  fields1.put("title","sssergey");
+        // fields1.put("category_id","77");
 
-       // dataOperation.setEntity("LibQuery");
-      //  dataOperation.setType(DataOperationType.UPDATE);
-      //  dataOperation.setFields(fields1);
-      //  dataOperationInterface.create(dataOperation);
+        // dataOperation.setEntity("LibQuery");
+        //  dataOperation.setType(DataOperationType.UPDATE);
+        //  dataOperation.setFields(fields1);
+        //  dataOperationInterface.create(dataOperation);
 
     }
 
-    private Category createWithText(String text){
+    private Category createWithText(String text) {
         Category category = new Category();
         //Don't set Id - it will be auto generated
         category.setTitle(text);
@@ -96,7 +96,7 @@ public class DataOperationServiceImplTest {
         category1.setOwner(null);
         category.setParentCategory(category1);
         categoryDao.saveAndFlush(category1);
-        LOGGER.info("parentCategory id "+category1.getId());
+        LOGGER.info("parentCategory id " + category1.getId());
         return categoryDao.saveAndFlush(category);
     }
 }
