@@ -14,7 +14,7 @@ public interface DataOperationService<T> {
 
     DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException;
 
-    DataOperationResult update(String entity, T id, Map<String, String> fields);
+    DataOperationResult update(String entity, T id, Map<String, String> fields) throws ClassNotFoundException;
 
     DataOperationResult delete(String entity, T id);
 }

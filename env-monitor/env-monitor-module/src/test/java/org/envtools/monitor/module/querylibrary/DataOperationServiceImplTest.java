@@ -87,7 +87,7 @@ public class DataOperationServiceImplTest {
 
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
-                ,dataOperationService.create("Category", fields).getStatus());
+               ,dataOperationService.create("Category3", fields).getStatus());
 
 
         Assert.assertEquals(0,categoryDao.getCategoryByTitle("t2").size());

@@ -40,8 +40,44 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     @Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException {
+    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException{
+        try{
+            Class entityClass = Class.forName(path + entity);
+       Map<String,Object> result= listProperty(entity, fields);
 
+        Object a = entityClass.newInstance();
+        BeanUtils.populate(a, result);
+        LOGGER.info("Полученный результат:  " + a);
+        entityManager.persist(a);
+        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+    }
+
+    catch(NumberFormatException|IllegalAccessException|InstantiationException|InvocationTargetException|ClassNotFoundException ex)
+
+    {
+        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+    }
+
+
+}
+
+    @Override
+    public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException {
+        /*Вытаскиваем класс, делаем find, по id, втавляем туда fields*/
+        //находим класс по entity
+        Class entityClass = Class.forName(path + entity);
+        return null;
+    }
+
+    @Override
+    public DataOperationResult delete(String entity, Long id) {
+        /*Вытаскиваем класс, находим id, грохаем*/
+
+        return null;
+    }
+
+
+    public Map<String,Object> listProperty(String entity, Map<String, String> fields) throws NumberFormatException {
         Map<String, Object> result = new HashMap<String, Object>();
         List<String> propertyId = new ArrayList<String>();
 
@@ -57,67 +93,50 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         }
         try {
 
-        //находим класс по entity
-        Class entityClass = Class.forName(path + entity);
-        BeanInfo bi = Introspector.getBeanInfo(entityClass);
-        PropertyDescriptor[] pds = bi.getPropertyDescriptors();
+            //находим класс по entity
+            Class entityClass = Class.forName(path + entity);
+            BeanInfo bi = Introspector.getBeanInfo(entityClass);
+            PropertyDescriptor[] pds = bi.getPropertyDescriptors();
 
         /*Находим все методы setXXX, которые содержат в названии id*/
-        for (int i = 0; i < pds.length; i++) {
+            for (int i = 0; i < pds.length; i++) {
 
-            if (pds[i].getWriteMethod() != null) {
-
+                if (pds[i].getWriteMethod() != null) {
 
                 /*находим методы с id в классе entity*/
-                for (String entry : propertyId) {
-                    if (pds[i].getWriteMethod().getName().contains(firstUpperCase(entry))) {
-                        LOGGER.info("propertyId.get(j)= " + entry);
-                        LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
-                        LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
-                        Class[] clazz = pds[i].getWriteMethod().getParameterTypes();
+                    for (String entry : propertyId) {
+                        if (pds[i].getWriteMethod().getName().contains(firstUpperCase(entry))) {
+                            LOGGER.info("propertyId.get(j)= " + entry);
+                            LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
+                            LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
+                            Class[] clazz = pds[i].getWriteMethod().getParameterTypes();
 
                      /*
                      * Узнали какие параметры принимает наш метод.
                      * Теперь необходимо достать связный объект
                      * */
-                        for (Class arg : clazz) {
-                            LOGGER.info("Тип параметра принимаемого методом " + Class.forName(arg.getName()));
+                            for (Class arg : clazz) {
+                                LOGGER.info("Тип параметра принимаемого методом " + Class.forName(arg.getName()));
 
-                            result.put(entry, entityManager.find(Class.forName(arg.getName()),
-                                    Long.valueOf(fields.get(entry + ID))));
+                                result.put(entry, entityManager.find(Class.forName(arg.getName()),
+                                        Long.valueOf(fields.get(entry + ID))));
 
-                            LOGGER.info("Object - связный объект " + result.get(entry));
+                                LOGGER.info("Object - связный объект " + result.get(entry));
+                            }
+
                         }
-
                     }
+
                 }
 
             }
 
+        } catch (ClassNotFoundException| NumberFormatException|IntrospectionException e) {
+           LOGGER.info(e.getMessage());
         }
-
-
-            Object a = entityClass.newInstance();
-            BeanUtils.populate(a, result);
-            LOGGER.info("Полученный результат:  " + a);
-            entityManager.persist(a);
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        }catch (NumberFormatException|IllegalAccessException| InstantiationException| InvocationTargetException | ClassNotFoundException| IntrospectionException ex){
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
-        }
-
-
+        return result;
     }
 
-    @Override
-    public DataOperationResult update(String entity, Long id, Map<String, String> fields) {
-        return null;
-    }
-
-    @Override
-    public DataOperationResult delete(String entity, Long id) {
-        return null;
-    }
 
     public String firstUpperCase(String text) {
         if (text == null || text.isEmpty()) return "";
