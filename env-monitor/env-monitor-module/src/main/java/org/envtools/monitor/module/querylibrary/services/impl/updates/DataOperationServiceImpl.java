@@ -40,8 +40,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     @Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws
-            IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException, InstantiationException, SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException {
 
         Map<String, Object> result = new HashMap<String, Object>();
         List<String> propertyId = new ArrayList<String>();
@@ -58,6 +57,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                 result.put(entry.getKey(), fields.get(entry.getKey()));
             }
         }
+
 
 
         //находим класс по entity
