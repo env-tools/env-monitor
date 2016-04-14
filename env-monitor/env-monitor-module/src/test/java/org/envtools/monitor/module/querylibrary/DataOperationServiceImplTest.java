@@ -8,6 +8,7 @@ import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.model.updates.DataOperationType;
 import org.envtools.monitor.module.DataOperationInterface;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
+import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.testng.Assert;
 
+import javax.transaction.*;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
@@ -49,38 +52,38 @@ public class DataOperationServiceImplTest {
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
     @Test
-    public void testDataOperationServiceContains() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceContains() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
 
-        fields.put("Title", "t1");
-        fields.put("Description", "test");
-        fields.put("Owner", "sergey");
-        fields.put("ParentCategory_id", "1");
+        fields.put("title", "t1");
+        fields.put("description", "test");
+        fields.put("owner", "sergey");
+        fields.put("parentCategory_id", "1");
 
-        //dataOperation.setEntity("Category");
-        // dataOperation.setType(DataOperationType.UPDATE);
-        // dataOperation.setFields(fields);
-        dataOperationService.create("Category", fields);
+
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED
+                ,dataOperationService.create("Category", fields).getStatus());
+
+
+        Assert.assertEquals(1,categoryDao.getCategoryByTitle("t1").size());
 
     }
 
 
     @Test
-    public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
 
-        // createWithText(QUERY_SEARCH_PRESENT);
+
 
          Map<String,String> fields1 = new HashMap<String,String>();
-        // fields1.put("text","text");
+
           fields1.put("StartTimestamp","2016, 3, 22, 20, 24");
           fields1.put("User","sssergey");
          fields1.put("Text","77");
 
-        // dataOperation.setEntity("LibQuery");
-        //  dataOperation.setType(DataOperationType.UPDATE);
-        //  dataOperation.setFields(fields1);
+
           dataOperationService.create("QueryExecution",fields1);
 
     }
@@ -90,7 +93,7 @@ public class DataOperationServiceImplTest {
         //Don't set Id - it will be auto generated
         category.setTitle(text);
         category.setDescription("some_description");
-        category.setOwner(null);
+        category.setOwner("anastasiya");
 
         Category category1 = new Category();
         //Don't set Id - it will be auto generated
@@ -98,7 +101,9 @@ public class DataOperationServiceImplTest {
         category1.setDescription("parent");
         category1.setOwner(null);
         category.setParentCategory(category1);
+        category.setChildCategories(category1.getChildCategories());
         categoryDao.saveAndFlush(category1);
+
         LOGGER.info("parentCategory id " + category1.getId());
 
        // LibQuery
