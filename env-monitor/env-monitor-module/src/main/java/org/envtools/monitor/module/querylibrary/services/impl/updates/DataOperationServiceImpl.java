@@ -46,8 +46,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         List<String> propertyId = new ArrayList<String>();
 
         /*Найдем все string, которые заканчиваются на _id*/
-        List<String> list = new ArrayList(fields.keySet());
-
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
             if (entry.getKey().contains(ID)) {
@@ -57,26 +55,24 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                 result.put(entry.getKey(), fields.get(entry.getKey()));
             }
         }
-
-
+        try {
 
         //находим класс по entity
         Class entityClass = Class.forName(path + entity);
         BeanInfo bi = Introspector.getBeanInfo(entityClass);
         PropertyDescriptor[] pds = bi.getPropertyDescriptors();
 
-
         /*Находим все методы setXXX, которые содержат в названии id*/
         for (int i = 0; i < pds.length; i++) {
 
             if (pds[i].getWriteMethod() != null) {
 
-                /*находим методы с id в классе entity*/
-                for (int j = 0; j < propertyId.size(); j++) {
 
-                    if (pds[i].getWriteMethod().getName().contains(firstUpperCase(propertyId.get(j)))) {
-                        LOGGER.info("propertyId.get(j)= " + propertyId.get(j));
-                        LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + propertyId.get(j));
+                /*находим методы с id в классе entity*/
+                for (String entry : propertyId) {
+                    if (pds[i].getWriteMethod().getName().contains(firstUpperCase(entry))) {
+                        LOGGER.info("propertyId.get(j)= " + entry);
+                        LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
                         LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
                         Class[] clazz = pds[i].getWriteMethod().getParameterTypes();
 
@@ -84,30 +80,33 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                      * Узнали какие параметры принимает наш метод.
                      * Теперь необходимо достать связный объект
                      * */
+                        for (Class arg : clazz) {
+                            LOGGER.info("Тип параметра принимаемого методом " + Class.forName(arg.getName()));
 
-                        for (int k = 0; k < clazz.length; k++) {
-                            LOGGER.info("Тип параметра принимаемого методом " + Class.forName(clazz[k].getName()));
+                            result.put(entry, entityManager.find(Class.forName(arg.getName()),
+                                    Long.valueOf(fields.get(entry + ID))));
 
-                            result.put(propertyId.get(j), entityManager.find(Class.forName(clazz[k].getName()),
-                                    Long.valueOf(fields.get(propertyId.get(j) + ID))));
-
-                            LOGGER.info("Object - связный объект " + result.get(propertyId.get(j)));
+                            LOGGER.info("Object - связный объект " + result.get(entry));
                         }
-                    }
 
+                    }
                 }
 
             }
 
         }
 
-        Object a = entityClass.newInstance();
-        BeanUtils.populate(a, result);
-        LOGGER.info("Полученный результат:  " + a);
 
-        entityManager.persist(a);
+            Object a = entityClass.newInstance();
+            BeanUtils.populate(a, result);
+            LOGGER.info("Полученный результат:  " + a);
+            entityManager.persist(a);
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+        }catch (NumberFormatException|IllegalAccessException| InstantiationException| InvocationTargetException | ClassNotFoundException| IntrospectionException ex){
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+        }
 
-        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+
     }
 
     @Override

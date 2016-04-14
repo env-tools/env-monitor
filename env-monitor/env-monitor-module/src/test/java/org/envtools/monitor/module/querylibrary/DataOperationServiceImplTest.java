@@ -77,14 +77,20 @@ public class DataOperationServiceImplTest {
 
 
 
-         Map<String,String> fields1 = new HashMap<String,String>();
+        createWithText(QUERY_SEARCH_PRESENT);
+        Map<String, String> fields = new HashMap<String, String>();
 
-          fields1.put("StartTimestamp","2016, 3, 22, 20, 24");
-          fields1.put("User","sssergey");
-         fields1.put("Text","77");
+        fields.put("title", "t2");
+        fields.put("description", "test2");
+        fields.put("owner", "anastasiya");
+        fields.put("parentCategory_id", "f");
 
 
-          dataOperationService.create("QueryExecution",fields1);
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
+                ,dataOperationService.create("Category", fields).getStatus());
+
+
+        Assert.assertEquals(0,categoryDao.getCategoryByTitle("t2").size());
 
     }
 
