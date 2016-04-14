@@ -2,6 +2,8 @@ package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.QueryExecution;
 import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.model.updates.DataOperationType;
 import org.envtools.monitor.module.DataOperationInterface;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,20 +68,20 @@ public class DataOperationServiceImplTest {
 
 
     @Test
-    public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException {
+    public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
 
         // createWithText(QUERY_SEARCH_PRESENT);
 
-        // Map<String,String> fields1 = new HashMap<String,String>();
+         Map<String,String> fields1 = new HashMap<String,String>();
         // fields1.put("text","text");
-        //  fields1.put("description","test");
-        //  fields1.put("title","sssergey");
-        // fields1.put("category_id","77");
+          fields1.put("StartTimestamp","2016, 3, 22, 20, 24");
+          fields1.put("User","sssergey");
+         fields1.put("Text","77");
 
         // dataOperation.setEntity("LibQuery");
         //  dataOperation.setType(DataOperationType.UPDATE);
         //  dataOperation.setFields(fields1);
-        //  dataOperationInterface.create(dataOperation);
+          dataOperationService.create("QueryExecution",fields1);
 
     }
 
@@ -97,6 +100,16 @@ public class DataOperationServiceImplTest {
         category.setParentCategory(category1);
         categoryDao.saveAndFlush(category1);
         LOGGER.info("parentCategory id " + category1.getId());
+
+       // LibQuery
+        LocalDateTime localTime = LocalDateTime.of(2016, 3, 22, 20, 24);
+        QueryExecution queryExecution =new QueryExecution();
+
+        queryExecution.setUser("user1");
+        //queryExecution.setLibQuery();
+        queryExecution.setStartTimestamp(localTime);
+        queryExecution.setText("text");
+
         return categoryDao.saveAndFlush(category);
     }
 }

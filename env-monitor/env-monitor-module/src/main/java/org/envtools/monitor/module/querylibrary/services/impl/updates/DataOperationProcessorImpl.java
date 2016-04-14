@@ -4,6 +4,7 @@ import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.querylibrary.services.DataOperationProcessor;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import java.util.Map;
  */
 public class DataOperationProcessorImpl implements DataOperationProcessor {
 
+    @Autowired
+    DataOperationService<Long> dataOperationService;
 
     @Override
     public DataOperationResult process(DataOperation operation) {
