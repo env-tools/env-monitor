@@ -29,7 +29,7 @@ public class Category extends AbstractDbIdentifiable {
         this.description = description;
         this.queries = queries;
         this.childCategories = childCategories;
-        this.parentCategory =parentCategory;
+        this.parentCategory = parentCategory;
 
     }
 
@@ -49,7 +49,6 @@ public class Category extends AbstractDbIdentifiable {
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")
     private List<Category> childCategories;
-
 
 
     public Category getParentCategory() {

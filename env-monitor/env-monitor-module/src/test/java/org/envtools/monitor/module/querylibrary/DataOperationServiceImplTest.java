@@ -64,17 +64,16 @@ public class DataOperationServiceImplTest {
 
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED
-                ,dataOperationService.create("Category", fields).getStatus());
+                , dataOperationService.create("Category", fields).getStatus());
 
 
-        Assert.assertEquals(1,categoryDao.getCategoryByTitle("t1").size());
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t1").size());
 
     }
 
 
     @Test
     public void testDataOperationServiceContains1() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
-
 
 
         createWithText(QUERY_SEARCH_PRESENT);
@@ -87,17 +86,85 @@ public class DataOperationServiceImplTest {
 
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
-               ,dataOperationService.create("Category3", fields).getStatus());
+                , dataOperationService.create("Category3", fields).getStatus());
 
 
-        Assert.assertEquals(0,categoryDao.getCategoryByTitle("t2").size());
+        Assert.assertEquals(0, categoryDao.getCategoryByTitle("t2").size());
+
+    }
+
+
+    @Test
+    public void testDataOperationServiceUpdate() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
+
+
+        createWithText(QUERY_SEARCH_PRESENT);
+        Map<String, String> fields = new HashMap<String, String>();
+
+        fields.put("title", "t3");
+        fields.put("description", "test3");
+        fields.put("owner", "maksim");
+        fields.put("parentCategory_id", "1");
+
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED
+                , dataOperationService.update("Category", (long) 9, fields).getStatus());
+
+
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t3").size());
+
+    }
+
+    @Test
+    public void testDataOperationServiceUpdateErrors() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
+
+
+        createWithText(QUERY_SEARCH_PRESENT);
+        Map<String, String> fields = new HashMap<String, String>();
+
+        fields.put("title", "t5");
+        fields.put("description", "test4");
+        fields.put("owner", "asd");
+        fields.put("parentCategory_id", "1");
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
+                , dataOperationService.update("Category1", (long) 1, fields).getStatus());
+        Assert.assertEquals(0, categoryDao.getCategoryByTitle("t5").size());
+
+    }
+
+
+    @Test
+    public void testDataOperationServiceDelete() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
+
+
+        createWithText(QUERY_SEARCH_PRESENT);
+        Map<String, String> fields = new HashMap<String, String>();
+
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED
+                , dataOperationService.delete("Category", (long) 2).getStatus());
+        Assert.assertEquals(0, categoryDao.getCategoryByTitle("t3").size());
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t9").size());
+
+    }
+
+    @Test
+    public void testDataOperationServiceDeleteErrors() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, HeuristicRollbackException, HeuristicMixedException, NotSupportedException, RollbackException, SystemException {
+
+
+        createWithText(QUERY_SEARCH_PRESENT);
+        Map<String, String> fields = new HashMap<String, String>();
+
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
+                , dataOperationService.delete("Category1", (long) 2).getStatus());
+        Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR
+                , dataOperationService.delete("Category", (long) 1).getStatus());
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t3").size());
 
     }
 
     private Category createWithText(String text) {
         Category category = new Category();
         //Don't set Id - it will be auto generated
-        category.setTitle(text);
+        category.setTitle("t3");
         category.setDescription("some_description");
         category.setOwner("anastasiya");
 
@@ -112,15 +179,18 @@ public class DataOperationServiceImplTest {
 
         LOGGER.info("parentCategory id " + category1.getId());
 
-       // LibQuery
         LocalDateTime localTime = LocalDateTime.of(2016, 3, 22, 20, 24);
-        QueryExecution queryExecution =new QueryExecution();
+        QueryExecution queryExecution = new QueryExecution();
 
         queryExecution.setUser("user1");
-        //queryExecution.setLibQuery();
         queryExecution.setStartTimestamp(localTime);
         queryExecution.setText("text");
-
+        categoryDao.saveAndFlush(category);
+        LOGGER.info(" id " + category.getId());
+        LOGGER.info(" id category1 " + category.getId());
+        Category category2 = new Category();
+        category2.setTitle("t9");
+        categoryDao.saveAndFlush(category2);
         return categoryDao.saveAndFlush(category);
     }
 }

@@ -6,6 +6,7 @@ import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.updates.DataOperation;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Service;
 
@@ -40,44 +41,58 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     @Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException{
-        try{
+    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+        try {
             Class entityClass = Class.forName(path + entity);
-       Map<String,Object> result= listProperty(entity, fields);
+            Map<String, Object> result = listProperty(entity, fields);
 
-        Object a = entityClass.newInstance();
-        BeanUtils.populate(a, result);
-        LOGGER.info("Полученный результат:  " + a);
-        entityManager.persist(a);
-        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+            Object a = entityClass.newInstance();
+            BeanUtils.populate(a, result);
+            LOGGER.info("Полученный результат:  " + a);
+            entityManager.persist(a);
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+        } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException ex)
+
+        {
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+        }
+
+
     }
-
-    catch(NumberFormatException|IllegalAccessException|InstantiationException|InvocationTargetException|ClassNotFoundException ex)
-
-    {
-        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
-    }
-
-
-}
 
     @Override
-    public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException {
+    public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException, IllegalArgumentException {
         /*Вытаскиваем класс, делаем find, по id, втавляем туда fields*/
         //находим класс по entity
-        Class entityClass = Class.forName(path + entity);
-        return null;
+        try {
+            Class entityClass = Class.forName(path + entity);
+            Object object = entityManager.find(entityClass, id);
+            LOGGER.info("_____________" + object);
+            entityManager.refresh(object);
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+        } catch (ClassNotFoundException | IllegalArgumentException e) {
+            LOGGER.info(e.getMessage());
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+        }
+
+
     }
 
     @Override
-    public DataOperationResult delete(String entity, Long id) {
-        /*Вытаскиваем класс, находим id, грохаем*/
-
-        return null;
+    public DataOperationResult delete(String entity, Long id) throws ClassNotFoundException {
+        try {
+            Class entityClass = Class.forName(path + entity);
+            Object object = entityManager.find(entityClass, id);
+            entityManager.remove(object);
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
+        } catch (ClassNotFoundException | IllegalArgumentException | ConstraintViolationException e) {
+            LOGGER.info(e.getMessage());
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+        }
     }
 
 
-    public Map<String,Object> listProperty(String entity, Map<String, String> fields) throws NumberFormatException {
+    public Map<String, Object> listProperty(String entity, Map<String, String> fields) throws NumberFormatException {
         Map<String, Object> result = new HashMap<String, Object>();
         List<String> propertyId = new ArrayList<String>();
 
@@ -131,8 +146,8 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
             }
 
-        } catch (ClassNotFoundException| NumberFormatException|IntrospectionException e) {
-           LOGGER.info(e.getMessage());
+        } catch (ClassNotFoundException | NumberFormatException | IntrospectionException e) {
+            LOGGER.info(e.getMessage());
         }
         return result;
     }

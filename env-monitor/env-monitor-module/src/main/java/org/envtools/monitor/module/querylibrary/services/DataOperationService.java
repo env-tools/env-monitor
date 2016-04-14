@@ -16,5 +16,5 @@ public interface DataOperationService<T> {
 
     DataOperationResult update(String entity, T id, Map<String, String> fields) throws ClassNotFoundException;
 
-    DataOperationResult delete(String entity, T id);
+    DataOperationResult delete(String entity, T id) throws ClassNotFoundException;
 }
