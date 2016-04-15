@@ -11,11 +11,7 @@ import java.time.LocalDateTime;
 public class UpdateTrigger {
     public LocalDateTime timestamp;
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
+    public UpdateTrigger(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

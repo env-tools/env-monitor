@@ -1,41 +1,29 @@
 package org.envtools.monitor.module.querylibrary;
 
-import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponseType;
-import org.envtools.monitor.model.messaging.content.MapContent;
-import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.model.querylibrary.execution.view.QueryExecutionResultView;
 import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider;
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
-import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
-import org.h2.tools.RunScript;
+import org.envtools.monitor.module.querylibrary.services.TreeUpdateTask;
+import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -112,22 +100,30 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         }
     }
 
-    @Autowired
-    CategoryDao categoryDao;
+    /*   @Autowired
+       CategoryDao categoryDao;
+
+       @Autowired
+       CategoryViewMapper categoryViewMapper;
+
+       @Autowired
+       DataSource dataSource;
+
+       @Autowired
+       @Qualifier("transactionManager")
+       protected PlatformTransactionManager transactionManager;*/
+
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
-    CategoryViewMapper categoryViewMapper;
-
-    @Autowired
-    DataSource dataSource;
-
-    @Autowired
-    @Qualifier("transactionManager")
-    protected PlatformTransactionManager transactionManager;
+    TreeUpdateTriggerService treeUpdateTriggerService;
 
     public void init() throws Exception {
         super.init();
-        Connection connection = dataSource.getConnection();
+        TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService);
+        executorService.submit(treeUpdateTask);
+        treeUpdateTriggerService.triggerUpdate();
+        /*Connection connection = dataSource.getConnection();
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
         RunScript.execute(connection, new InputStreamReader(stream));
 
@@ -178,7 +174,12 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         .build());
 
             }
-        });
+        });*/
+    }
+
+    @PreDestroy
+    private void close() {
+        executorService.shutdownNow();
     }
 
     private void sendResultMessage(QueryExecutionResultView resultView, RequestMessage requestMessage) {

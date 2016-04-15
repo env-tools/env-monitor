@@ -6,15 +6,13 @@ import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.RequestPayload;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.module.exception.MessageFormatException;
-import org.springframework.messaging.MessageChannel;
+import org.envtools.monitor.module.querylibrary.services.CoreModuleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.messaging.support.GenericMessage;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -28,8 +26,8 @@ public abstract class AbstractPluggableModule implements Module {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractPluggableModule.class);
 
-    @Resource(name = "core.channel")
-    MessageChannel coreModuleChannel;
+    //@Resource(name = "core.channel")
+    //MessageChannel coreModuleChannel;
 
     private MessageHandler incomingMessageHandler = (message) -> handleIncomingMessage((RequestMessage) message.getPayload());
 
@@ -64,10 +62,12 @@ public abstract class AbstractPluggableModule implements Module {
 
     protected abstract <T> void processPayload(T payload, RequestMessage requestMessage);
 
+
+    @Autowired
+    CoreModuleService coreModuleService;
+
     public void sendMessageToCore(ResponseMessage responseMessage) {
-
-        coreModuleChannel.send(new GenericMessage<ResponseMessage>(responseMessage));
-
+        coreModuleService.sendToCore(responseMessage);
     }
 
     protected abstract SubscribableChannel getModuleChannel();
