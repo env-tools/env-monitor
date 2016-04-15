@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface DataOperationService<T> {
 
-    DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException;
+    DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException;
 
     DataOperationResult update(String entity, T id, Map<String, String> fields) throws ClassNotFoundException;
 

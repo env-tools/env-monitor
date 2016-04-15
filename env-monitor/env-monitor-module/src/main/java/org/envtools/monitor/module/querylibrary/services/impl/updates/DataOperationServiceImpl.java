@@ -2,15 +2,13 @@ package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.updates.DataOperation;
+
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.orm.jpa.JpaTransactionManager;
+
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.*;
@@ -19,7 +17,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
 import java.util.*;
 
 /**
