@@ -1,6 +1,8 @@
 package org.envtools.monitor.module.querylibrary.services;
 
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,11 @@ import javax.annotation.Resource;
  */
 @Service
 public class CoreModuleServiceImpl implements CoreModuleService {
-    @Resource(name = "core.channel")
+
+    //We mark this as optional for tests that don't include core module spring context
+    //TODO provide a cleaner solution
+    @Autowired(required = false)
+    @Qualifier("core.channel")
     MessageChannel coreModuleChannel;
 
     public MessageChannel getCoreModuleChannel() {

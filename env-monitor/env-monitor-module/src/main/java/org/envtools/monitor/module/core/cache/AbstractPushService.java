@@ -15,6 +15,8 @@ public abstract class AbstractPushService implements DataPushService {
 
     protected Logger LOGGER = Logger.getLogger(getClass());
 
+    //We mark this as optional for tests that don't include env-monitor-ui spring context
+    //TODO provide a cleaner solution
     @Autowired(required = false)
     private SimpMessagingTemplate webSocketClientMessagingTemplate;
 
