@@ -34,7 +34,7 @@ public class JSONRequestMessageParserTest extends Assert {
         fields.put("title", "newTitle");
         fields.put("owner", "Owner1");
         fields.put("parentCategoryID", "5");
-        DataOperation resultDataOperation = new DataOperation(DataOperationType.CREATE, "Category", fields);
+        DataOperation resultDataOperation = new DataOperation(DataOperationType.CREATE, "Category", fields, (long)1);
         assertEquals(dataOperation.toString(), resultDataOperation.toString());
     }
 }

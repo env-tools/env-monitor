@@ -14,14 +14,24 @@ public class DataOperation {
     private DataOperationType type; //available types of operations
     private String entity;
     private Map<String, String> fields;
+    private Long id;
 
     public DataOperation() {
     }
 
-    public DataOperation(DataOperationType type, String entity, Map<String, String> fields) {
+    public DataOperation(DataOperationType type, String entity, Map<String, String> fields, Long id) {
         this.type = type;
         this.entity = entity;
         this.fields = fields;
+        this.id=id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEntity() {
@@ -50,10 +60,11 @@ public class DataOperation {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        return new ToStringBuilder(this)
                 .append("type", type)
                 .append("entity", entity)
                 .append("fields", fields)
+                .append("id", id)
                 .toString();
     }
 }

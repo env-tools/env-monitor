@@ -30,7 +30,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID_FLAG = "_id";
-    private static final String STRING = "String";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
 
 
@@ -42,18 +41,16 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
         try {
             Class entityClass = Class.forName(path + entity);
-            Map<String, Object> result = resolveIdPropertyValues(entityClass, fields);
-            if(result==null)throw new NumberFormatException( "NumberFormatException"
-            ){};
+            Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
             Object createdEntity = entityClass.newInstance();
-            BeanUtils.populate(createdEntity, result);
+            BeanUtils.populate(createdEntity, propertyValues);
             LOGGER.info("Полученный результат:  " + createdEntity);
             entityManager.persist(createdEntity);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException ex)
 
         {
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(ex.getMessage()).build();
         }
 
 
@@ -66,18 +63,18 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         try {
             Class entityClass = Class.forName(path + entity);
             Object object = entityManager.find(entityClass, id);
-          //  Object createdEntity = entityClass.newInstance();
-            Map<String, Object> result = resolveIdPropertyValues(entityClass, fields);
-            if(result==null)throw new NumberFormatException( "NumberFormatException"
-            ){};
-            BeanUtils.populate(object, result);
+            Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
+            if (propertyValues == null) throw new NumberFormatException("NumberFormatException"
+            ) {
+            };
+            BeanUtils.populate(object, propertyValues);
             LOGGER.info("Полученный результат:  " + object);
             entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        } catch (ClassNotFoundException | IllegalArgumentException| IllegalAccessException|
+        } catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException |
                 InvocationTargetException e) {
             LOGGER.info(e.getMessage());
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).build();
         }
 
     }
@@ -91,7 +88,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | ConstraintViolationException e) {
             LOGGER.info(e.getMessage());
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).build();
         }
     }
 
@@ -115,7 +112,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             BeanInfo bi = Introspector.getBeanInfo(entityClass);
             PropertyDescriptor[] pds = bi.getPropertyDescriptors();
 
-        /*Находим все методы setXXX, которые содержат в названии id*/
+            /*Находим все методы setXXX, которые содержат в названии id*/
             for (int i = 0; i < pds.length; i++) {
 
                 if (pds[i].getWriteMethod() != null) {
@@ -128,22 +125,18 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                             LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
                             Class[] setterParameterTypes = pds[i].getWriteMethod().getParameterTypes();
 
-                     /*
-                     * Узнали какие параметры принимает наш метод.
-                     * Теперь необходимо достать связный объект
-                     * */
-                            if(setterParameterTypes.length!=1)throw new IllegalArgumentException(
-                                   "IllegalArgumentException"
+
+                            if (setterParameterTypes.length != 1) throw new IllegalArgumentException(
+                                    "IllegalArgumentException"
                             );
 
-                            for (Class arg :setterParameterTypes) {
-                                LOGGER.info("Тип параметра принимаемого методом " + Class.forName(arg.getName()));
+                            LOGGER.info("Тип параметра принимаемого методом " + Class.forName(setterParameterTypes[0].getName()));
 
-                                propertyValues.put(entry, entityManager.find(Class.forName(arg.getName()),
-                                        Long.valueOf(fields.get(entry + ID_FLAG))));
+                            propertyValues.put(entry, entityManager.find(Class.forName(setterParameterTypes[0].getName()),
+                                    Long.valueOf(fields.get(entry + ID_FLAG))));
 
-                                LOGGER.info("Object - связный объект " + propertyValues.get(entry));
-                            }
+                            LOGGER.info("Object - связный объект " + propertyValues.get(entry));
+
 
                         }
                     }
