@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This DbUnit configuration is not used yet -->
 <dataset>
-    <CATEGORY id="1" parent_category="Simplest query" ower="SELECT * FROM CATEGORY" title="Simplest query" />
-    <CATEGORY id="2" parent_category="More complex query" ower="SELECT * FROM CATEGORY WHERE title LIKE '%query%'" title="More complex query" />
-    <CATEGORY id="3" parent_category="Complicated query" ower="SELECT id, text FROM CATEGORY ORDER BY ower" title="Complicated query" />
+    <CATEGORY id="1" parent_category="Simplest query" ower="SELECT * FROM CATEGORY" title="Simplest query"/>
+    <CATEGORY id="2" parent_category="More complex query" ower="SELECT * FROM CATEGORY WHERE title LIKE '%query%'"
+              title="More complex query"/>
+    <CATEGORY id="3" parent_category="Complicated query" ower="SELECT id, text FROM CATEGORY ORDER BY ower"
+              title="Complicated query"/>
 </dataset>

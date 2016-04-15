@@ -7,6 +7,6 @@ package org.envtools.monitor.model.applications.update;
  */
 public interface UpdateNotificationHandler {
 
-     void sendUpdateNotification();
+    void sendUpdateNotification();
 
 }

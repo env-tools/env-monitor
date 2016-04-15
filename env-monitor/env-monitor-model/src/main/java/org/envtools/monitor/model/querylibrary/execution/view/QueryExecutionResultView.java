@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author Yury Yakovlev
  */
-public class QueryExecutionResultView implements Serializable{
+public class QueryExecutionResultView implements Serializable {
 
     private List<ColumnView> columns;
     private List<Map<String, String>> result;

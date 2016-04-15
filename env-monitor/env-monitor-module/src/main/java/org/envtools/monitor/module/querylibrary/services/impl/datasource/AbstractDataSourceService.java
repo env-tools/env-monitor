@@ -37,7 +37,7 @@ public abstract class AbstractDataSourceService<T> implements DataSourceService<
             try {
                 //Perform the double check
                 if (!dataSources.containsKey(key)) {
-                     T dataSource = createDataSource(params);
+                    T dataSource = createDataSource(params);
                     LOGGER.info("AbstractDataSourceService.getDataSourceForParams - " + " created data source for " + key);
                     dataSources.put(key, dataSource);
                     return dataSource;

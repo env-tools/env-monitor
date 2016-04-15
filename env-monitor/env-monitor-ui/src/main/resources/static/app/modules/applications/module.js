@@ -1,6 +1,6 @@
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module('applications', ['ngStomp']);
+    angular
+        .module('applications', ['ngStomp']);
 })();

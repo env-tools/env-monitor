@@ -5,7 +5,7 @@ package org.envtools.monitor.module.exception;
  *
  * @author Yury Yakovlev
  */
-public class MessageFormatException extends RuntimeException{
+public class MessageFormatException extends RuntimeException {
     public MessageFormatException() {
     }
 

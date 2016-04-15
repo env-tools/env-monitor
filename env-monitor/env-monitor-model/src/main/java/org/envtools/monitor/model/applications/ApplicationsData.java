@@ -7,8 +7,8 @@ import java.util.List;
  * Created: 10/31/15 1:38 AM
  *
  * @author Yury Yakovlev
- *
- * This is model object for Applications module
+ *         <p>
+ *         This is model object for Applications module
  */
 public class ApplicationsData implements Serializable {
     private Long freeMemory;

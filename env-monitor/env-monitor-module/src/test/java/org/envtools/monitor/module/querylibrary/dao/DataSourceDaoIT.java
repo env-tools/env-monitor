@@ -19,8 +19,8 @@ import java.util.List;
  * Created by anastasiya on 07.03.16.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class DataSourceDaoIT {
 
@@ -30,8 +30,8 @@ public class DataSourceDaoIT {
     DataSourceDao dataSourceDao;
 
     private static final String NAME = "gjhghjg ZERO";
-    private static final String VALUE= "ZERO";
-   // private static final String QUERY_SEARCH_ABSENT = "WHAT";
+    private static final String VALUE = "ZERO";
+    // private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
     @Test
     public void testDataSourceContains() {
@@ -60,20 +60,20 @@ public class DataSourceDaoIT {
 
     }
 
-    private  DataSource createWithText(String text) {
-        DataSource  dataSource = new  DataSource();
+    private DataSource createWithText(String text) {
+        DataSource dataSource = new DataSource();
         //Don't set Id - it will be auto generated
         dataSource.setDescription("123");
         dataSource.setName(text);
         dataSource.setType(DataProviderType.JDBC);
 
-     //   DataSource  dataSource1 = new  DataSource();
+        //   DataSource  dataSource1 = new  DataSource();
         //Don't set Id - it will be auto generated
-     //   dataSource1.setDescription("123sfd");
-     //   dataSource1.setName("sdfsds222f");
-     //   dataSource1.setType("wrwr233323");
-       // dataSourceDao.saveAndFlush(dataSource1);
+        //   dataSource1.setDescription("123sfd");
+        //   dataSource1.setName("sdfsds222f");
+        //   dataSource1.setType("wrwr233323");
+        // dataSourceDao.saveAndFlush(dataSource1);
 
-        return  dataSourceDao.saveAndFlush(dataSource);
+        return dataSourceDao.saveAndFlush(dataSource);
     }
 }

@@ -1,5 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services;
 
+import javax.transaction.*;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -11,9 +12,9 @@ import java.util.Map;
  */
 public interface DataOperationService<T> {
 
-    DataOperationResult create(String entity, Map<String, String> fields) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException;
+    DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException;
 
-    DataOperationResult update(String entity, T id, Map<String, String> fields);
+    DataOperationResult update(String entity, T id, Map<String, String> fields) throws ClassNotFoundException;
 
-    DataOperationResult delete(String entity, T id);
+    DataOperationResult delete(String entity, T id) throws ClassNotFoundException;
 }

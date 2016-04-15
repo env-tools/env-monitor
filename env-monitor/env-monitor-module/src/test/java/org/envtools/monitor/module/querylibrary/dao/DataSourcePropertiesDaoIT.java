@@ -20,8 +20,8 @@ import java.util.List;
  * @author Anastasiya Plotnikova
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes =PersistenceTestApplication.class)
-@TestPropertySource(locations="classpath:/persistence/application-persistence-test.properties")
+@SpringApplicationConfiguration(classes = PersistenceTestApplication.class)
+@TestPropertySource(locations = "classpath:/persistence/application-persistence-test.properties")
 @Transactional
 public class DataSourcePropertiesDaoIT {
     private static final Logger LOGGER = Logger.getLogger(DataSourceDaoIT.class);
@@ -30,7 +30,7 @@ public class DataSourcePropertiesDaoIT {
     DataSourcePropertiesDao dataSourcePropertiesDao;
 
     private static final String PARAM = "gjhghjg ZERO";
-    private static final String VALUE= "ZERO";
+    private static final String VALUE = "ZERO";
     // private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
     @Test
@@ -70,6 +70,6 @@ public class DataSourcePropertiesDaoIT {
         dataSourceProperty.setProperty("dfgdfg");
         dataSourceProperty.setValue(text);
 
-        return  dataSourcePropertiesDao.saveAndFlush(dataSourceProperty);
+        return dataSourcePropertiesDao.saveAndFlush(dataSourceProperty);
     }
 }

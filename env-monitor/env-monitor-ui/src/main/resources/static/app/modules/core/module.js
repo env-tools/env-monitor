@@ -1,8 +1,8 @@
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module('core', [
-      'ui.router'
-    ]);
+    angular
+        .module('core', [
+            'ui.router'
+        ]);
 })();

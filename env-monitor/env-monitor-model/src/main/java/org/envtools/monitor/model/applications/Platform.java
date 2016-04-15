@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Yury Yakovlev
  */
-public class Platform extends AbstractNamedIdentifiable<String>{
+public class Platform extends AbstractNamedIdentifiable<String> {
 
     private List<Environment> environments;
 

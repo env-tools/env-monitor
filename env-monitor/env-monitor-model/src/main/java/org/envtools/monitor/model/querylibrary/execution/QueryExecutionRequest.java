@@ -24,7 +24,8 @@ public class QueryExecutionRequest {
     private Long timeOutMs;
     private Integer rowCount;
 
-    public QueryExecutionRequest() {}
+    public QueryExecutionRequest() {
+    }
 
     public QueryExecutionRequest(
             String operationId,
@@ -112,7 +113,8 @@ public class QueryExecutionRequest {
         private Long timeOutMs;
         private Integer rowCount;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder operationId(String operationId) {
             this.operationId = operationId;

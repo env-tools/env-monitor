@@ -43,7 +43,7 @@
             });
         }
 
-        function getMessage (message) {
+        function getMessage(message) {
             var publicTree = [];
             angular.forEach(message.payload.jsonContent[0], function (category) {
                 publicTree.push(createTree(category));
@@ -54,7 +54,7 @@
                 privateTree.push(createTree(category));
             });
 
-            $scope.$apply(function() {
+            $scope.$apply(function () {
                 $scope.source = [
                     {
                         label: "Public categories",
@@ -99,7 +99,7 @@
 
         function getQueryArray(queries) {
             var result = [];
-            angular.forEach(queries, function(query) {
+            angular.forEach(queries, function (query) {
                 var queryId = 'query_' + query.id;
                 var _query = {
                     html: '<div class="tree-item" id="' + queryId + '" title="' + query.description + '" style="padding-right: 20px;">' + query.title + '</div>',

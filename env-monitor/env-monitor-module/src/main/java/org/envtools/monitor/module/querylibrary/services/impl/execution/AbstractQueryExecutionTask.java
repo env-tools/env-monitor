@@ -15,7 +15,7 @@ public abstract class AbstractQueryExecutionTask implements Callable<QueryExecut
     protected final QueryExecutionRequest queryExecutionRequest;
 
     public AbstractQueryExecutionTask(QueryExecutionRequest queryExecutionRequest) {
-       this.queryExecutionRequest = queryExecutionRequest;
+        this.queryExecutionRequest = queryExecutionRequest;
     }
 
     @Override
@@ -25,7 +25,8 @@ public abstract class AbstractQueryExecutionTask implements Callable<QueryExecut
 
     /**
      * Expected data operation exceptions are encoded in the result (and not thrown)
-     * @return  Execution result (partial or final)
+     *
+     * @return Execution result (partial or final)
      */
     protected abstract QueryExecutionResult doCall();
 }

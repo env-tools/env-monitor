@@ -16,8 +16,8 @@ public interface DataOperationInterface {
 
     QueryExecutionResult create(DataOperation dataOperation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, NoSuchFieldException;
 
-    void update(Long id,DataOperation dataOperation);
+    void update(Long id, DataOperation dataOperation);
 
-    void delete(Long id,DataOperation dataOperation);
+    void delete(Long id, DataOperation dataOperation);
 
 }

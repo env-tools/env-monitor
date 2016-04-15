@@ -7,7 +7,7 @@ import java.io.Serializable;
  *
  * @author Yury Yakovlev
  */
-public interface Identifiable <T> extends Serializable {
+public interface Identifiable<T> extends Serializable {
 
     T getId();
 

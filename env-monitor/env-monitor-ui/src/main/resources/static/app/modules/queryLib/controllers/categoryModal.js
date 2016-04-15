@@ -73,7 +73,7 @@
             $stomp.send(mesDestination, body, {});
         }
 
-        $scope.$on('categoryModal::create', function() {
+        $scope.$on('categoryModal::create', function () {
             $scope.title = 'Create category';
             $scope.category = {
                 title: '',
@@ -83,7 +83,7 @@
             $('#category').modal('show');
         });
 
-        $scope.$on('categoryModal::edit', function(event, data) {
+        $scope.$on('categoryModal::edit', function (event, data) {
             $scope.title = 'Edit category';
             $scope.category = {
                 id: data.id,

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
  * @author Sergey Moldachev
  */
 @Service
-public class QueryLibraryDataPushService extends AbstractPushService{
+public class QueryLibraryDataPushService extends AbstractPushService {
 }

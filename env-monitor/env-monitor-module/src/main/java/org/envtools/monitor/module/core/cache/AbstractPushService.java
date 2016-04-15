@@ -11,7 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  *
  * @author Yury Yakovlev
  */
-public abstract class AbstractPushService implements DataPushService{
+public abstract class AbstractPushService implements DataPushService {
 
     protected Logger LOGGER = Logger.getLogger(getClass());
 

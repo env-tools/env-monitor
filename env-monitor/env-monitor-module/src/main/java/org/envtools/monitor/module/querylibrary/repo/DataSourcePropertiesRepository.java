@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  * @author Anastasiya Plotnikova
  */
 @Repository
-public interface DataSourcePropertiesRepository  extends JpaRepository<DataSourceProperty, Long> {
+public interface DataSourcePropertiesRepository extends JpaRepository<DataSourceProperty, Long> {
 }

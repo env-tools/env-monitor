@@ -5,7 +5,7 @@ package org.envtools.monitor.model.messaging.content;
  *
  * @author Yury Yakovlev
  */
-public abstract class AbstractContent <T>{
+public abstract class AbstractContent<T> {
 
     private T value;
 

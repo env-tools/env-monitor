@@ -14,7 +14,7 @@ public class MemoryDataProvider {
     private static final Logger LOGGER = Logger.getLogger(MemoryDataProvider.class);
 
     public Long getFreeMemory() {
-          return Runtime.getRuntime().freeMemory();
+        return Runtime.getRuntime().freeMemory();
 
 
 //        try {

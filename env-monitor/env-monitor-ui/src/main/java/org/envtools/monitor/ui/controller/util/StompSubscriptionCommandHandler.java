@@ -84,7 +84,7 @@ public class StompSubscriptionCommandHandler {
 
             processApplicationsModuleSubscription(destination, stompCommand, sessionId);
 
-        } else if (DestinationUtil.isDestinationForModule(destination, ModuleConstants.QUERY_LIBRARY_MODULE_ID)){
+        } else if (DestinationUtil.isDestinationForModule(destination, ModuleConstants.QUERY_LIBRARY_MODULE_ID)) {
 
             processQueryLibraryModuleSubscription(destination, stompCommand, sessionId);
 
@@ -121,7 +121,7 @@ public class StompSubscriptionCommandHandler {
         QueryLibraryDestinationData destinationData = DestinationUtil.parseQlDestination(destination);
         String action = destinationData.getAction();
 
-        switch (action){
+        switch (action) {
             case "tree":
                 executor.schedule(() -> {
                     sendTreeDataToSubscriber(destination, destinationData);

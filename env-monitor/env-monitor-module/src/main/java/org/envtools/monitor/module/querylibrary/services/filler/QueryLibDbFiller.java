@@ -127,7 +127,7 @@ public class QueryLibDbFiller {
     }
 
     public static void saveCategories(EntityManager em, List<Category> categories) {
-        for (Category category: categories) {
+        for (Category category : categories) {
             LibQuery query = createQuery(category);
             QueryParam queryParam = createQueryParam(query);
             em.persist(category);

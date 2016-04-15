@@ -7,13 +7,13 @@ import java.util.Map;
  *
  * @author Yury Yakovlev
  */
-public class MapContent extends AbstractContent <Map<?,?>> {
+public class MapContent extends AbstractContent<Map<?, ?>> {
 
-   public static MapContent of(Map<?, ?> value) {
-       MapContent mc = new MapContent();
-       mc.setValue(value);
-       return mc;
-   }
+    public static MapContent of(Map<?, ?> value) {
+        MapContent mc = new MapContent();
+        mc.setValue(value);
+        return mc;
+    }
 
 }
 

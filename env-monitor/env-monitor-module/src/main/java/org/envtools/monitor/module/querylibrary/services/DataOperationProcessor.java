@@ -8,5 +8,5 @@ import org.envtools.monitor.model.querylibrary.updates.DataOperation;
  * @author Anastasiya Plotnikova
  */
 public interface DataOperationProcessor {
-    DataOperationResult process (DataOperation operation);
+    DataOperationResult process(DataOperation operation);
 }

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  *
  * @author Yury Yakovlev
  */
-public class RESTPathSelector implements Iterable<String>{
+public class RESTPathSelector implements Iterable<String> {
 
     private String selectorSegmentSeparator;
 

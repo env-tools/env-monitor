@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * @author Yury Yakovlev
  */
-public class ResponsePayload implements Serializable{
+public class ResponsePayload implements Serializable {
 
     @JsonRawValue
     private String jsonContent;
@@ -64,7 +64,7 @@ public class ResponsePayload implements Serializable{
         }
 
         public Builder abstractContent(AbstractContent content) {
-             this.abstractContent = content;
+            this.abstractContent = content;
             return this;
         }
 

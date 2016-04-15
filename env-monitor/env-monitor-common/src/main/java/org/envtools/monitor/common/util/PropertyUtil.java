@@ -12,7 +12,7 @@ public final class PropertyUtil {
     private PropertyUtil() {
     }
 
-    public static <K,V> V getRequiredValue(Map<K,V> map, K key) {
+    public static <K, V> V getRequiredValue(Map<K, V> map, K key) {
         if (map.containsKey(key)) {
             return map.get(key);
         } else {

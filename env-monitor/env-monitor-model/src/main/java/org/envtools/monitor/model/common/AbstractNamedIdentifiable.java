@@ -5,7 +5,7 @@ package org.envtools.monitor.model.common;
  *
  * @author Yury Yakovlev
  */
-public abstract class AbstractNamedIdentifiable <T> extends AbstractIdentifiable <T> implements HasName{
+public abstract class AbstractNamedIdentifiable<T> extends AbstractIdentifiable<T> implements HasName {
 
     protected String name;
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @author Yury Yakovlev
  */
 @Component
-public class DefaultColumnValueFormatter implements ColumnValueFormatter{
+public class DefaultColumnValueFormatter implements ColumnValueFormatter {
 
     @Override
     public String formatColumnValue(Object value) {

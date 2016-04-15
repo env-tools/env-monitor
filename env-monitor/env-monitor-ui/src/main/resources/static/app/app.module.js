@@ -1,10 +1,10 @@
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module('envMonitor', [
-      'core',
-      'applications',
-      'queryLib'
-    ]);
+    angular
+        .module('envMonitor', [
+            'core',
+            'applications',
+            'queryLib'
+        ]);
 })();

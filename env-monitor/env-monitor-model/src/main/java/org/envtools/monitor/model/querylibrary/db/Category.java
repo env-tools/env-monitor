@@ -23,17 +23,22 @@ public class Category extends AbstractDbIdentifiable {
     public Category() {
     }
 
-    public Category(String owner, String title, String description, List<LibQuery> queries, List<Category> childCategories) {
+    public Category(String owner, String title, String description, List<LibQuery> queries, List<Category> childCategories, Category parentCategory) {
         this.owner = owner;
         this.title = title;
         this.description = description;
         this.queries = queries;
         this.childCategories = childCategories;
+        this.parentCategory = parentCategory;
+
     }
 
     private String owner; //пустое для public
     private String title;
     private String description;
+
+    @ManyToOne
+    private Category parentCategory;
 
     /*Один ко многим к таблице LibQuery*/
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
@@ -45,8 +50,6 @@ public class Category extends AbstractDbIdentifiable {
     @OrderBy(value = "title")
     private List<Category> childCategories;
 
-    @ManyToOne
-    private Category parentCategory;
 
     public Category getParentCategory() {
         return parentCategory;
@@ -104,6 +107,7 @@ public class Category extends AbstractDbIdentifiable {
                 .append("description", description)
                 .append("queries", queries)
                 .append("childCategories", childCategories)
+                .append("parentCategory", parentCategory)
                 .toString();
     }
 }

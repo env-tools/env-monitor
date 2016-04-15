@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Anastasiya Plotnikova
  */
-public interface DataSourcePropertiesDao extends Dao<DataSourceProperty, Long > {
+public interface DataSourcePropertiesDao extends Dao<DataSourceProperty, Long> {
 
     List<DataSourceProperty> getValueByText(String text);
 

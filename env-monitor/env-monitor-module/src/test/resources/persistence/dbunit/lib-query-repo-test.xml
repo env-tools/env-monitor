@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This DbUnit configuration is not used yet -->
 <dataset>
-    <LIB_QUERY id="1" description="Simplest query" text="SELECT * FROM LIB_QUERY" title="Simplest query" />
-    <LIB_QUERY id="2" description="More complex query" text="SELECT * FROM LIB_QUERY WHERE title LIKE '%query%'" title="More complex query" />
-    <LIB_QUERY id="3" description="Complicated query" text="SELECT id, text FROM LIB_QUERY ORDER BY test" title="Complicated query" />
+    <LIB_QUERY id="1" description="Simplest query" text="SELECT * FROM LIB_QUERY" title="Simplest query"/>
+    <LIB_QUERY id="2" description="More complex query" text="SELECT * FROM LIB_QUERY WHERE title LIKE '%query%'"
+               title="More complex query"/>
+    <LIB_QUERY id="3" description="Complicated query" text="SELECT id, text FROM LIB_QUERY ORDER BY test"
+               title="Complicated query"/>
 </dataset>

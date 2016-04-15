@@ -30,9 +30,9 @@ public class QueryExecutionResult {
     /**
      * How much time it took to execute lastly
      * Say: executed 20 sec initially (1st stage, returned 50 rows) ,
-     *  3 sec when user requested more rows (2nd stage, returned 24 rows).
-     *  So there will be first result with elapsedTimeMs = 20000,
-     *  and for the second request there will be second result with elapsedTimeMs = 3000
+     * 3 sec when user requested more rows (2nd stage, returned 24 rows).
+     * So there will be first result with elapsedTimeMs = 20000,
+     * and for the second request there will be second result with elapsedTimeMs = 3000
      */
     private final long elapsedTimeMs;
 
@@ -101,13 +101,13 @@ public class QueryExecutionResult {
     }
 
     public static class Builder {
-        private  String executionId;
-        private  ExecutionStatusE status;
-        private  long elapsedTimeMs;
-        private  long returnedRowCount;
-        private  List<Map<String, Object>> resultRows;
-        private  String errorMessage;
-        private  Throwable error;
+        private String executionId;
+        private ExecutionStatusE status;
+        private long elapsedTimeMs;
+        private long returnedRowCount;
+        private List<Map<String, Object>> resultRows;
+        private String errorMessage;
+        private Throwable error;
 
         public Builder executionId(String executionId) {
             this.executionId = executionId;
@@ -156,16 +156,15 @@ public class QueryExecutionResult {
         }
 
 
-
     }
 
     public static QueryExecutionResult ofError(String executionId, Throwable t) {
-         return QueryExecutionResult
-                 .builder()
-                 .executionId(executionId)
-                 .status(ExecutionStatusE.ERROR)
-                 .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
-                 .error(t)
-                 .build();
+        return QueryExecutionResult
+                .builder()
+                .executionId(executionId)
+                .status(ExecutionStatusE.ERROR)
+                .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
+                .error(t)
+                .build();
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by anastasiya on 06.03.16.
  */
 @Repository
-public class CategoryDaoImpl  extends AbstractDbDao<Category, Long> implements CategoryDao {
+public class CategoryDaoImpl extends AbstractDbDao<Category, Long> implements CategoryDao {
 
 
     private static final Logger LOGGER = Logger.getLogger(CategoryDaoImpl.class);
@@ -23,6 +23,7 @@ public class CategoryDaoImpl  extends AbstractDbDao<Category, Long> implements C
 
         LOGGER.info("CategoryDaoImpl created.");
     }
+
     @Override
     public List<Category> getCategoryByTitle(String title) {
         return em.createQuery("FROM Category WHERE title LIKE :titleParam")

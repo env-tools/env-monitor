@@ -5,7 +5,7 @@ package org.envtools.monitor.model.common;
  *
  * @author Yury Yakovlev
  */
-public abstract class AbstractIdentifiable <T> implements Identifiable<T> {
+public abstract class AbstractIdentifiable<T> implements Identifiable<T> {
 
     protected T id;
 

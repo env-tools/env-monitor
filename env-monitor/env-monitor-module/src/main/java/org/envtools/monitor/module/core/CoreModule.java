@@ -101,7 +101,7 @@ public class CoreModule implements Module {
 
     private void handleQueryLibraryModuleResponseMessage(ResponseMessage responseMessage) {
         LOGGER.info("CoreModule.handleQueryLibraryModuleResponseMessage - message: " + responseMessage);
-        ResponseType type = responseMessage.getType() ;
+        ResponseType type = responseMessage.getType();
 
         switch (type) {
             case QUERY_EXECUTION_RESULT:
