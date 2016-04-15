@@ -29,7 +29,7 @@ import java.util.*;
 public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
-    private static final String ID = "_id";
+    private static final String ID_FLAG = "_id";
     private static final String STRING = "String";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
 
@@ -42,12 +42,13 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
         try {
             Class entityClass = Class.forName(path + entity);
-            Map<String, Object> result = listProperty(entity, fields);
-
-            Object a = entityClass.newInstance();
-            BeanUtils.populate(a, result);
-            LOGGER.info("Полученный результат:  " + a);
-            entityManager.persist(a);
+            Map<String, Object> result = resolveIdPropertyValues(entityClass, fields);
+            if(result==null)throw new NumberFormatException( "NumberFormatException"
+            ){};
+            Object createdEntity = entityClass.newInstance();
+            BeanUtils.populate(createdEntity, result);
+            LOGGER.info("Полученный результат:  " + createdEntity);
+            entityManager.persist(createdEntity);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException ex)
 
@@ -65,14 +66,19 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         try {
             Class entityClass = Class.forName(path + entity);
             Object object = entityManager.find(entityClass, id);
-            LOGGER.info("_____________" + object);
-            entityManager.refresh(object);
+          //  Object createdEntity = entityClass.newInstance();
+            Map<String, Object> result = resolveIdPropertyValues(entityClass, fields);
+            if(result==null)throw new NumberFormatException( "NumberFormatException"
+            ){};
+            BeanUtils.populate(object, result);
+            LOGGER.info("Полученный результат:  " + object);
+            entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        } catch (ClassNotFoundException | IllegalArgumentException e) {
+        } catch (ClassNotFoundException | IllegalArgumentException| IllegalAccessException|
+                InvocationTargetException e) {
             LOGGER.info(e.getMessage());
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
         }
-
 
     }
 
@@ -90,24 +96,22 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     }
 
 
-    public Map<String, Object> listProperty(String entity, Map<String, String> fields) throws NumberFormatException {
-        Map<String, Object> result = new HashMap<String, Object>();
-        List<String> propertyId = new ArrayList<String>();
+    public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException {
+        Map<String, Object> propertyValues = new HashMap<>();
+        List<String> propertyId = new ArrayList<>();
 
         /*Найдем все string, которые заканчиваются на _id*/
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
-            if (entry.getKey().contains(ID)) {
-                propertyId.add(entry.getKey().replace(ID, ""));
+            if (entry.getKey().endsWith(ID_FLAG)) {
+                propertyId.add(entry.getKey().replace(ID_FLAG, ""));
 
             } else {
-                result.put(entry.getKey(), fields.get(entry.getKey()));
+                propertyValues.put(entry.getKey(), entry.getValue());
             }
         }
         try {
 
-            //находим класс по entity
-            Class entityClass = Class.forName(path + entity);
             BeanInfo bi = Introspector.getBeanInfo(entityClass);
             PropertyDescriptor[] pds = bi.getPropertyDescriptors();
 
@@ -122,19 +126,23 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                             LOGGER.info("propertyId.get(j)= " + entry);
                             LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
                             LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
-                            Class[] clazz = pds[i].getWriteMethod().getParameterTypes();
+                            Class[] setterParameterTypes = pds[i].getWriteMethod().getParameterTypes();
 
                      /*
                      * Узнали какие параметры принимает наш метод.
                      * Теперь необходимо достать связный объект
                      * */
-                            for (Class arg : clazz) {
+                            if(setterParameterTypes.length!=1)throw new IllegalArgumentException(
+                                   "IllegalArgumentException"
+                            );
+
+                            for (Class arg :setterParameterTypes) {
                                 LOGGER.info("Тип параметра принимаемого методом " + Class.forName(arg.getName()));
 
-                                result.put(entry, entityManager.find(Class.forName(arg.getName()),
-                                        Long.valueOf(fields.get(entry + ID))));
+                                propertyValues.put(entry, entityManager.find(Class.forName(arg.getName()),
+                                        Long.valueOf(fields.get(entry + ID_FLAG))));
 
-                                LOGGER.info("Object - связный объект " + result.get(entry));
+                                LOGGER.info("Object - связный объект " + propertyValues.get(entry));
                             }
 
                         }
@@ -146,8 +154,9 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
         } catch (ClassNotFoundException | NumberFormatException | IntrospectionException e) {
             LOGGER.info(e.getMessage());
+            return null;
         }
-        return result;
+        return propertyValues;
     }
 
 
