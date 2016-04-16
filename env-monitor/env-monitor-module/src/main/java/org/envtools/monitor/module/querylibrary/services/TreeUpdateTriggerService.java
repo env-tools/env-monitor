@@ -7,5 +7,6 @@ import org.envtools.monitor.model.querylibrary.updates.UpdateTrigger;
  */
 public interface TreeUpdateTriggerService {
     void triggerUpdate() throws InterruptedException;
+
     UpdateTrigger waitForUpdateTrigger() throws InterruptedException;
 }

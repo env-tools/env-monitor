@@ -1,6 +1,7 @@
 package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -12,14 +13,19 @@ import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
+import org.envtools.monitor.module.querylibrary.services.TreeUpdateService;
 import org.envtools.monitor.module.querylibrary.services.TreeUpdateTask;
 import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerService;
+import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
 
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -116,65 +122,23 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
+    DataSource dataSource;
+
+    @Autowired
     TreeUpdateTriggerService treeUpdateTriggerService;
+
+    @Autowired
+    TreeUpdateService treeUpdateService;
 
     public void init() throws Exception {
         super.init();
-        TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService);
-        executorService.submit(treeUpdateTask);
-        treeUpdateTriggerService.triggerUpdate();
-        /*Connection connection = dataSource.getConnection();
+        Connection connection = dataSource.getConnection();
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
         RunScript.execute(connection, new InputStreamReader(stream));
 
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-
-                Map<String, List<Category>> treeMap = new HashMap<>();
-                List<Category> listCategories = categoryDao.getRootCategories();
-
-                for (Category category : listCategories) {
-                    String owner = category.getOwner();
-                    String ownerKey = owner == null ? ModuleConstants.OWNER_NULL : owner;
-
-                    List<Category> ownerCategories;
-                    if (!treeMap.containsKey(ownerKey)) {
-                        ownerCategories = Lists.newArrayList();
-                        treeMap.put(ownerKey, ownerCategories);
-                    } else {
-                        ownerCategories = treeMap.get(ownerKey);
-                    }
-                    ownerCategories.add(category);
-                }
-
-                for (Map.Entry<String, List<Category>> tree : treeMap.entrySet()) {
-
-                    LOGGER.info("\n KEY " + tree.getKey() + "\n");
-                    for (int i = 0; i < tree.getValue().size(); i++) {
-                        LOGGER.info("\n VALUE #" + i + " " + tree.getValue().get(i) + "\n");
-                    }
-
-                }
-
-                Map<String, String> jsonMap = null;
-                try {
-                    jsonMap = categoryViewMapper
-                            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                sendMessageToCore(ResponseMessage
-                        .builder()
-                        .payload(MapContent.of(jsonMap))
-                        .type(ResponseType.CATEGORY_TREE_DATA)
-                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
-                        .build());
-
-            }
-        });*/
+        TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
+        executorService.submit(treeUpdateTask);
+        treeUpdateTriggerService.triggerUpdate();
     }
 
     @PreDestroy

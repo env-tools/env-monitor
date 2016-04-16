@@ -1,6 +1,5 @@
 package org.envtools.monitor.module.querylibrary.services;
 
-import javax.transaction.*;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
