@@ -1,11 +1,10 @@
-package org.envtools.monitor.module.querylibrary;
+package org.envtools.monitor.module.querylibrary.services;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
+import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
-import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
-import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,10 +98,10 @@ public class DataOperationServiceImplTest {
         fields.put("title", "t5r");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "1");
+        fields.put("parentCategory_id", "t1");
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR,
-                dataOperationService.update("Category", (long) 7, fields).getStatus());
+                dataOperationService.update("Category1", (long) 7, fields).getStatus());
         Assert.assertEquals(0, categoryDao.getCategoryByTitle("t5r").size());
 
     }
@@ -139,6 +138,7 @@ public class DataOperationServiceImplTest {
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t5").size());
 
     }
+
 
     private Category createWithText(String text) {
         Category category = new Category();

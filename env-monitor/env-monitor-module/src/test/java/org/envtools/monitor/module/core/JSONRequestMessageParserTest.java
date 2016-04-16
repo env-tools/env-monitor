@@ -18,7 +18,7 @@ import java.util.Map;
 public class JSONRequestMessageParserTest extends Assert {
 
     public static String INPUT_REQUEST = "{\"requestId\":\"a\",\"destination\":\"b\",\"sessionId\":\"c\",\"targetModuleId\":\"d\",\"username\":\"e\",\"payload\":{\"payloadType\":\"f\",\"content\":{\"dataOperation\":{\"type\":\"3\",\"y\":\"2\"}}}}",
-            INPUT_DATAOPERATON = "{\"type\":\"CREATE\",\"entity\":\"Category\",\"fields\":{\"title\":\"newTitle\",\"owner\":\"Owner1\",\"parentCategoryID\":5}}";
+            INPUT_DATAOPERATON = "{\"type\":\"CREATE\",\"entity\":\"Category\",\"fields\":{\"title\":\"newTitle\",\"owner\":\"Owner1\",\"parentCategoryID\":5},\"id\":1}";
 
     @Test
     public void testRequestMessageParser() throws IOException {
@@ -35,6 +35,8 @@ public class JSONRequestMessageParserTest extends Assert {
         fields.put("owner", "Owner1");
         fields.put("parentCategoryID", "5");
         DataOperation resultDataOperation = new DataOperation(DataOperationType.CREATE, "Category", fields, (long)1);
-        assertEquals(dataOperation.toString(), resultDataOperation.toString());
+        assertEquals(dataOperation.getEntity(), resultDataOperation.getEntity());
+        assertEquals(dataOperation.getFields(), resultDataOperation.getFields());
+        assertEquals(dataOperation.getId(), resultDataOperation.getId());
     }
 }

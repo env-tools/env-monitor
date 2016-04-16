@@ -1,8 +1,10 @@
 package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.hibernate.exception.ConstraintViolationException;
@@ -47,10 +49,10 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             LOGGER.info("Полученный результат:  " + createdEntity);
             entityManager.persist(createdEntity);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException ex)
+        } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException | DataOperationExeption ex)
 
         {
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(ex.getMessage()).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(ex.getMessage()).error(ex).build();
         }
 
 
@@ -72,9 +74,9 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException |
-                InvocationTargetException e) {
+                InvocationTargetException | DataOperationExeption e) {
             LOGGER.info(e.getMessage());
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
 
     }
@@ -88,12 +90,12 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | ConstraintViolationException e) {
             LOGGER.info(e.getMessage());
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).build();
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
     }
 
 
-    public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException {
+    public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException, DataOperationExeption {
         Map<String, Object> propertyValues = new HashMap<>();
         List<String> propertyId = new ArrayList<>();
 
@@ -107,6 +109,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                 propertyValues.put(entry.getKey(), entry.getValue());
             }
         }
+
         try {
 
             BeanInfo bi = Introspector.getBeanInfo(entityClass);
@@ -119,16 +122,15 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
                 /*находим методы с id в классе entity*/
                     for (String entry : propertyId) {
-                        if (pds[i].getWriteMethod().getName().contains(firstUpperCase(entry))) {
+                        if (pds[i].getName().contains(firstUpperCase(entry))) {
                             LOGGER.info("propertyId.get(j)= " + entry);
                             LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
                             LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));
                             Class[] setterParameterTypes = pds[i].getWriteMethod().getParameterTypes();
 
-
-                            if (setterParameterTypes.length != 1) throw new IllegalArgumentException(
-                                    "IllegalArgumentException"
-                            );
+                            if (setterParameterTypes.length != 1) throw new IllegalSelectorException(
+                                    new IllegalSelectorException(String.format("Invalid number of arguments %s, " +
+                                            "expected 1", setterParameterTypes.length)));
 
                             LOGGER.info("Тип параметра принимаемого методом " + Class.forName(setterParameterTypes[0].getName()));
 
@@ -137,7 +139,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
                             LOGGER.info("Object - связный объект " + propertyValues.get(entry));
 
-
                         }
                     }
 
@@ -145,16 +146,16 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
             }
 
-        } catch (ClassNotFoundException | NumberFormatException | IntrospectionException e) {
-            LOGGER.info(e.getMessage());
-            return null;
+        } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException e) {
+
+            throw new DataOperationExeption("Create operation falied", e);
         }
         return propertyValues;
     }
 
 
     public String firstUpperCase(String text) {
-        if (text == null || text.isEmpty()) return "";
+        if (StringUtils.isEmpty(text)) return "";
         return text.substring(0, 1).toUpperCase() + text.substring(1);
     }
 }
