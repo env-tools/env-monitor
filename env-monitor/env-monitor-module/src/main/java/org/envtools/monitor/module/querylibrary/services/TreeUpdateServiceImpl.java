@@ -2,7 +2,6 @@ package org.envtools.monitor.module.querylibrary.services;
 
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponseType;
 import org.envtools.monitor.model.messaging.content.MapContent;
@@ -10,7 +9,6 @@ import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
-import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +37,6 @@ public class TreeUpdateServiceImpl implements TreeUpdateService {
     CategoryViewMapper categoryViewMapper;
 
     @Autowired
-    DataSource dataSource;
-
-    @Autowired
     @Qualifier("transactionManager")
     protected PlatformTransactionManager transactionManager;
 
@@ -53,11 +44,7 @@ public class TreeUpdateServiceImpl implements TreeUpdateService {
     CoreModuleService coreModuleService;
 
     @Override
-    public void sendTreeUpdate() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
-        RunScript.execute(connection, new InputStreamReader(stream));
-
+    public void sendTreeUpdate() {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override

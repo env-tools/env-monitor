@@ -2,8 +2,6 @@ package org.envtools.monitor.module.querylibrary.services;
 
 import org.envtools.monitor.model.querylibrary.execution.*;
 
-import java.util.UUID;
-
 /**
  * Created: 23.02.16 3:06
  *

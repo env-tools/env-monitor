@@ -1,7 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services;
 
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 
 import java.util.List;
 import java.util.Map;
