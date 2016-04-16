@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
+import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.hibernate.exception.ConstraintViolationException;
@@ -40,7 +41,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     @Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws ClassNotFoundException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+    public DataOperationResult create(String entity, Map<String, String> fields) throws  IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
         try {
             Class entityClass = Class.forName(path + entity);
             Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
@@ -49,10 +50,11 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             LOGGER.info("Полученный результат:  " + createdEntity);
             entityManager.persist(createdEntity);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        } catch (NumberFormatException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException | DataOperationExeption ex)
+        } catch (Throwable t)
 
         {
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(ex.getMessage()).error(ex).build();
+            LOGGER.error(t.getMessage(),t);
+            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(t.getMessage()).error(t).build();
         }
 
 
@@ -66,15 +68,12 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             Class entityClass = Class.forName(path + entity);
             Object object = entityManager.find(entityClass, id);
             Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
-            if (propertyValues == null) throw new NumberFormatException("NumberFormatException"
-            ) {
-            };
             BeanUtils.populate(object, propertyValues);
             LOGGER.info("Полученный результат:  " + object);
             entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException |
-                InvocationTargetException | DataOperationExeption e) {
+                InvocationTargetException| DataOperationException e) {
             LOGGER.info(e.getMessage());
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
@@ -95,7 +94,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     }
 
 
-    public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException, DataOperationExeption {
+    public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException, DataOperationException {
         Map<String, Object> propertyValues = new HashMap<>();
         List<String> propertyId = new ArrayList<>();
 
@@ -111,7 +110,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         }
 
         try {
-
             BeanInfo bi = Introspector.getBeanInfo(entityClass);
             PropertyDescriptor[] pds = bi.getPropertyDescriptors();
 
@@ -148,7 +146,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
         } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException e) {
 
-            throw new DataOperationExeption("Create operation falied", e);
+            throw new DataOperationException("Create operation falied", e);
         }
         return propertyValues;
     }

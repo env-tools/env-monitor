@@ -1,6 +1,7 @@
 package org.envtools.monitor.module.querylibrary.services;
 
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
+import org.envtools.monitor.module.exception.DataOperationException;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -11,5 +12,5 @@ import java.lang.reflect.InvocationTargetException;
  * @author Anastasiya Plotnikova
  */
 public interface DataOperationProcessor {
-    DataOperationResult process(DataOperation operation) throws NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException;
+    DataOperationResult process(DataOperation operation) throws NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException;
 }

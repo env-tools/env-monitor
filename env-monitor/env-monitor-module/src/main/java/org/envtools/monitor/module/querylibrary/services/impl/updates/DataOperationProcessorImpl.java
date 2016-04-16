@@ -2,6 +2,7 @@ package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.model.querylibrary.updates.DataOperationType;
+import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationProcessor;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
@@ -22,16 +23,19 @@ public class DataOperationProcessorImpl implements DataOperationProcessor {
     DataOperationService<Long> dataOperationService;
 
     @Override
-    public DataOperationResult process(DataOperation operation) throws NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+    public DataOperationResult process(DataOperation operation) throws NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
 
         DataOperationService dataOperationService = null;
-        if (operation.getType().equals(DataOperationType.CREATE)) {
-            return dataOperationService.create(operation.getEntity(), operation.getFields());
+        switch (operation.getType()) {
+            case CREATE:
+                return dataOperationService.create(operation.getEntity(), operation.getFields());
+            case UPDATE:
+                return dataOperationService.update(operation.getEntity(), operation.getId(), operation.getFields());
+            case DELETE:
+                return dataOperationService.delete(operation.getEntity(), operation.getId());
+            default:
+                return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).build();
         }
-        if (operation.getType().equals(DataOperationType.UPDATE)) {
-            return dataOperationService.update(operation.getEntity(), operation.getId(), operation.getFields());
-        } else {
-            return dataOperationService.delete(operation.getEntity(), operation.getId());
-        }
+
     }
 }

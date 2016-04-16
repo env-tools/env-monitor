@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.services;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
+import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class DataOperationServiceImplTest {
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
     @Test
-    public void testDataOperationServiceCreate() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceCreate() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<>();
@@ -60,7 +61,7 @@ public class DataOperationServiceImplTest {
     }
 
     @Test
-    public void testDataOperationServiceCreateError() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceCreateError() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
