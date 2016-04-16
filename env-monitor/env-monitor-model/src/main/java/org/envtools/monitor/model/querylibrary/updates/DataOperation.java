@@ -23,7 +23,7 @@ public class DataOperation {
         this.type = type;
         this.entity = entity;
         this.fields = fields;
-        this.id=id;
+        this.id = id;
     }
 
     public Long getId() {
