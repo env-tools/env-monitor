@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.querylibrary.services;
+package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
@@ -8,6 +8,8 @@ import org.envtools.monitor.model.messaging.content.MapContent;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
+import org.envtools.monitor.module.querylibrary.services.CoreModuleService;
+import org.envtools.monitor.module.querylibrary.services.TreeUpdateService;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

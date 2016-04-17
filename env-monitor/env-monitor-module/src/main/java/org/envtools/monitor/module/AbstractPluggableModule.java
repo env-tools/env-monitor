@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.RequestPayload;
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.exception.MessageFormatException;
 import org.envtools.monitor.module.querylibrary.services.CoreModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
 
 import javax.annotation.PostConstruct;
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -60,7 +63,7 @@ public abstract class AbstractPluggableModule implements Module {
 
     }
 
-    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage);
+    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException;
 
 
     @Autowired

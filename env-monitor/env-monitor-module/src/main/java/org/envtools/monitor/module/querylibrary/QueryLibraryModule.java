@@ -12,10 +12,10 @@ import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
-import org.envtools.monitor.module.querylibrary.services.TreeUpdateService;
-import org.envtools.monitor.module.querylibrary.services.TreeUpdateTask;
-import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerService;
+import org.envtools.monitor.module.exception.DataOperationException;
+import org.envtools.monitor.module.querylibrary.services.*;
+import org.envtools.monitor.module.querylibrary.services.impl.updates.DataOperationProcessorImpl;
+import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
 import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
@@ -23,8 +23,10 @@ import org.springframework.messaging.SubscribableChannel;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.beans.IntrospectionException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +76,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
 
     @Override
-    protected <T> void processPayload(T payload, RequestMessage requestMessage) {
+    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException {
         if (payload instanceof QueryExecutionRequest) {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
@@ -162,9 +164,14 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         sendResultMessage(resultView, requestMessage);
     }
 
-    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) {
-        String result = "{}";
-
+    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) throws NoSuchMethodException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, InterruptedException {
+        String result;
+        DataOperationProcessor dataOperationProcessor = new DataOperationProcessorImpl();
+        DataOperationResult dataOperationResult = dataOperationProcessor.process(dataOperation);
+        if (dataOperationResult != null) {
+            treeUpdateTriggerService.triggerUpdate();
+        }
+        result = dataOperationResult.toString();
         sendMessageToCore(ResponseMessage
                 .builder()
                 .requestMetaData(requestMessage)

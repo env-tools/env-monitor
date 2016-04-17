@@ -1,6 +1,7 @@
-package org.envtools.monitor.module.querylibrary.services;
+package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import org.envtools.monitor.model.querylibrary.updates.UpdateTrigger;
+import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @Service
 public class TreeUpdateTriggerServiceImpl implements TreeUpdateTriggerService {
-    BlockingQueue blockingQueue = new LinkedBlockingQueue<UpdateTrigger>();
+    BlockingQueue<UpdateTrigger> blockingQueue = new LinkedBlockingQueue<UpdateTrigger>();
 
     @Override
     public void triggerUpdate() throws InterruptedException {
@@ -21,7 +22,7 @@ public class TreeUpdateTriggerServiceImpl implements TreeUpdateTriggerService {
 
     @Override
     public UpdateTrigger waitForUpdateTrigger() throws InterruptedException {
-        UpdateTrigger updateTrigger = (UpdateTrigger) blockingQueue.take();
+        UpdateTrigger updateTrigger = blockingQueue.take();
         return updateTrigger;
     }
 }

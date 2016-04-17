@@ -1,6 +1,7 @@
-package org.envtools.monitor.module.querylibrary.services;
+package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
 import org.envtools.monitor.model.messaging.ResponseMessage;
+import org.envtools.monitor.module.querylibrary.services.CoreModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.MessageChannel;
