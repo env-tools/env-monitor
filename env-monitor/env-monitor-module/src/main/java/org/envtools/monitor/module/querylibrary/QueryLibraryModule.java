@@ -15,12 +15,10 @@ import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.*;
-import org.envtools.monitor.module.querylibrary.services.impl.updates.DataOperationProcessorImpl;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
 import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
-
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -78,7 +76,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
 
     @Override
-    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException, IOException {
+    protected <T> void processPayload(T payload, RequestMessage requestMessage) {
         if (payload instanceof QueryExecutionRequest) {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
@@ -110,23 +108,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         }
     }
 
-    /*   @Autowired
-       CategoryDao categoryDao;
-
-       @Autowired
-       CategoryViewMapper categoryViewMapper;
-
-       @Autowired
-       DataSource dataSource;
-
-       @Autowired
-       @Qualifier("transactionManager")
-       protected PlatformTransactionManager transactionManager;*/
-
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
     DataSource dataSource;
+
+    @Autowired
+    DataOperationService<Long> dataOperationService;
 
     @Autowired
     TreeUpdateTriggerService treeUpdateTriggerService;
@@ -141,7 +129,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         RunScript.execute(connection, new InputStreamReader(stream));
 
         TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
-        executorService.submit(treeUpdateTask);
+        executorService.execute(treeUpdateTask);
         treeUpdateTriggerService.triggerUpdate();
     }
 
@@ -166,23 +154,47 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         sendResultMessage(resultView, requestMessage);
     }
 
-    @Autowired
-    DataOperationProcessor dataOperationProcessor;
-
-    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) throws NoSuchMethodException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, InterruptedException, IOException {
-        String result;
-        //DataOperationProcessor dataOperationProcessor = new DataOperationProcessorImpl();
-        DataOperationResult dataOperationResult = dataOperationProcessor.process(dataOperation);
-        if (dataOperationResult.getStatus() == DataOperationResult.DataOperationStatusE.COMPLETED) {
-            treeUpdateTriggerService.triggerUpdate();
+    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) {
+        DataOperationResult result = null;
+        LOGGER.info("QueryLibraryModule.processDataOperationRequest - DataOperation: " + dataOperation);
+        try {
+            switch (dataOperation.getType()) {
+                case CREATE:
+                    LOGGER.info("QueryLibraryModule.processDataOperationRequest - create entity");
+                    LOGGER.info("QueryLibraryModule.processDataOperationRequest - fields: " + dataOperation.getFields());
+                    result = dataOperationService.create(dataOperation.getEntity(), dataOperation.getFields());
+                    break;
+                case UPDATE:
+                    LOGGER.info("QueryLibraryModule.processDataOperationRequest - update entity");
+                    result = dataOperationService.update(dataOperation.getEntity(), dataOperation.getId(), dataOperation.getFields());
+                    break;
+                case DELETE:
+                    LOGGER.info("QueryLibraryModule.processDataOperationRequest - delete entity");
+                    result = dataOperationService.delete(dataOperation.getEntity(), dataOperation.getId());
+                    break;
+            }
+        } catch (Exception e) {
+            LOGGER.error("QueryLibraryModule.processDataOperationRequest - unhandled exception: " + e.getMessage());
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        result = objectMapper.writeValueAsString(dataOperationResult);
+
+        if (result != null && result.getStatus() == DataOperationResult.DataOperationStatusE.COMPLETED) {
+            TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
+            executorService.submit(treeUpdateTask);
+            try {
+                treeUpdateTriggerService.triggerUpdate();
+            } catch (InterruptedException e) {
+                LOGGER.error("QueryLibraryModule.processDataOperationRequest - InterruptedException: " + e.getMessage());
+            }
+        }
+
+        LOGGER.error("QueryLibraryModule.processDataOperationRequest - operation result: " + result);
+        String jsonResult = serializer.serialize(result);
+
         sendMessageToCore(ResponseMessage
                 .builder()
                 .requestMetaData(requestMessage)
                 .type(ResponseType.DATA_OPERATION_RESULT)
-                .payload(result)
+                .payload(jsonResult)
                 .build());
     }
 

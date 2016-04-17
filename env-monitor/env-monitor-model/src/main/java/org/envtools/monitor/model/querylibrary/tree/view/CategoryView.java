@@ -2,6 +2,7 @@ package org.envtools.monitor.model.querylibrary.tree.view;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.querylibrary.db.Category;
 
 import java.util.List;
 
@@ -16,14 +17,24 @@ public class CategoryView {
     private String description;
     private List<QueryView> queries;
     private List<CategoryView> childCategories;
+    private Long parentCategoryId;
 
     public CategoryView() {
     }
 
-    public CategoryView(Long id, String title, String description) {
+    public CategoryView(Long id, String title, String description, Long parentCategoryId) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.parentCategoryId = parentCategoryId;
+    }
+
+    public Long getParentCategory() {
+        return parentCategoryId;
+    }
+
+    public void setParentCategory(Long parentCategory_id) {
+        this.parentCategoryId = parentCategory_id;
     }
 
     public Long getId() {
@@ -69,10 +80,12 @@ public class CategoryView {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id)
                 .append("title", title)
                 .append("description", description)
                 .append("queries", queries)
                 .append("childCategories", childCategories)
+                .append("parentCategoryId", parentCategoryId)
                 .toString();
     }
 }

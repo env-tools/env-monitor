@@ -22,7 +22,7 @@
                 <h4 class="modal-title">{{ title }}</h4>
             </div>
             <div class="modal-body">
-                <form action="" class="ng-pristine ng-valid">
+                <form action="">
                     <div class="form-group">
                         <label for="query_title">Title</label>
                         <input id="query_title" type="text" class="form-control" data-ng-model="query.title">
@@ -33,6 +33,15 @@
                                data-ng-model="query.description">
                     </div>
                     <div class="form-group">
+                        <label for="query_parentCategory">Parent category</label>
+                        <select name="" id="query_parentCategory" class="form-control" data-ng-model="query.category_id">
+                            <option value="null">Select any category</option>
+                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
+                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="query_text">Text</label>
                         <textarea id="query_text" class="form-control" cols="30" rows="10"
                                   data-ng-model="query.text"></textarea>
@@ -41,10 +50,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!query.id" type="button" class="btn btn-success" data-ng-click="create(query)">
+                <button data-ng-if="!entity_id" type="button" class="btn btn-success" data-ng-click="create(query)">
                     Create
                 </button>
-                <button data-ng-if="query.id" type="button" class="btn btn-success" data-ng-click="update(query)">
+                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(query)">
                     Update
                 </button>
             </div>
@@ -60,7 +69,7 @@
                 <h4 class="modal-title">{{ title }}</h4>
             </div>
             <div class="modal-body">
-                <form action="" class="ng-pristine ng-valid">
+                <form action="">
                     <div class="form-group">
                         <label for="title">Title</label>
                         <input id="title" type="text" class="form-control" data-ng-model="category.title">
@@ -69,14 +78,23 @@
                         <label for="description">Description</label>
                         <input id="description" type="text" class="form-control" data-ng-model="category.description">
                     </div>
+                    <div class="form-group">
+                        <label for="category_parentCategory">Parent category</label>
+                        <select name="" id="category_parentCategory" class="form-control" data-ng-model="category.parentCategory_id">
+                            <option value="null">Select any category</option>
+                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
+                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!category.id" type="button" class="btn btn-success"
+                <button data-ng-if="!entity_id" type="button" class="btn btn-success"
                         data-ng-click="create(category)">Create
                 </button>
-                <button data-ng-if="category.id" type="button" class="btn btn-success" data-ng-click="update(category)">
+                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(category)">
                     Update
                 </button>
             </div>

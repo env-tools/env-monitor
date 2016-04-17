@@ -5,32 +5,41 @@
         .module('queryLib')
         .controller('CategoryModal', CategoryModal);
 
-    CategoryModal.$injector = ['$scope', '$stomp', 'rfc4122', 'Stomp'];
+    CategoryModal.$injector = ['$scope', 'ngstomp', 'rfc4122'];
 
-    function CategoryModal($scope, $stomp, rfc4122, Stomp) {
-        var subscribes = {};
+    function CategoryModal($scope, ngstomp, rfc4122) {
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
 
         $scope.close = close;
         $scope.create = create;
         $scope.update = update;
+        $scope.depth = depth;
 
         init();
 
         function init() {
-            Stomp.connect('/monitor');
-
-            $scope.$on('stomp::connect', function (event, data) {
-                if (data["endpoint"] == "/monitor") {
-                    if (!subscribes[subDestination]) {
-                        var sub = $stomp.subscribe(subDestination, function (message) {
-                            console.log(message)
-                        });
-                        subscribes[subDestination] = sub;
-                    }
+            ngstomp.subscribeTo(subDestination).callback(function (message) {
+                var content = message['body']['payload']['jsonContent'];
+                if (content != null && !content['error']['present']) {
+                    close();
+                    $('.alert-main.alert-success').removeClass('hide');
+                    $('.alert-main.alert-danger').addClass('hide');
+                } else {
+                    close();
+                    $('.alert-main.alert-success').addClass('hide');
+                    $('.alert-main.alert-danger').removeClass('hide');
                 }
-            });
+            }).withBodyInJson().connect();
+        }
+
+        function depth(level) {
+            var string = '';
+            for (var i = 0; i < level; i++) {
+                string += '.';
+            }
+
+            return string + ' ';
         }
 
         function create(category) {
@@ -50,7 +59,7 @@
                     }
                 }
             };
-            $stomp.send(mesDestination, body, {});
+            ngstomp.send(mesDestination, body, {});
         }
 
         function update(category) {
@@ -64,31 +73,42 @@
                 payload: {
                     payloadType: 'dataOperation',
                     content: {
+                        id: $scope.entity_id,
                         type: 'UPDATE',
                         entity: 'Category',
                         fields: category
                     }
                 }
             };
-            $stomp.send(mesDestination, body, {});
+            ngstomp.send(mesDestination, body, {});
         }
 
-        $scope.$on('categoryModal::create', function () {
+        $scope.$on('categoryModal::create', function (event, data) {
+            $scope.categories = data['categories'];
             $scope.title = 'Create category';
+            $scope.entity_id = null;
             $scope.category = {
-                title: '',
-                description: ''
+                title: null,
+                description: null,
+                owner: null,
+                parentCategory_id: null
             };
 
             $('#category').modal('show');
         });
 
         $scope.$on('categoryModal::edit', function (event, data) {
+            var element = data['element'];
+            var parentCategoryId = element['parentCategory'] != null ? element['parentCategory'].toString() : "null";
+
             $scope.title = 'Edit category';
+            $scope.categories = data['categories'];
+            $scope.entity_id = element['id'];
             $scope.category = {
-                id: data.id,
-                title: data.title,
-                description: data.description
+                title: element['title'],
+                description: element['description'],
+                owner: null,
+                parentCategory_id: parentCategoryId
             };
 
             $('#category').modal('show');

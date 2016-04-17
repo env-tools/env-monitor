@@ -5,9 +5,9 @@
         .module('queryLib')
         .controller('QueryModal', QueryModal);
 
-    QueryModal.$injector = ['$scope', '$stomp', 'rfc4122', 'Stomp'];
+    QueryModal.$injector = ['$scope', 'ngstomp', 'rfc4122'];
 
-    function QueryModal($scope, $stomp, rfc4122, Stomp) {
+    function QueryModal($scope, ngstomp, rfc4122) {
         var subscribes = {};
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
@@ -15,22 +15,32 @@
         $scope.close = close;
         $scope.create = create;
         $scope.update = update;
+        $scope.depth = depth;
 
         init();
 
         function init() {
-            Stomp.connect('/monitor');
-
-            $scope.$on('stomp::connect', function (event, data) {
-                if (data["endpoint"] == "/monitor") {
-                    if (!subscribes[subDestination]) {
-                        var sub = $stomp.subscribe(subDestination, function (message) {
-                            console.log(message)
-                        });
-                        subscribes[subDestination] = sub;
-                    }
+            ngstomp.subscribeTo(subDestination).callback(function (message) {
+                var content = message['body']['payload']['jsonContent'];
+                if (content != null && !content['error']['present']) {
+                    close();
+                    $('.alert-main.alert-success').removeClass('hide');
+                    $('.alert-main.alert-danger').addClass('hide');
+                } else {
+                    close();
+                    $('.alert-main.alert-success').addClass('hide');
+                    $('.alert-main.alert-danger').removeClass('hide');
                 }
-            });
+            }).withBodyInJson().connect();
+        }
+
+        function depth(level) {
+            var string = '';
+            for (var i = 0; i < level; i++) {
+                string += '.';
+            }
+
+            return string + ' ';
         }
 
         function create(query) {
@@ -50,7 +60,7 @@
                     }
                 }
             };
-            $stomp.send(mesDestination, body, {});
+            ngstomp.send(mesDestination, body, {});
         }
 
         function update(query) {
@@ -64,33 +74,42 @@
                 payload: {
                     payloadType: 'dataOperation',
                     content: {
+                        id: $scope.entity_id,
                         type: 'UPDATE',
                         entity: 'LibQuery',
                         fields: query
                     }
                 }
             };
-            $stomp.send(mesDestination, body, {});
+            ngstomp.send(mesDestination, body, {});
         }
 
-        $scope.$on('queryModal::create', function () {
-            $scope.title = 'Create category';
+        $scope.$on('queryModal::create', function (data) {
+            $scope.title = 'Create query';
+            $scope.entity_id = null;
+            $scope.categories = data['categories'];
             $scope.query = {
                 title: '',
                 description: '',
-                text: ''
+                text: '',
+                category_id: "null"
             };
 
             $('#query').modal('show');
         });
 
         $scope.$on('queryModal::edit', function (event, data) {
-            $scope.title = 'Edit category';
+            var element = data['element'];
+            var categoryId = element['category'] != null ? element['category'].toString() : "null";
+            console.log(element);
+            $scope.title = 'Edit query';
+            $scope.entity_id = element.id;
+            $scope.categories = data['categories'];
             $scope.query = {
-                id: data.id,
-                title: data.title,
-                description: data.description,
-                text: data.text
+                title: element.title,
+                description: element.description,
+                text: element.text,
+                category_id: categoryId
             };
 
             $('#query').modal('show');
