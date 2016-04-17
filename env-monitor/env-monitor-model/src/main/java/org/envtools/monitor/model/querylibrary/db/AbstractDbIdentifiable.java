@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class AbstractDbIdentifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "QueryLibSeqGenerator")
-    @SequenceGenerator(name = "QueryLibSeqGenerator", sequenceName = "QUERY_LIB_SEQUENCE", allocationSize = 1)
+    @SequenceGenerator(name = "QueryLibSeqGenerator", sequenceName = "QUERY_LIB_SEQUENCE", allocationSize = 1, initialValue = 1000)
     @Column(name = "ID")
     protected Long id;
 
