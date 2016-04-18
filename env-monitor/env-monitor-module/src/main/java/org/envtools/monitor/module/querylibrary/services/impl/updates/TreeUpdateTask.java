@@ -1,5 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
+import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.updates.UpdateTrigger;
 import org.envtools.monitor.module.querylibrary.services.TreeUpdateService;
 import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerService;
@@ -9,6 +10,8 @@ import org.envtools.monitor.module.querylibrary.services.TreeUpdateTriggerServic
  */
 
 public class TreeUpdateTask implements Runnable {
+    private static final Logger LOGGER = Logger.getLogger(TreeUpdateTask.class);
+
     private TreeUpdateTriggerService treeUpdateTriggerService;
 
     private TreeUpdateService treeUpdateService;
@@ -25,6 +28,7 @@ public class TreeUpdateTask implements Runnable {
                 UpdateTrigger updateTrigger = treeUpdateTriggerService.waitForUpdateTrigger();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                LOGGER.error("TreeUpdateTask interrupted exception");
                 break;
             }
             treeUpdateService.sendTreeUpdate();

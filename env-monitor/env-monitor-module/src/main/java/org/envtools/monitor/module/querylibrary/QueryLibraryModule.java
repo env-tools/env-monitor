@@ -2,6 +2,7 @@ package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -24,6 +25,7 @@ import org.springframework.messaging.SubscribableChannel;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.beans.IntrospectionException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
@@ -76,7 +78,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
 
     @Override
-    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException {
+    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException, IOException {
         if (payload instanceof QueryExecutionRequest) {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
@@ -164,14 +166,18 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         sendResultMessage(resultView, requestMessage);
     }
 
-    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) throws NoSuchMethodException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, InterruptedException {
+    @Autowired
+    DataOperationProcessor dataOperationProcessor;
+
+    private void processDataOperationRequest(DataOperation dataOperation, RequestMessage requestMessage) throws NoSuchMethodException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, InterruptedException, IOException {
         String result;
-        DataOperationProcessor dataOperationProcessor = new DataOperationProcessorImpl();
+        //DataOperationProcessor dataOperationProcessor = new DataOperationProcessorImpl();
         DataOperationResult dataOperationResult = dataOperationProcessor.process(dataOperation);
-        if (dataOperationResult != null) {
+        if (dataOperationResult.getStatus() == DataOperationResult.DataOperationStatusE.COMPLETED) {
             treeUpdateTriggerService.triggerUpdate();
         }
-        result = dataOperationResult.toString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        result = objectMapper.writeValueAsString(dataOperationResult);
         sendMessageToCore(ResponseMessage
                 .builder()
                 .requestMetaData(requestMessage)
