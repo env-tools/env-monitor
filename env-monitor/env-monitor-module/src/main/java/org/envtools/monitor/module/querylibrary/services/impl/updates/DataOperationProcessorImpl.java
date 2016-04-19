@@ -25,7 +25,6 @@ public class DataOperationProcessorImpl implements DataOperationProcessor {
     @Override
     public DataOperationResult process(DataOperation operation) throws NoSuchMethodException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
 
-        DataOperationService dataOperationService = null;
         switch (operation.getType()) {
             case CREATE:
                 return dataOperationService.create(operation.getEntity(), operation.getFields());
