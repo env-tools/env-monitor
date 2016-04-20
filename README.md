@@ -78,3 +78,25 @@ gulp dist
  
 *To debug from your IDE*
  - Run Application::main in debug mode
+
+*Developers guide*
+
+Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.
+The application is built from modules: 1 Core Module and several pluggable modules
+ - Core module which is tightly coupled with Spring controllers and always lives together with them 
+ - M_APPLICATIONS module
+ - M_QUERY_LIBRARY module
+ - More modules will be added during development
+ 
+Modules are currently Spring beans which communicate through Spring Integration channels in the same Spring integration context. 
+However they could communicate through a lightweight messaging broker and live in standalone processes (if this is ever implemented)
+
+UI requests are routed to Core module which in turn:
+ - either provides response immediately (because has all necessary data) 
+ - or delegates processing to the responsible module
+
+Currently, the following types of interactions/flows are supported:
+
+1. Pluggable module sends some data model to Core module (which in turn caches it in memory). This happens on module startup, and also later when it's decided that data has been updated and the update should be sent. Full data is re-sent to be cached. When Core module receives the updated model, it broadcasts the updates for interested client subscribers.
+2. // TO BE DONE
+
