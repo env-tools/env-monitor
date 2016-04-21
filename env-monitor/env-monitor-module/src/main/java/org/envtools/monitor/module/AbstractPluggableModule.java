@@ -32,14 +32,36 @@ public abstract class AbstractPluggableModule implements Module {
     //@Resource(name = "core.channel")
     //MessageChannel coreModuleChannel;
 
-    private MessageHandler incomingMessageHandler = (message) -> handleIncomingMessage((RequestMessage) message.getPayload());
+    private MessageHandler incomingMessageHandler = (message) -> {
+        try {
+            handleIncomingMessage((RequestMessage) message.getPayload());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (DataOperationException e) {
+            e.printStackTrace();
+        } catch (IntrospectionException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    };
 
     @PostConstruct
     public void init() throws Exception {
         getModuleChannel().subscribe(incomingMessageHandler);
     }
 
-    public void handleIncomingMessage(RequestMessage requestMessage) {
+    public void handleIncomingMessage(RequestMessage requestMessage) throws NoSuchMethodException, InterruptedException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, IOException {
 
         RequestPayload requestPayload = requestMessage.getPayload();
         String payloadType = requestPayload.getPayloadType();
@@ -63,7 +85,7 @@ public abstract class AbstractPluggableModule implements Module {
 
     }
 
-    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException;
+    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException, IOException;
 
 
     @Autowired

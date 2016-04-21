@@ -12,4 +12,6 @@ public interface CategoryDao extends Dao<Category, Long> {
     List<Category> getCategoryByTitle(String title);
 
     List<Category> getRootCategories();
+
+    List<Category> getChildCategoriesByParentId(Long id);
 }

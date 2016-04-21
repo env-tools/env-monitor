@@ -4,6 +4,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import org.envtools.monitor.model.querylibrary.DataProviderType;
 import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
 import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
@@ -21,6 +22,8 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -41,11 +44,13 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     @Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws  IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
+    public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
         try {
             Class entityClass = Class.forName(path + entity);
             Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
             Object createdEntity = entityClass.newInstance();
+
+
             BeanUtils.populate(createdEntity, propertyValues);
             LOGGER.info("Полученный результат:  " + createdEntity);
             entityManager.persist(createdEntity);
@@ -53,7 +58,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
         } catch (Throwable t)
 
         {
-            LOGGER.error(t.getMessage(),t);
+            LOGGER.error(t.getMessage(), t);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(t.getMessage()).error(t).build();
         }
 
@@ -73,7 +78,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException |
-                InvocationTargetException| DataOperationException e) {
+                InvocationTargetException | DataOperationException e) {
             LOGGER.info(e.getMessage());
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
@@ -142,6 +147,15 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
                 }
 
+            }
+            for (Map.Entry<String, Object> entry : propertyValues.entrySet()) {
+                if (entry.getKey().equals("type")) {
+                    propertyValues.put(entry.getKey(), Enum.valueOf(DataProviderType.class, (String) entry.getValue()));
+                }
+                if (entry.getKey().contains("Timestamp")) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    propertyValues.put(entry.getKey(), LocalDateTime.parse((String) entry.getValue(), formatter));
+                }
             }
 
         } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException e) {
