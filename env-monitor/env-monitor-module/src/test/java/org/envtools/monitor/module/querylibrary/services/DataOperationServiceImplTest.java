@@ -68,12 +68,20 @@ public class DataOperationServiceImplTest {
         fields.put("title", "t1");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "1");
+        fields.put("parentCategory_id", "4");
+
+        Assert.assertEquals(0, categoryDao.getCategoryByTitle("t1").size());
+
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 4).size());
+
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
                 dataOperationService.create("Category", fields).getStatus());
+
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t1").size());
-        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long) 4).size());
+
+
+        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long)4).size());
 
     }
 
@@ -97,15 +105,15 @@ public class DataOperationServiceImplTest {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
-        fields.put("title", "t5");
+        fields.put("title", "t6");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "8");
-
+        fields.put("parentCategory_id", "7");
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long)7).size());
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
-                dataOperationService.update("Category", (long) 10, fields).getStatus());
-        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t5").size());
-        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long) 9).size());
+                dataOperationService.update("Category", (long) 7, fields).getStatus());
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t6").size());
+        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long)7).size());
 
     }
 
@@ -129,16 +137,13 @@ public class DataOperationServiceImplTest {
     public void testDataOperationServiceDelete() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
 
         createWithText(QUERY_SEARCH_PRESENT);
-        Map<String, String> fields = new HashMap<String, String>();
-        fields.put("title", "453333");
-        fields.put("description", "test");
-        fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "8");
 
+        Assert.assertEquals(1, categoryDao.getCategoryByTitle("t5").size());
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 6).size());
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
-                dataOperationService.delete("Category", (long) 8).getStatus());
+                dataOperationService.delete("Category", (long) 6).getStatus());
         Assert.assertEquals(0, categoryDao.getCategoryByTitle("t5").size());
-        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 8).size());
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 6).size());
 
     }
 
@@ -151,10 +156,10 @@ public class DataOperationServiceImplTest {
         fields.put("title", "df");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "1");
+        fields.put("parentCategory_id", "3");
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.ERROR,
-                dataOperationService.delete("Category1", (long) 7).getStatus());
+                dataOperationService.delete("Category1", (long) 3).getStatus());
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t5").size());
 
     }
@@ -201,17 +206,17 @@ public class DataOperationServiceImplTest {
         category.setDescription("some_description");
         category.setOwner(null);
 
-        Category category1 = new Category();
+       // Category category1 = new Category();
         //Don't set Id - it will be auto generated
-        category1.setTitle("453333");
-        category1.setDescription("parent");
-        category1.setOwner(null);
+       // category1.setTitle("453333");
+       // category1.setDescription("parent");
+      //  category1.setOwner(null);
 
-        category.setParentCategory(category1);
-        categoryDao.saveAndFlush(category1);
+       // category.setParentCategory(category1);
+       // categoryDao.saveAndFlush(category1);
         categoryDao.saveAndFlush(category);
-        LOGGER.info("id  " + category.getId());
-        LOGGER.info("id1  " + category1.getId());
+        LOGGER.info("id  родительский " + category.getId());
+       // LOGGER.info("id  родительский  " + category1.getId());
         return categoryDao.saveAndFlush(category);
     }
 

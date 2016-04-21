@@ -7,6 +7,7 @@ import org.envtools.monitor.module.querylibrary.services.DataOperationProcessor;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +18,7 @@ import java.util.Map;
  *
  * @author Anastasiya Plotnikova
  */
+@Service
 public class DataOperationProcessorImpl implements DataOperationProcessor {
 
     @Autowired

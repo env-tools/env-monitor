@@ -1,10 +1,15 @@
 package org.envtools.monitor.module.querylibrary.services.impl.updates;
 
+import com.sun.javafx.css.converters.EnumConverter;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.core.selection.exception.IllegalSelectorException;
 import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
@@ -43,15 +48,14 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     @PersistenceContext
     EntityManager entityManager;
 
+
     @Override
-    @Transactional
+    //@Transactional
     public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
         try {
             Class entityClass = Class.forName(path + entity);
             Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
             Object createdEntity = entityClass.newInstance();
-
-
             BeanUtils.populate(createdEntity, propertyValues);
             LOGGER.info("Полученный результат:  " + createdEntity);
             entityManager.persist(createdEntity);
@@ -101,30 +105,53 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
 
     public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException, DataOperationException {
+
         Map<String, Object> propertyValues = new HashMap<>();
         List<String> propertyId = new ArrayList<>();
 
-        /*Найдем все string, которые заканчиваются на _id*/
-
-        for (Map.Entry<String, String> entry : fields.entrySet()) {
-            if (entry.getKey().endsWith(ID_FLAG)) {
-                propertyId.add(entry.getKey().replace(ID_FLAG, ""));
-
-            } else {
-                if (entry.getKey().equals(TYPE)) {
-                    propertyValues.put(entry.getKey(), Enum.valueOf(DataProviderType.class, (String) entry.getValue()));
-                } else if (entry.getKey().contains(TIME)) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                    propertyValues.put(entry.getKey(), LocalDateTime.parse((String) entry.getValue(), formatter));
-                } else {
-                    propertyValues.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
 
         try {
             BeanInfo bi = Introspector.getBeanInfo(entityClass);
             PropertyDescriptor[] pds = bi.getPropertyDescriptors();
+
+            /*Найдем все string, которые заканчиваются на _id*/
+            for (Map.Entry<String, String> entry : fields.entrySet()) {
+                if (entry.getKey().endsWith(ID_FLAG)) {
+                    propertyId.add(entry.getKey().replace(ID_FLAG, ""));
+
+                } else {
+                    propertyValues.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+
+            for (int i = 0; i < pds.length; i++) {
+
+                if (pds[i].getWriteMethod() != null) {
+                    for (Map.Entry<String, Object> entryParam : propertyValues.entrySet()) {
+
+                        if (pds[i].getName().contains(entryParam.getKey())) {
+                            for (Class<?> entry : pds[i].getWriteMethod().getParameterTypes()) {
+                                if (entry != String.class) {
+                                    if (entry.isEnum()) {
+                                        LOGGER.info("ddddddddd" + entry);
+                                        // propertyValues.put( entryParam.getKey(), ConvertUtils.convert(DataOperation.class))  ;
+                                        propertyValues.put(entryParam.getKey(),
+                                                Enum.valueOf(DataProviderType.class, (String) entryParam.getValue()));
+
+                                    } else if (entry.getName().equals(LocalDateTime.class.getName())) {
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                                        propertyValues.put(entryParam.getKey(), LocalDateTime.parse((String) entryParam.getValue(), formatter));
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
 
             /*Находим все методы setXXX, которые содержат в названии id*/
             for (int i = 0; i < pds.length; i++) {
@@ -133,7 +160,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
                 /*находим методы с id в классе entity*/
                     for (String entry : propertyId) {
-                        if (pds[i].getName().contains(firstUpperCase(entry))) {
+                        if (pds[i].getName().contains(entry)) {
                             LOGGER.info("propertyId.get(j)= " + entry);
                             LOGGER.info("есть ID в методе " + pds[i].getWriteMethod() + "    " + entry);
                             LOGGER.info("Метод принимает " + Arrays.asList(pds[i].getWriteMethod().getParameterTypes()));

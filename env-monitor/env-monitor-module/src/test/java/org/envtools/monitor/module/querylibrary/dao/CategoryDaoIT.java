@@ -45,8 +45,16 @@ public class CategoryDaoIT {
         Assert.assertEquals(QUERY_SEARCH_PRESENT, foundQueries.get(0).getTitle());
         List<Category> foundQueries1 = categoryDao.getRootCategories();
         Assert.assertEquals(1, foundQueries1.size());
-        // List<Category> foundQueries2 = categoryDao.getRootCategoriesByOwner("owner");
-        //  Assert.assertEquals(1, foundQueries2.size());
+
+        List<Category> foundQueries2 = categoryDao.getChildCategoriesByParentId((long)1);
+        Assert.assertEquals(1, foundQueries2.size()); //дочерняя категория
+
+        List<Category> foundQueries3 = categoryDao.getChildCategoriesByParentId((long)2);
+        Assert.assertEquals(0, foundQueries3.size());
+
+
+
+
 
         LOGGER.info("Found queries: " + foundQueries);
         LOGGER.info("Found queries: " + foundQueries1);
@@ -83,6 +91,9 @@ public class CategoryDaoIT {
 
         category.setParentCategory(category1);
         categoryDao.saveAndFlush(category1);
-        return categoryDao.saveAndFlush(category);
+        categoryDao.saveAndFlush(category);
+        LOGGER.info("id  дочерней " + category.getId());
+        LOGGER.info("id  родительской " + category1.getId());
+        return category;
     }
 }
