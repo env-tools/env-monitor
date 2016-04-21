@@ -135,9 +135,9 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                                 if (entry != String.class) {
                                     if (entry.isEnum()) {
                                         LOGGER.info("ddddddddd" + entry);
-                                        // propertyValues.put( entryParam.getKey(), ConvertUtils.convert(DataOperation.class))  ;
+                                         //propertyValues.put( entryParam.getKey(), ConvertUtils.convert(entryParam.getValue(),(Class)entry))  ;
                                         propertyValues.put(entryParam.getKey(),
-                                                Enum.valueOf(DataProviderType.class, (String) entryParam.getValue()));
+                                                Enum.valueOf((Class) entry, (String) entryParam.getValue()));
 
                                     } else if (entry.getName().equals(LocalDateTime.class.getName())) {
                                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
