@@ -37,8 +37,8 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID_FLAG = "_id";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
-    private static final String TYPE="type";
-    private static final String TIME="Timestamp";
+    private static final String TYPE = "type";
+    private static final String TIME = "Timestamp";
 
     @PersistenceContext
     EntityManager entityManager;
@@ -111,7 +111,14 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
                 propertyId.add(entry.getKey().replace(ID_FLAG, ""));
 
             } else {
-                propertyValues.put(entry.getKey(), entry.getValue());
+                if (entry.getKey().equals(TYPE)) {
+                    propertyValues.put(entry.getKey(), Enum.valueOf(DataProviderType.class, (String) entry.getValue()));
+                } else if (entry.getKey().contains(TIME)) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    propertyValues.put(entry.getKey(), LocalDateTime.parse((String) entry.getValue(), formatter));
+                } else {
+                    propertyValues.put(entry.getKey(), entry.getValue());
+                }
             }
         }
 
@@ -148,15 +155,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
                 }
 
-            }
-            for (Map.Entry<String, Object> entry : propertyValues.entrySet()) {
-                if (entry.getKey().equals(TYPE)) {
-                    propertyValues.put(entry.getKey(), Enum.valueOf(DataProviderType.class, (String) entry.getValue()));
-                }
-                if (entry.getKey().contains(TIME)) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                    propertyValues.put(entry.getKey(), LocalDateTime.parse((String) entry.getValue(), formatter));
-                }
             }
 
         } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException e) {
