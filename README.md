@@ -79,7 +79,7 @@ gulp dist
 *To debug from your IDE*
  - Run Application::main in debug mode
 
-*Developers guide*
+#Developers guide
 
 Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.
 The application is built from modules: 1 Core Module and several pluggable modules
@@ -98,5 +98,16 @@ UI requests are routed to Core module which in turn:
 Currently, the following types of interactions/flows are supported:
 
 1. Pluggable module sends some data model to Core module (which in turn caches it in memory). This happens on module startup, and also later when it's decided that data has been updated and the update should be sent. Full data is re-sent to be cached. When Core module receives the updated model, it broadcasts the updates for interested client subscribers.
+ 
+When used:
+ -Applications data is sent by M_APPLICATIONS module : 
+
+ApplicationsModule::onModelUpdate()
+
+ -Query tree is sent by M_QUERY_LIBRARY module
+
+QueryLibraryModule:
+treeUpdateTriggerService.triggerUpdate();
+
 2. // TO BE DONE
 
