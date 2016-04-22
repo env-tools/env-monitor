@@ -3,6 +3,8 @@ package org.envtools.monitor.model.querylibrary.tree.view;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.List;
+
 /**
  * Created by jesa on 02.04.2016.
  */
@@ -11,15 +13,17 @@ public class QueryView {
     private String title;
     private String description;
     private Long id;
+    private List<ParameterView> parameters;
 
     public QueryView() {
     }
 
-    public QueryView(String text, String title, String description, Long id) {
+    public QueryView(String text, String title, String description, Long id, List<ParameterView> parameters) {
         this.text = text;
         this.title = title;
         this.description = description;
         this.id = id;
+        this.parameters = parameters;
     }
 
     public String getText() {
@@ -54,6 +58,14 @@ public class QueryView {
         this.id = id;
     }
 
+    public List<ParameterView> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<ParameterView> parameters) {
+        this.parameters = parameters;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -61,6 +73,7 @@ public class QueryView {
                 .append("title", title)
                 .append("description", description)
                 .append("id", id)
+                .append("parameters", parameters)
                 .toString();
     }
 }
