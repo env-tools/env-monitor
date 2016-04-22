@@ -14,16 +14,18 @@ public class QueryView {
     private String description;
     private Long id;
     private List<ParameterView> parameters;
+    private List<ParameterValueSetView> parameterHistory;
 
     public QueryView() {
     }
 
-    public QueryView(String text, String title, String description, Long id, List<ParameterView> parameters) {
+    public QueryView(String text, String title, String description, Long id, List<ParameterView> parameters, List<ParameterValueSetView> parameterHistory) {
         this.text = text;
         this.title = title;
         this.description = description;
         this.id = id;
         this.parameters = parameters;
+        this.parameterHistory = parameterHistory;
     }
 
     public String getText() {
@@ -66,6 +68,14 @@ public class QueryView {
         this.parameters = parameters;
     }
 
+    public List<ParameterValueSetView> getParameterHistory() {
+        return parameterHistory;
+    }
+
+    public void setParameterHistory(List<ParameterValueSetView> parameterHistory) {
+        this.parameterHistory = parameterHistory;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -74,6 +84,7 @@ public class QueryView {
                 .append("description", description)
                 .append("id", id)
                 .append("parameters", parameters)
+                .append("parameterHistory", parameterHistory)
                 .toString();
     }
 }
