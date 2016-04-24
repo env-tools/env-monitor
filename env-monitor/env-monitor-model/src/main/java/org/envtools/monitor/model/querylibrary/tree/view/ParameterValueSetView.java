@@ -10,10 +10,12 @@ import java.util.List;
  * Created by jesa on 22.04.2016.
  */
 public class ParameterValueSetView {
+
     private LocalDateTime timestamp;
     private List<ParameterValueView> parameterValues;
 
     public ParameterValueSetView() {
+
     }
 
     public LocalDateTime getTimestamp() {

@@ -5,16 +5,27 @@ import com.google.common.collect.Lists;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
+import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.QueryExecution;
+import org.envtools.monitor.model.querylibrary.db.QueryExecutionParam;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
+import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
+import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
 import org.envtools.monitor.module.querylibrary.services.DataSourceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE.*;
@@ -46,8 +57,17 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         public Throwable error;
     }
 
+    @Autowired
+    LibQueryDao libQueryDao;
+
+    @Autowired
+    QueryExecutionParamDao queryExecutionParamDao;
+
+    @Autowired
+    QueryExecutionDao queryExecutionDao;
+
     @Override
-    // @Transactional(timeout=queryExecutionRequest.)
+    @Transactional
     protected QueryExecutionResult doCall() {
 
         final ResultDTO resultDTO = new ResultDTO();
@@ -78,6 +98,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                                 rowNum++;
                                 rows.add(row);
                             }
+
                             LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
 
                             resultDTO.status = COMPLETED;
@@ -97,6 +118,13 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
                     // errorMessage, Optional<Throwable> error
                 });
+
+
+        LocalDateTime localDateTime= LocalDateTime.now();
+        QueryExecution queryExecution = new QueryExecution();
+        queryExecution.setStartTimestamp(localDateTime);
+        queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
+        queryExecutionDao.saveAndFlush(queryExecution);
 
         return QueryExecutionResult
                 .builder()

@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * Created by jesa on 22.04.2016.
  */
 public class ParameterValueView {
+
     private String name;
     private String value;
 

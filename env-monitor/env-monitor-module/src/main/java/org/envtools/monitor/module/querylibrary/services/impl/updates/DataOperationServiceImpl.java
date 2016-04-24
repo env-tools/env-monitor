@@ -14,6 +14,7 @@ import org.envtools.monitor.module.core.selection.exception.IllegalSelectorExcep
 import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.DataOperationResult;
 import org.envtools.monitor.module.querylibrary.services.DataOperationService;
+import org.hibernate.HibernateException;
 import org.hibernate.exception.ConstraintViolationException;
 
 import org.springframework.stereotype.Service;
@@ -42,16 +43,14 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
     private static final String ID_FLAG = "_id";
     private static final String path = "org.envtools.monitor.model.querylibrary.db.";
-    private static final String TYPE = "type";
-    private static final String TIME = "Timestamp";
 
     @PersistenceContext
     EntityManager entityManager;
 
 
     @Override
-    //@Transactional
-    public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
+    @Transactional
+    public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException,HibernateException {
         try {
             Class entityClass = Class.forName(path + entity);
             Map<String, Object> propertyValues = resolveIdPropertyValues(entityClass, fields);
@@ -61,7 +60,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             entityManager.persist(createdEntity);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (Throwable t)
-
         {
             LOGGER.error(t.getMessage(), t);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(t.getMessage()).error(t).build();
@@ -71,7 +69,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     }
 
     @Override
-    public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException, IllegalArgumentException {
+    public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException, IllegalArgumentException,HibernateException {
         /*Вытаскиваем класс, делаем find, по id, втавляем туда fields*/
         //находим класс по entity
         try {
@@ -83,7 +81,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             entityManager.persist(object);
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
         } catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException |
-                InvocationTargetException | DataOperationException e) {
+                InvocationTargetException | DataOperationException|HibernateException e) {
             LOGGER.info(e.getMessage());
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
@@ -91,16 +89,11 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     }
 
     @Override
-    public DataOperationResult delete(String entity, Long id) throws ClassNotFoundException {
-        try {
-            Class entityClass = Class.forName(path + entity);
-            Object object = entityManager.find(entityClass, id);
-            entityManager.remove(object);
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-        } catch (ClassNotFoundException | IllegalArgumentException | ConstraintViolationException e) {
-            LOGGER.info(e.getMessage());
-            return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
-        }
+    public DataOperationResult delete(String entity, Long id) throws ClassNotFoundException, HibernateException, IllegalArgumentException, ConstraintViolationException {
+        Class entityClass = Class.forName(path + entity);
+        Object object = entityManager.find(entityClass, id);
+        entityManager.remove(object);
+        return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
     }
 
 
