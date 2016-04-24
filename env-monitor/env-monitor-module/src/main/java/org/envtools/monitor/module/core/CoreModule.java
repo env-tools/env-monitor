@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -115,6 +116,7 @@ public class CoreModule implements Module {
                 if (content != null && content instanceof MapContent && content.getValue() != null) {
                     Map<String, String> categoryTreesPerUser = (Map<String, String>) content.getValue();
                     queryLibraryModuleStorageService.storeFull(categoryTreesPerUser);
+                    queryLibraryDataPushService.sendTreeDataToSubscribers();
                 } else {
                     LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - empty tree data");
                 }
@@ -126,7 +128,6 @@ public class CoreModule implements Module {
             default:
                 LOGGER.warn("CoreModule.handleQueryLibraryModuleResponseMessage - undefined response type: " + type);
         }
-
     }
 
     private void handleApplicationsModuleResponseMessage(ResponseMessage responseMessage) {
@@ -135,7 +136,10 @@ public class CoreModule implements Module {
         applicationsModuleStorageService.storeFull(newContent);
 
         for (String subscribedDestination : subscriptionManager.getSubscribedDestinations()) {
-
+            //TODO temp fix, need rework
+            if (!subscribedDestination.contains("/M_APPLICATIONS/")) {
+                continue;
+            }
             String newContentPart = applicationsModuleStorageService.extractPartBySelector(
                     DestinationUtil.extractSelector(subscribedDestination));
 
@@ -145,7 +149,6 @@ public class CoreModule implements Module {
                 applicationsDataPushService.pushToSubscribedClients(subscribedDestination, newContentPart);
             }
         }
-
     }
 
     @PreDestroy

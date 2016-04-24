@@ -85,8 +85,7 @@ public abstract class AbstractPluggableModule implements Module {
 
     }
 
-    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage) throws NoSuchMethodException, InvocationTargetException, InterruptedException, IntrospectionException, IllegalAccessException, InstantiationException, DataOperationException, ClassNotFoundException, IOException;
-
+    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage);
 
     @Autowired
     CoreModuleService coreModuleService;

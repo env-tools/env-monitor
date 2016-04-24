@@ -39,9 +39,10 @@ gulp.task('javascript', function () {
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-uuid-service/angular-uuid-service.js',
             'vendor/angular-resource/angular-resource.js',
+
             'vendor/sockjs/sockjs.js',
             'vendor/stomp-websocket/lib/stomp.js',
-            'vendor/ng-stomp/ng-stomp.js',
+            'vendor/AngularStompDK/dist/angular-stomp.js',
 
             'js/custom.js',
 

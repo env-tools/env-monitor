@@ -121,25 +121,22 @@ public class StompSubscriptionCommandHandler {
         QueryLibraryDestinationData destinationData = DestinationUtil.parseQlDestination(destination);
         String action = destinationData.getAction();
 
+        if (isSubscribe(stompCommand)) {
+            subscriptionManager.registerSubscription(sessionId, destination);
+        } else if (isUnSubscribe(stompCommand)) {
+            subscriptionManager.unregisterSubscription(sessionId, destination);
+        }
+
         switch (action) {
             case "tree":
                 executor.schedule(() -> {
-                    sendTreeDataToSubscriber(destination, destinationData);
+                    queryLibraryDataPushService.sendTreeDataToSubscribers();
                 }, 100, TimeUnit.MILLISECONDS);
                 break;
             default:
                 LOGGER.warn("StompSubscriptionCommandHandler.processQueryLibraryModuleSubscription - unsupported  action, skipping : " + action);
                 break;
         }
-    }
-
-    private void sendTreeDataToSubscriber(String subscribedDestination, QueryLibraryDestinationData destinationData) {
-        String publicTree = queryLibraryModuleStorageService.getPublicTree();
-        String privateTree = queryLibraryModuleStorageService.getTreeByOwner(destinationData.getOwner());
-
-        String contentPart = jsonAggregator.aggregate(publicTree, privateTree);
-
-        queryLibraryDataPushService.pushToSubscribedClients(subscribedDestination, contentPart);
     }
 
     private void sendDataToSubscriberImmediately(String subscribedDestination) {
@@ -150,6 +147,7 @@ public class StompSubscriptionCommandHandler {
         applicationsDataPushService.pushToSubscribedClients(subscribedDestination, contentPart);
 
     }
+
 
     @PreDestroy
     public void destroy() {
