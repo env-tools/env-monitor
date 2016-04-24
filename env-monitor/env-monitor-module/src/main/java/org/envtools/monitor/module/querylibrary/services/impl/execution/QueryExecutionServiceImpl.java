@@ -4,14 +4,23 @@ import com.google.common.util.concurrent.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
+import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.QueryExecution;
 import org.envtools.monitor.model.querylibrary.execution.*;
+import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
+import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
+import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.envtools.monitor.module.querylibrary.services.impl.datasource.JdbcDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.*;
 
@@ -43,12 +52,31 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
         threadPool.shutdownNow();
     }
 
+    @Autowired
+    LibQueryDao libQueryDao;
+
+    @Autowired
+    QueryExecutionParamDao queryExecutionParamDao;
+
+    @Autowired
+    QueryExecutionDao queryExecutionDao;
+
+    @PersistenceContext
+    EntityManager entityManager;
+
     @Override
+    @Transactional
     public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException {
 
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
         Future<QueryExecutionResult> future = threadPool.submit(task);
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        QueryExecution queryExecution = new QueryExecution();
+        queryExecution.setStartTimestamp(localDateTime);
+        queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
+        queryExecutionDao.saveAndFlush(queryExecution);
 
         try {
             return future.get(queryExecutionRequest.getTimeOutMs(), TimeUnit.MILLISECONDS);

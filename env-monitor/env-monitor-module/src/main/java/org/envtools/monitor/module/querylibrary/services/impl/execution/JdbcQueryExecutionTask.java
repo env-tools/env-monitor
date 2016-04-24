@@ -57,14 +57,6 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         public Throwable error;
     }
 
-    @Autowired
-    LibQueryDao libQueryDao;
-
-    @Autowired
-    QueryExecutionParamDao queryExecutionParamDao;
-
-    @Autowired
-    QueryExecutionDao queryExecutionDao;
 
     @Override
     @Transactional
@@ -119,12 +111,6 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     // errorMessage, Optional<Throwable> error
                 });
 
-
-        LocalDateTime localDateTime= LocalDateTime.now();
-        QueryExecution queryExecution = new QueryExecution();
-        queryExecution.setStartTimestamp(localDateTime);
-        queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
-        queryExecutionDao.saveAndFlush(queryExecution);
 
         return QueryExecutionResult
                 .builder()

@@ -90,11 +90,16 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     @Override
     public DataOperationResult delete(String entity, Long id) throws ClassNotFoundException, HibernateException, IllegalArgumentException, ConstraintViolationException {
+     try{
         Class entityClass = Class.forName(path + entity);
         Object object = entityManager.find(entityClass, id);
         entityManager.remove(object);
         return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.COMPLETED).build();
-    }
+    }catch (ClassNotFoundException | IllegalArgumentException |
+             HibernateException e) {
+         LOGGER.info(e.getMessage());
+         return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
+     }}
 
 
     public Map<String, Object> resolveIdPropertyValues(Class entityClass, Map<String, String> fields) throws NumberFormatException, DataOperationException {
@@ -177,7 +182,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
             }
 
-        } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException e) {
+        } catch (ClassNotFoundException | NumberFormatException | IntrospectionException | IllegalSelectorException | HibernateException e) {
 
             throw new DataOperationException("Create operation falied", e);
         }
