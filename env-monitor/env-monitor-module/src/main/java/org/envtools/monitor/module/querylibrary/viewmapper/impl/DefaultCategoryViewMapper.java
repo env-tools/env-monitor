@@ -5,12 +5,16 @@ import com.google.common.collect.Maps;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.model.querylibrary.db.Category;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
+import org.envtools.monitor.model.querylibrary.tree.view.ParameterValueSetView;
+import org.envtools.monitor.model.querylibrary.tree.view.ParameterView;
 import org.envtools.monitor.model.querylibrary.tree.view.QueryView;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,10 +45,16 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
             if (entry.getQueries() != null) {
                 List<QueryView> queryViewList = Lists.newArrayList();
                 for (LibQuery libQuery : entry.getQueries()) {
+
+                    List<ParameterView> parameters = getParameterViews(libQuery);
+                    List<ParameterValueSetView> parameterValues = getParameterValueSetViews(libQuery);
+
                     queryViewList.add(new QueryView(libQuery.getText(),
                             libQuery.getTitle(),
                             libQuery.getDescription(),
-                            libQuery.getId()));
+                            libQuery.getId(),
+                            parameters,
+                            parameterValues));
                 }
                 categoryView.setQueries(queryViewList);
             }
@@ -56,6 +66,19 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         }
         return categoryViews;
     }
+
+    protected List<ParameterValueSetView> getParameterValueSetViews(LibQuery libQuery) {
+        List<ParameterValueSetView> result = new ArrayList<>();
+
+        return result;
+    }
+
+    protected List<ParameterView> getParameterViews(LibQuery libQuery) {
+        List<ParameterView> result = new ArrayList<>();
+
+        return result;
+    }
+
 
     @Override
     public Map<String, String> mapCategoriesByOwnerToString(Map<String, List<CategoryView>> categoriesByOwner) throws IOException {
