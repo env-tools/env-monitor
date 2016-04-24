@@ -112,8 +112,9 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             queryExecution.setText(queryExecutionRequest.getQuery());
            // queryExecution.setQueryExecutionParams(queryExecutionParamDao.getOne(queryExecutionParamDao
            // .getNameByText(queryExecutionRequest.getQueryParameters()).get(0).getId()));
-            queryExecution.setLibQuery(libQueryDao.getOne(libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()).get(0).getId()));
-            //queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
+            queryExecution.setLibQuery(libQueryDao.getOne(libQueryDao.
+                    getLibQueryByTextFragment(queryExecutionRequest.getQuery()).get(0).getId()));
+            //queryExecutionRequest.getQueryParameters()
             queryExecutionDao.saveAndFlush(queryExecution);
             listenableFuture.get();
         } catch (InterruptedException | ExecutionException e) {
