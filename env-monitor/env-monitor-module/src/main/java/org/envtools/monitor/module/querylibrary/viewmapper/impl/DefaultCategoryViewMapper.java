@@ -75,7 +75,10 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
 
     protected List<ParameterView> getParameterViews(LibQuery libQuery) {
         List<ParameterView> result = new ArrayList<>();
-
+        List<QueryParam> queryParams = libQuery.getQueryParams();
+        for (QueryParam entry : queryParams) {
+            result.add(new ParameterView(entry.getName(), entry.getType().toString()));
+        }
         return result;
     }
 

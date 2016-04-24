@@ -13,6 +13,11 @@ public class ParameterView {
     public ParameterView() {
     }
 
+    public ParameterView(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public String getName() {
         return name;
     }
