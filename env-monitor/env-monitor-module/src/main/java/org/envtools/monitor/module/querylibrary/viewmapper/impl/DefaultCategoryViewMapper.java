@@ -40,8 +40,9 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         List<CategoryView> categoryViews = Lists.newArrayList();
 
         for (Category entry : categoriesByOwner) {
+            Long parentCategoryId = entry.getParentCategory() != null ? entry.getParentCategory().getId() : null;
             CategoryView categoryView = new CategoryView(entry.getId(), entry.getTitle(),
-                    entry.getDescription());
+                    entry.getDescription(), parentCategoryId);
             if (entry.getQueries() != null) {
                 List<QueryView> queryViewList = Lists.newArrayList();
                 for (LibQuery libQuery : entry.getQueries()) {
@@ -49,7 +50,9 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
                     List<ParameterView> parameters = getParameterViews(libQuery);
                     List<ParameterValueSetView> parameterValues = getParameterValueSetViews(libQuery);
 
-                    queryViewList.add(new QueryView(libQuery.getText(),
+                    Long categoryId = libQuery.getCategory() != null ? libQuery.getCategory().getId() : null;
+                    queryViewList.add(new QueryView(categoryId,
+                            libQuery.getText(),
                             libQuery.getTitle(),
                             libQuery.getDescription(),
                             libQuery.getId(),

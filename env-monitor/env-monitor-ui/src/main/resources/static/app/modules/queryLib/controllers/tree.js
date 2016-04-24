@@ -1,18 +1,19 @@
-(function () {
+(function ($) {
     'use strict';
 
     angular
         .module('queryLib')
         .controller('Tree', Tree);
 
-    Tree.$injector = ['$scope', '$rootScope', '$stomp', 'rfc4122', 'Stomp'];
+    Tree.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122'];
 
-    function Tree($scope, $rootScope, $stomp, rfc4122, Stomp) {
-        var subscribes = {};
+    function Tree($scope, $rootScope, ngstomp, rfc4122) {
         var requestId = rfc4122.v4();
-        var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
+        var subOperationDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
         var allQueries = {};
         var allCategories = {};
+        var categoriesFormat = {};
+
 
         $scope.categoryCreate = categoryCreate;
         $scope.queryCreate = queryCreate;
@@ -29,30 +30,43 @@
         init();
 
         function init() {
-            Stomp.connect('/monitor');
-            $scope.$on('stomp::connect', function (event, data) {
-                if (data["endpoint"] == "/monitor") {
-                    var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
-                    if (!subscribes[subDestination]) {
-                        var sub = $stomp.subscribe(subDestination, function (message) {
-                            getMessage(message);
-                        });
-                        subscribes[subDestination] = sub;
-                    }
-                }
-            });
+            var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
+            ngstomp.subscribeTo(subDestination).callback(getMessage).withBodyInJson().connect();
+            ngstomp.subscribeTo(subOperationDestination).callback(getOperationResult).withBodyInJson().connect();
+        }
+
+        function getOperationResult(message) {
+            var content = message['body']['payload']['jsonContent'];
+            if (content != null && !content['error']['present']) {
+                close();
+                $('.alert-main.alert-success').removeClass('hide');
+                $('.alert-main.alert-danger').addClass('hide');
+            } else {
+                close();
+                $('.alert-main.alert-success').addClass('hide');
+                $('.alert-main.alert-danger').removeClass('hide');
+            }
         }
 
         function getMessage(message) {
+            allCategories = {};
             var publicTree = [];
-            angular.forEach(message.payload.jsonContent[0], function (category) {
-                publicTree.push(createTree(category));
+            angular.forEach(message.body.payload.jsonContent[0], function (category) {
+                publicTree.push(createTree(category, 1));
             });
+            categoriesFormat["Public categories"] = allCategories;
 
+            //TODO: Переделать это убожество как только руки дойдут
+            var tmp = allCategories;
+
+            allCategories = {};
             var privateTree = [];
-            angular.forEach(message.payload.jsonContent[1], function (category) {
-                privateTree.push(createTree(category));
+            angular.forEach(message.body.payload.jsonContent[1], function (category) {
+                privateTree.push(createTree(category, 1));
             });
+            categoriesFormat["Private categories (sergey)"] = allCategories;
+
+            allCategories = $.extend({}, tmp, allCategories);
 
             $scope.$apply(function () {
                 $scope.source = [
@@ -71,8 +85,11 @@
             });
         }
 
-        function createTree(category) {
+        function createTree(category, depthLevel) {
+            category['depthLevel'] = depthLevel;
             var categoryId = 'category_' + category.id;
+            allCategories[categoryId] = category;
+
             var result = {
                 html: '<div class="tree-item" id="' + categoryId + '" title="' + category.description + '" style="padding-right: 20px;">' + category.title + '</div>',
                 icon: "/images/treeWidget/folder.png",
@@ -84,15 +101,13 @@
 
             if (category.hasOwnProperty("childCategories") && category["childCategories"].length > 0) {
                 angular.forEach(category["childCategories"], function (category) {
-                    categories.push(createTree(category));
+                    categories.push(createTree(category, depthLevel + 1));
                 });
             }
 
             if (categories || queries) {
                 result["items"] = categories.concat(queries);
             }
-
-            allCategories[categoryId] = category;
 
             return result;
         }
@@ -123,9 +138,9 @@
 
         function edit() {
             if (~$scope.itemSelect.indexOf("query_")) {
-                $scope.$broadcast('queryModal::edit', allQueries[$scope.itemSelect]);
+                $scope.$broadcast('queryModal::edit', {element: allQueries[$scope.itemSelect], categories: categoriesFormat});
             } else {
-                $scope.$broadcast('categoryModal::edit', allCategories[$scope.itemSelect]);
+                $scope.$broadcast('categoryModal::edit', {element: allCategories[$scope.itemSelect], categories: categoriesFormat});
             }
         }
 
@@ -142,31 +157,29 @@
             var mesDestination = '/message/modulerequest';
             var body = {
                 requestId: requestId,
-                destination: subDestination,
+                destination: subOperationDestination,
                 sessionId: requestId,
                 username: 'unknown',
                 targetModuleId: 'M_QUERY_LIBRARY',
                 payload: {
                     payloadType: 'dataOperation',
                     content: {
+                        id: fields['id'],
                         type: 'DELETE',
-                        entity: entity,
-                        fields: {
-                            id: fields['id']
-                        }
+                        entity: entity
                     }
                 }
             };
-            $stomp.send(mesDestination, body, {});
+            ngstomp.send(mesDestination, body, {});
         }
 
         function categoryCreate() {
-            $scope.$broadcast('categoryModal::create')
+            $scope.$broadcast('categoryModal::create', {categories: allCategories})
         }
 
         function queryCreate() {
-            $scope.$broadcast('queryModal::create')
+            $scope.$broadcast('queryModal::create', {categories: allCategories})
         }
     }
-})();
+})(window.jQuery);
 

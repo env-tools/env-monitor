@@ -1,7 +1,11 @@
 package org.envtools.monitor.module.querylibrary.services;
 
+import com.google.common.base.MoreObjects;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +15,7 @@ import java.util.Optional;
  *
  * @author Anastasiya Plotnikova
  */
-public class DataOperationResult {
+public class DataOperationResult implements Serializable {
 
 
     public enum DataOperationStatusE {
@@ -135,5 +139,16 @@ public class DataOperationResult {
                 .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
                 .error(t)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("executionId", executionId)
+                .append("status", status)
+                .append("resultRows", resultRows)
+                .append("errorMessage", errorMessage)
+                .append("error", error)
+                .toString();
     }
 }

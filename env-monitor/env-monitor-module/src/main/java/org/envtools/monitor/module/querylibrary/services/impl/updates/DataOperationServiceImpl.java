@@ -50,7 +50,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
 
     @Override
-    //@Transactional
+    @Transactional
     public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException {
         try {
             Class entityClass = Class.forName(path + entity);
@@ -71,6 +71,7 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
     }
 
     @Override
+    @Transactional
     public DataOperationResult update(String entity, Long id, Map<String, String> fields) throws ClassNotFoundException, IllegalArgumentException {
         /*Вытаскиваем класс, делаем find, по id, втавляем туда fields*/
         //находим класс по entity
@@ -87,10 +88,10 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
             LOGGER.info(e.getMessage());
             return DataOperationResult.builder().status(DataOperationResult.DataOperationStatusE.ERROR).errorMessage(e.getMessage()).error(e).build();
         }
-
     }
 
     @Override
+    @Transactional
     public DataOperationResult delete(String entity, Long id) throws ClassNotFoundException {
         try {
             Class entityClass = Class.forName(path + entity);

@@ -2,6 +2,7 @@ package org.envtools.monitor.model.querylibrary.tree.view;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.querylibrary.db.Category;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  * Created by jesa on 02.04.2016.
  */
 public class QueryView {
+    private Long categoryId;
     private String text;
     private String title;
     private String description;
@@ -19,13 +21,22 @@ public class QueryView {
     public QueryView() {
     }
 
-    public QueryView(String text, String title, String description, Long id, List<ParameterView> parameters, List<ParameterValueSetView> parameterHistory) {
+    public QueryView(Long categoryId, String text, String title, String description, Long id, List<ParameterView> parameters, List<ParameterValueSetView> parameterHistory) {
+        this.categoryId = categoryId;
         this.text = text;
         this.title = title;
         this.description = description;
         this.id = id;
         this.parameters = parameters;
         this.parameterHistory = parameterHistory;
+    }
+
+    public Long getCategory() {
+        return categoryId;
+    }
+
+    public void setCategory(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getText() {
@@ -79,6 +90,7 @@ public class QueryView {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("categoryId", categoryId)
                 .append("text", text)
                 .append("title", title)
                 .append("description", description)

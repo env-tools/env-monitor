@@ -3,8 +3,10 @@
 
     angular
         .module('envMonitor', [
-            'core',
-            'applications',
+            'AngularStompDK',
+            'ui.router',
             'queryLib'
+           /* 'core',
+            'applications',*/
         ]);
 })();
