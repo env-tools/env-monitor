@@ -6,7 +6,9 @@ import org.apache.log4j.Logger;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryExecution;
+import org.envtools.monitor.model.querylibrary.db.QueryExecutionParam;
 import org.envtools.monitor.model.querylibrary.execution.*;
+import org.envtools.monitor.module.querylibrary.dao.DataSourceDao;
 import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
@@ -21,6 +23,7 @@ import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
 
@@ -52,6 +55,9 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
         //TODO close resources ? Ште???
         threadPool.shutdownNow();
     }
+
+    @Autowired
+    DataSourceDao dataSourceDao;
 
     @Autowired
     LibQueryDao libQueryDao;
@@ -110,13 +116,15 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             QueryExecution queryExecution = new QueryExecution();
             queryExecution.setStartTimestamp(localDateTime);
             queryExecution.setText(queryExecutionRequest.getQuery());
-           // queryExecution.setQueryExecutionParams(queryExecutionParamDao.getOne(queryExecutionParamDao
-           // .getNameByText(queryExecutionRequest.getQueryParameters()).get(0).getId()));
-            queryExecution.setLibQuery(libQueryDao.getOne(libQueryDao.
-                    getLibQueryByTextFragment(queryExecutionRequest.getQuery()).get(0).getId()));
-            //queryExecutionRequest.getQueryParameters()
+            //queryExecution.setLibQuery(libQueryDao.getOne(queryExecutionRequest.getLibQuery_id()));
+            queryExecution.setLibQuery(libQueryDao.getOne((long) 1));
+            /*
+            * просто для теста, потом надо строку выше раскомментить а эту удалить
+            * */
+            //queryExecution.setDataSource(dataSourceDao.getOne(queryExecutionRequest.getDataSource_id()));
             queryExecutionDao.saveAndFlush(queryExecution);
             listenableFuture.get();
+
         } catch (InterruptedException | ExecutionException e) {
             throw new QueryExecutionException(e);
             //Don't we report the same twice?

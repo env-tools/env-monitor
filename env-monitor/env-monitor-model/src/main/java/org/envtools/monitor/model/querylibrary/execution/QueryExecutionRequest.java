@@ -23,6 +23,24 @@ public class QueryExecutionRequest {
     private Map<String, String> dataSourceProperties;
     private Long timeOutMs;
     private Integer rowCount;
+    private Long libQuery_id;
+    private Long dataSource_id;
+
+    public Long getDataSource_id() {
+        return dataSource_id;
+    }
+
+    public void setDataSource_id(Long dataSource_id) {
+        this.dataSource_id = dataSource_id;
+    }
+
+    public Long getLibQuery_id() {
+        return libQuery_id;
+    }
+
+    public void setLibQuery_id(Long libQuery_id) {
+        this.libQuery_id = libQuery_id;
+    }
 
     public QueryExecutionRequest() {
     }
@@ -166,13 +184,16 @@ public class QueryExecutionRequest {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("operationId", operationId).
-                append("queryType", queryType).
-                append("query", query).
-                append("queryParameters", queryParameters).
-                append("timeOutMs", timeOutMs).
-                append("rowCount", rowCount).
-                toString();
+        return new ToStringBuilder(this)
+                .append("operationId", operationId)
+                .append("queryType", queryType)
+                .append("query", query)
+                .append("queryParameters", queryParameters)
+                .append("dataSourceProperties", dataSourceProperties)
+                .append("timeOutMs", timeOutMs)
+                .append("rowCount", rowCount)
+                .append("libQuery_id", libQuery_id)
+                .append("dataSource_id", dataSource_id)
+                .toString();
     }
 }

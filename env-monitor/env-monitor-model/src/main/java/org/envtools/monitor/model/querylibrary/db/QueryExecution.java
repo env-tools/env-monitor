@@ -25,6 +25,14 @@ public class QueryExecution extends AbstractDbIdentifiable implements Serializab
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
 
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public LocalDateTime getEndTimestamp() {
         return endTimestamp;
     }
@@ -85,15 +93,17 @@ public class QueryExecution extends AbstractDbIdentifiable implements Serializab
         this.user = user;
     }
 
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
-                append("user", user).
-                append("text", text).
-                append("startTimestamp", startTimestamp).
-                append("endTimestamp", endTimestamp).
-                append("queryExecutionParams", queryExecutionParams).
-                toString();
+        return new ToStringBuilder(this)
+                .append("user", user)
+                .append("text", text)
+                .append("startTimestamp", startTimestamp)
+                .append("endTimestamp", endTimestamp)
+                .append("libQuery", libQuery)
+                .append("queryExecutionParams", queryExecutionParams)
+                .append("dataSource", dataSource)
+                .toString();
     }
-
 }
