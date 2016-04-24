@@ -30,6 +30,7 @@ import java.util.concurrent.*;
  * @author Yury Yakovlev
  */
 @Service
+@Transactional
 public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     private static final Logger LOGGER = Logger.getLogger(QueryExecutionServiceImpl.class);
@@ -61,22 +62,13 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     @Autowired
     QueryExecutionDao queryExecutionDao;
 
-    @PersistenceContext
-    EntityManager entityManager;
 
     @Override
-    @Transactional
     public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException {
 
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
         Future<QueryExecutionResult> future = threadPool.submit(task);
-
-        LocalDateTime localDateTime = LocalDateTime.now();
-        QueryExecution queryExecution = new QueryExecution();
-        queryExecution.setStartTimestamp(localDateTime);
-        queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
-        queryExecutionDao.saveAndFlush(queryExecution);
 
         try {
             return future.get(queryExecutionRequest.getTimeOutMs(), TimeUnit.MILLISECONDS);
@@ -100,8 +92,8 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
         LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
-        ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
 
+        ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
         Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
             public void onSuccess(QueryExecutionResult result) {
                 listener.onQueryCompleted(result);
@@ -113,6 +105,16 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
         });
 
         try {
+
+            LocalDateTime localDateTime = LocalDateTime.now();
+            QueryExecution queryExecution = new QueryExecution();
+            queryExecution.setStartTimestamp(localDateTime);
+            queryExecution.setText(queryExecutionRequest.getQuery());
+           // queryExecution.setQueryExecutionParams(queryExecutionParamDao.getOne(queryExecutionParamDao
+           // .getNameByText(queryExecutionRequest.getQueryParameters()).get(0).getId()));
+            queryExecution.setLibQuery(libQueryDao.getOne(libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()).get(0).getId()));
+            //queryExecution.setLibQuery((LibQuery) libQueryDao.getLibQueryByTextFragment(queryExecutionRequest.getQuery()));
+            queryExecutionDao.saveAndFlush(queryExecution);
             listenableFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new QueryExecutionException(e);
