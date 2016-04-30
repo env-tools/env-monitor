@@ -70,6 +70,11 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         return categoryViews;
     }
 
+    /**
+     * Возвращает историю запросов
+     * @param libQuery
+     * @return
+     */
     protected List<ParameterValueSetView> getParameterValueSetViews(LibQuery libQuery) {
         List<ParameterValueSetView> result = new ArrayList<>();
 

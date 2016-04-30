@@ -91,7 +91,7 @@
                 title: null,
                 description: null,
                 owner: null,
-                parentCategory_id: null
+                parentCategory_id: "null"
             };
 
             $('#category').modal('show');

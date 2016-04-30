@@ -174,11 +174,11 @@
         }
 
         function categoryCreate() {
-            $scope.$broadcast('categoryModal::create', {categories: allCategories})
+            $scope.$broadcast('categoryModal::create', {categories: categoriesFormat})
         }
 
         function queryCreate() {
-            $scope.$broadcast('queryModal::create', {categories: allCategories})
+            $scope.$broadcast('queryModal::create', {categories: categoriesFormat})
         }
     }
 })(window.jQuery);

@@ -84,7 +84,8 @@
             ngstomp.send(mesDestination, body, {});
         }
 
-        $scope.$on('queryModal::create', function (data) {
+        $scope.$on('queryModal::create', function (event, data) { 
+            console.log(data);
             $scope.title = 'Create query';
             $scope.entity_id = null;
             $scope.categories = data['categories'];
@@ -101,7 +102,6 @@
         $scope.$on('queryModal::edit', function (event, data) {
             var element = data['element'];
             var categoryId = element['category'] != null ? element['category'].toString() : "null";
-            console.log(element);
             $scope.title = 'Edit query';
             $scope.entity_id = element.id;
             $scope.categories = data['categories'];

@@ -24,6 +24,9 @@ public class QueryParam extends AbstractDbIdentifiable {
     @JoinColumn(name = "QUERY_ID")
     private LibQuery libQuery;
 
+    /**
+     * TODO: переделать на ENUM (Number, String, Date).
+     */
     @Enumerated(EnumType.STRING)
     private DataProviderType type;
 
