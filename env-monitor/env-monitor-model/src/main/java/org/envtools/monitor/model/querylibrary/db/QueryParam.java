@@ -3,6 +3,7 @@ package org.envtools.monitor.model.querylibrary.db;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
 
 import javax.persistence.*;
 
@@ -25,7 +26,7 @@ public class QueryParam extends AbstractDbIdentifiable {
     private LibQuery libQuery;
 
     @Enumerated(EnumType.STRING)
-    private DataProviderType type;
+    private QueryParamType type;
 
     public LibQuery getLibQuery() {
         return libQuery;
@@ -35,11 +36,11 @@ public class QueryParam extends AbstractDbIdentifiable {
         this.libQuery = libQuery;
     }
 
-    public DataProviderType getType() {
+    public QueryParamType getType() {
         return type;
     }
 
-    public void setType(DataProviderType type) {
+    public void setType(QueryParamType type) {
         this.type = type;
     }
 

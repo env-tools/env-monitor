@@ -150,3 +150,8 @@
 .tree-controls .glyphicon-remove {
     color: red;
 }
+
+input.query-param {
+    width: 100px;
+    border: none;
+}

@@ -84,6 +84,7 @@
         }
 
         $scope.$on('categoryModal::create', function (event, data) {
+            var parentCategoryId = data['parentCategoryId'] != null ? data['parentCategoryId'].toString() : "null";
             $scope.categories = data['categories'];
             $scope.title = 'Create category';
             $scope.entity_id = null;
@@ -91,7 +92,7 @@
                 title: null,
                 description: null,
                 owner: null,
-                parentCategory_id: null
+                parentCategory_id: parentCategoryId
             };
 
             $('#category').modal('show');

@@ -84,7 +84,8 @@
             ngstomp.send(mesDestination, body, {});
         }
 
-        $scope.$on('queryModal::create', function (data) {
+        $scope.$on('queryModal::create', function (event, data) {
+            var categoryId = data['parentCategoryId'] != null ? data['parentCategoryId'].toString() : "null";
             $scope.title = 'Create query';
             $scope.entity_id = null;
             $scope.categories = data['categories'];
@@ -92,7 +93,7 @@
                 title: '',
                 description: '',
                 text: '',
-                category_id: "null"
+                category_id: categoryId
             };
 
             $('#query').modal('show');
@@ -101,7 +102,6 @@
         $scope.$on('queryModal::edit', function (event, data) {
             var element = data['element'];
             var categoryId = element['category'] != null ? element['category'].toString() : "null";
-            console.log(element);
             $scope.title = 'Edit query';
             $scope.entity_id = element.id;
             $scope.categories = data['categories'];

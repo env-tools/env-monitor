@@ -173,12 +173,22 @@
             ngstomp.send(mesDestination, body, {});
         }
 
+        function getParentCategory() {
+            if (~$scope.itemSelect.indexOf("query_")) {
+                return allQueries[$scope.itemSelect]['category'];
+            } else {
+                return allCategories[$scope.itemSelect]['id'];
+            }
+        }
+
         function categoryCreate() {
-            $scope.$broadcast('categoryModal::create', {categories: allCategories})
+            var parentCategory = getParentCategory();
+            $scope.$broadcast('categoryModal::create', {categories: categoriesFormat, parentCategoryId: parentCategory})
         }
 
         function queryCreate() {
-            $scope.$broadcast('queryModal::create', {categories: allCategories})
+            var parentCategory = getParentCategory();
+            $scope.$broadcast('queryModal::create', {categories: categoriesFormat, parentCategoryId: parentCategory})
         }
     }
 })(window.jQuery);

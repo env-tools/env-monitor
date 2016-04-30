@@ -19,18 +19,26 @@ INSERT INTO LIB_QUERY (ID, DESCRIPTION, TEXT, TITLE, CATEGORY_ID)
       (6, 'Get all customers', 'SELECT * FROM CUSTOMERS', 'All customers', 2),
       (7, 'Get customers from Sweden', 'SELECT * FROM CUSTOMERS WHERE COUNTRY = ''Sweden''', 'Sweden customers', 2),
       (8, 'Get all employees', 'SELECT * FROM EMPLOYEES', 'All employees', 3),
-      (9, 'Get managers', 'SELECT * FROM EMPLOYESS WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 3),
+      (9, 'Get managers', 'SELECT * FROM EMPLOYEES WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 3),
       (10, 'Get all offices', 'SELECT * FROM OFFICES', 'All offices', 4),
       (11, 'Get all offices in NA', 'SELECT * FROM OFFICES WHERE TERRITORY = ''NA''', 'All offices in NA', 4),
       (12, 'Get employee - offices', 'SELECT t1.FIRST_NAME, t1.LAST_NAME, t2.CITY, t2.COUNTRY FROM EMPLOYEES as t1, OFFICES as t2 WHERE t1.OFFICE_CODE = t2.OFFICE_CODE', 'Employees - offices', 4),
       (13, 'Get all products', 'SELECT * FROM PRODUCTS ', 'All products', 5),
       (14, 'Get all motorcycles', 'SELECT * FROM PRODUCTS WHERE PRODUCT_LINE = ''Motorcycles''', 'Get motorcycles', 5),
-      (15, 'Get product which more 5000pcs', 'FROM PRODUCTS WHERE QUANTITY_IN_STOCK > 5000', 'In stock > 5000pcs', 5),
+      (15, 'Get product which more 5000pcs', 'SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > 5000', 'In stock > 5000pcs', 5),
       (16, 'Get all orders details', 'SELECT * FROM ORDER_DETAILS', 'All orders detail', 6),
       (17, 'Get orders where ordered quantity > 30', 'SELECT * FROM ORDER_DETAILS WHERE QUANTITY_ORDERED > 30', 'Ordered quantity > 30', 6),
       (18, 'Get all product lines', 'SELECT * FROM PRODUCT_LINES', 'All product lines', 7),
       (19, 'Get all payments', 'SELECT * FROM PAYMENTS', 'All payments', 8),
-      (20, 'Get full payments info', 'SELECT t1.CUSTOMER_NAME, t1.CONTACT_LAST_NAME, t1.CONTACT_FIRST_NAME, t1.PHONE, t1.CREDIT_LIMIT, t2.CHECK_NUMBER , t2.PAYMENT_DATE , t2.AMOUNT  FROM CUSTOMERS as t1 LEFT JOIN PAYMENTS AS t2 on t1.CUSTOMER_NUMBER = t2.CUSTOMER_NUMBER ', 'Full payments info', 8);
+      (20, 'Get full payments info', 'SELECT t1.CUSTOMER_NAME, t1.CONTACT_LAST_NAME, t1.CONTACT_FIRST_NAME, t1.PHONE, t1.CREDIT_LIMIT, t2.CHECK_NUMBER , t2.PAYMENT_DATE , t2.AMOUNT  FROM CUSTOMERS as t1 LEFT JOIN PAYMENTS AS t2 on t1.CUSTOMER_NUMBER = t2.CUSTOMER_NUMBER ', 'Full payments info', 8),
+      (42, 'Get employees by job title', 'SELECT * FROM EMPLOYEES WHERE JOB_TITLE LIKE '':job_title''', 'All managers', 3),
+      (43, 'Get product by quantity', 'SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > :quantity AND BUY_PRICE > :price', 'In stock > any quantity', 5);
+
+INSERT INTO QUERY_PARAM  (ID, NAME, TYPE, QUERY_ID)
+    VALUES
+      (1, 'job_title', 'STRING', 42),
+      (2, 'quantity', 'NUMBER', 43),
+      (3, 'price', 'NUMBER', 43);
 
 INSERT INTO CATEGORY (ID, DESCRIPTION, OWNER, TITLE, PARENT_CATEGORY_ID)
   VALUES
@@ -53,14 +61,14 @@ VALUES
   (26, 'Get all customers', 'SELECT * FROM CUSTOMERS', 'All customers', 10),
   (27, 'Get customers from Sweden', 'SELECT * FROM CUSTOMERS WHERE COUNTRY = ''Sweden''', 'Sweden customers', 10),
   (28, 'Get all employees', 'SELECT * FROM EMPLOYEES', 'All employees', 11),
-  (29, 'Get managers', 'SELECT * FROM EMPLOYESS WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 11),
-  (30, 'Get managers', 'SELECT * FROM EMPLOYESS WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 11),
+  (29, 'Get managers', 'SELECT * FROM EMPLOYEES WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 11),
+  (30, 'Get managers', 'SELECT * FROM EMPLOYEES WHERE JOB_TITLE LIKE ''%Manager%''', 'All managers', 11),
   (31, 'Get all offices', 'SELECT * FROM OFFICES', 'All offices', 12),
   (32, 'Get all offices in NA', 'SELECT * FROM OFFICES WHERE TERRITORY = ''NA''', 'All offices in NA', 12),
   (33, 'Get employee - offices', 'SELECT t1.FIRST_NAME, t1.LAST_NAME, t2.CITY, t2.COUNTRY FROM EMPLOYEES as t1, OFFICES as t2 WHERE t1.OFFICE_CODE = t2.OFFICE_CODE', 'Employees - offices', 12),
   (34, 'Get all products', 'SELECT * FROM PRODUCTS ', 'All products', 13),
   (35, 'Get all motorcycles', 'SELECT * FROM PRODUCTS WHERE PRODUCT_LINE = ''Motorcycles''', 'Get motorcycles', 13),
-  (36, 'Get product which more 5000pcs', 'FROM PRODUCTS WHERE QUANTITY_IN_STOCK > 5000', 'In stock > 5000pcs', 13),
+  (36, 'Get product which more 5000pcs', 'SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > 5000', 'In stock > 5000pcs', 13),
   (37, 'Get all orders details', 'SELECT * FROM ORDER_DETAILS', 'All orders detail', 14),
   (38, 'Get orders where ordered quantity > 30', 'SELECT * FROM ORDER_DETAILS WHERE QUANTITY_ORDERED > 30', 'Ordered quantity > 30', 14),
   (39, 'Get all product lines', 'SELECT * FROM PRODUCT_LINES', 'All product lines', 15),
