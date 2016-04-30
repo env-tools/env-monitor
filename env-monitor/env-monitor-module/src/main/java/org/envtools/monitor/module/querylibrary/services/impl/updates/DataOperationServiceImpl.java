@@ -38,6 +38,7 @@ import java.util.*;
  * @author Anastasiya Plotnikova
  */
 @Service
+@Transactional
 public class DataOperationServiceImpl implements DataOperationService<Long> {
 
     private static final Logger LOGGER = Logger.getLogger(DataOperationServiceImpl.class);
@@ -49,7 +50,6 @@ public class DataOperationServiceImpl implements DataOperationService<Long> {
 
 
     @Override
-    @Transactional
     public DataOperationResult create(String entity, Map<String, String> fields) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, DataOperationException,HibernateException {
         try {
             Class entityClass = Class.forName(path + entity);

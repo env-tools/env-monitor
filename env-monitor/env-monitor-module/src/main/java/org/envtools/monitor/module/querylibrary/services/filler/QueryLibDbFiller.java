@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.services.filler;
 import org.apache.log4j.Logger;
 
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
 import org.envtools.monitor.model.querylibrary.db.*;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -170,7 +171,7 @@ public class QueryLibDbFiller {
 
         queryParam.setName(":id");
         queryParam.setLibQuery(query);
-        queryParam.setType(DataProviderType.JDBC);
+        queryParam.setType(QueryParamType.NUMBER);
 
         return queryParam;
     }

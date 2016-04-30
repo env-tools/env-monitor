@@ -16,7 +16,8 @@
         $scope.params = {
             query: '',
             timeout: 1000,
-            rows: 50
+            rows: 50,
+            parameters: {}
         };
 
         $scope.resultExecute = {};
@@ -28,12 +29,21 @@
 
         function init() {
             ngstomp.subscribeTo(subDestination).callback(function (message) {
-                console.log(message);
                 $scope.$apply(getExecuteResult(message.body.payload.jsonContent))
             }).withBodyInJson().connect();
         }
 
+        function formatQueryParameters(parameters) {
+            var result = {};
+            angular.forEach(parameters, function(values) {
+                result[values.name]  = values.value;
+            });
+
+            return result;
+        }
+
         function execute(params) {
+            var parameters = formatQueryParameters(params.parameters);
             var mesDestination = '/message/modulerequest';
             var body = {
                 requestId: requestId,
@@ -48,6 +58,7 @@
                         queryType: "JDBC",
                         timeOutMs: params.timeout,
                         rowCount: params.rows,
+                        queryParameters: parameters,
                         dataSourceProperties: {
                             user: "sa",
                             password: "sa",
@@ -101,6 +112,7 @@
 
         $rootScope.$on('setQuery', function (event, data) {
             $scope.params.query = data.text;
+            $scope.params.parameters = data.parameters;
         })
     }
 })(window.jQuery);
