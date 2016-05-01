@@ -28,7 +28,7 @@ public interface QueryExecutionService {
      * @return Next result (complete or partial) of the query
      * @throws QueryExecutionException
      */
-    //QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest)  throws QueryExecutionException;
+    QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest)  throws QueryExecutionException;
 
     /**
      * Asynchronous operation to execute query with appropriate result listener
@@ -39,8 +39,8 @@ public interface QueryExecutionService {
     void submitForExecution(QueryExecutionRequest queryExecutionRequest,
                             QueryExecutionListener listener) throws QueryExecutionException;
 
-    //void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
-    //                         QueryExecutionListener listener) throws QueryExecutionException;
+    void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
+                             QueryExecutionListener listener) throws QueryExecutionException;
 
     /**
      * Request query cancel

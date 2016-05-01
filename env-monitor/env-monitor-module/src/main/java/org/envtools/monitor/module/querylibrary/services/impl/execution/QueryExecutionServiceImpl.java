@@ -130,7 +130,6 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     }
 
-
     private AbstractQueryExecutionTask createExecutionTask(QueryExecutionRequest queryExecutionRequest) {
         switch (queryExecutionRequest.getQueryType()) {
             case JDBC:
@@ -147,5 +146,16 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     @Override
     public void cancel(QueryExecutionCancelRequest cancelRequest) {
         //TODO impl cancel
+    }
+
+
+    @Override
+    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
+
+    }
+
+    @Override
+    public QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest) throws QueryExecutionException {
+        return null;
     }
 }
