@@ -27,6 +27,7 @@ import javax.persistence.PersistenceContext;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE.*;
 
@@ -61,65 +62,78 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
     @Override
     @Transactional
     protected QueryExecutionResult doCall() {
+        try {
+            final ResultDTO resultDTO = new ResultDTO();
 
-        final ResultDTO resultDTO = new ResultDTO();
-
-        JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
-        template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
-        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
+            JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
+            template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
+            NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
         /*
         Получим n строк с запросом queryExecutionRequest.getQuery()
         * с параметрами queryExecutionRequest.getQueryParameters(),
         * из базы c параметрами jdbcDataSource
         * */
-        List<Map<String, Object>> result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
-                new ResultSetExtractor<List<Map<String, Object>>>() {
-                    public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                        int rowNum = 0; //строки
-                        try {
 
-                            ResultSetMetaData md = rs.getMetaData();
-                            int columnCount = md.getColumnCount();
-                            List<Map<String, Object>> rows = new ArrayList<>();
-                            while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
-                                Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
+            List<Map<String, Object>> result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
+                    new ResultSetExtractor<List<Map<String, Object>>>() {
+                        public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                            int rowNum = 0; //строки
+                            try {
 
-                                for (int iColumn = 1; iColumn <= columnCount; iColumn++) {
-                                    row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
+                                ResultSetMetaData md = rs.getMetaData();
+                                int columnCount = md.getColumnCount();
+                                List<Map<String, Object>> rows = new ArrayList<>();
+                                while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
+                                    Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
+
+                                    for (int iColumn = 1; iColumn <= columnCount; iColumn++) {
+                                        row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
+                                    }
+                                    rowNum++;
+                                    rows.add(row);
                                 }
-                                rowNum++;
-                                rows.add(row);
+
+                                LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
+
+                                resultDTO.status = COMPLETED;
+
+                                return rows;
+
+                            } catch (Throwable t) {
+                                LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
+                                resultDTO.status = ERROR;
+                                resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
+                                resultDTO.error = t;
+
+                                return Lists.newArrayList();
                             }
 
-                            LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
-
-                            resultDTO.status = COMPLETED;
-
-                            return rows;
-
-                        } catch (Throwable t) {
-                            LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
-                            resultDTO.status = ERROR;
-                            resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
-                            resultDTO.error = t;
-
-                            return Lists.newArrayList();
                         }
+                        //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
+                        // errorMessage, Optional<Throwable> error
+                    });
 
-                    }
-                });
+            return QueryExecutionResult
+                    .builder()
+                    .status(resultDTO.status)
+                    .elapsedTimeMs(200) //TODO count
+                    .returnedRowCount(result.size())
+                    .resultRows(result)
+                    .errorMessage(resultDTO.errorMessage)
+                    .error(resultDTO.error)
+                    .build();
 
 
-        return QueryExecutionResult
-                .builder()
-                .status(resultDTO.status)
-                .elapsedTimeMs(200) //TODO count
-                .returnedRowCount(result.size())
-                .resultRows(result)
-                .errorMessage(resultDTO.errorMessage)
-                .error(resultDTO.error)
-                .build();
-
+        } catch (Exception ee) {
+            return QueryExecutionResult
+                    .builder()
+                    .status(ERROR)
+                    .elapsedTimeMs(200) //TODO count
+                    .returnedRowCount(0)
+                    .resultRows(null)
+                    .errorMessage(ee.getMessage())
+                    .error(ee)
+                    .build();
+        }
     }
-
 }

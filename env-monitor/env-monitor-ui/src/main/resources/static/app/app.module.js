@@ -6,7 +6,7 @@
             'AngularStompDK',
             'ui.router',
             'queryLib'
-           /* 'core',
-            'applications',*/
+            /* 'core',
+             'applications',*/
         ]);
 })();

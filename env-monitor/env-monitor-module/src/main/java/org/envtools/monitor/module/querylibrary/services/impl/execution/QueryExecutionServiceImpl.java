@@ -72,7 +72,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
 
     @Override
-    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException {
+    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException{
 
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
@@ -97,20 +97,21 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
-        LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
-        AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException{
+    // try {
+         LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
+         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
-        ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
-        Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
-            public void onSuccess(QueryExecutionResult result) {
-                listener.onQueryCompleted(result);
-            }
+         ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
+         Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
+             public void onSuccess(QueryExecutionResult result) {
+                 listener.onQueryCompleted(result);
+             }
 
-            public void onFailure(Throwable t) {
-                listener.onQueryError(t);
-            }
-        });
+             public void onFailure(Throwable t) {
+                 listener.onQueryError(t);
+             }
+         });
 
         try {
 
@@ -120,7 +121,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             queryExecution.setText(queryExecutionRequest.getQuery());
             //queryExecution.setLibQuery(libQueryDao.getOne(queryExecutionRequest.getLibQuery_id()));
             queryExecution.setLibQuery(libQueryDao.getOne((long) 1));
-            /* просто для теста, потом надо строку выше раскомментить а эту удалить */
+            /* просто для теста, потом надо строку выше раскомментить, а эту удалить */
             //queryExecution.setDataSource(dataSourceDao.getOne(queryExecutionRequest.getDataSource_id()));
             queryExecutionDao.saveAndFlush(queryExecution);
             listenableFuture.get();

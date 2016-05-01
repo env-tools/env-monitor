@@ -147,7 +147,7 @@ public class QueryExecutionServiceImplTest {
     public void testExecuteFailSQL() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
-        String query = "FAIL SQL";
+        String query = "SELECT FROMd SQL";
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 5000;
         int rowCount = 50;
@@ -180,11 +180,11 @@ public class QueryExecutionServiceImplTest {
 
                     @Override
                     public void onQueryError(Throwable t) {
-                        listener.onQueryError(t);
+                      //  listener.onQueryError(t);
                         // future.complete(t);
                     }
                 });
         //  QueryExecutionResult result = executionService.execute(request);
-        //  Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
+          Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
     }
 }

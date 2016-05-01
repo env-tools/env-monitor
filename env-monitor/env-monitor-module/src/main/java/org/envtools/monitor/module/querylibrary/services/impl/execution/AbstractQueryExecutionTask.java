@@ -3,7 +3,9 @@ package org.envtools.monitor.module.querylibrary.services.impl.execution;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 
+import java.sql.SQLException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created: 13.03.16 1:29
@@ -28,5 +30,5 @@ public abstract class AbstractQueryExecutionTask implements Callable<QueryExecut
      *
      * @return Execution result (partial or final)
      */
-    protected abstract QueryExecutionResult doCall();
+    protected abstract QueryExecutionResult doCall() ;
 }

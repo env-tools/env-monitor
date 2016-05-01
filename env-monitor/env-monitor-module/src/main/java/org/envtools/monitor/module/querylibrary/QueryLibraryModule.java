@@ -30,6 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -76,7 +77,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
 
     @Override
-    protected <T> void processPayload(T payload, RequestMessage requestMessage) {
+    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws ExecutionException {
         if (payload instanceof QueryExecutionRequest) {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
@@ -86,7 +87,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         }
     }
 
-    private void processExecutionRequest(QueryExecutionRequest queryExecutionRequest, RequestMessage requestMessage) {
+    private void processExecutionRequest(QueryExecutionRequest queryExecutionRequest, RequestMessage requestMessage) throws ExecutionException {
         try {
             queryExecutionService.submitForExecution(queryExecutionRequest,
                     new QueryExecutionListener() {

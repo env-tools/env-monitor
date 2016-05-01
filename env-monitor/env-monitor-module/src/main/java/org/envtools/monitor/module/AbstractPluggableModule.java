@@ -17,6 +17,7 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created: 12.03.16 19:18
@@ -53,6 +54,8 @@ public abstract class AbstractPluggableModule implements Module {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     };
 
@@ -61,7 +64,7 @@ public abstract class AbstractPluggableModule implements Module {
         getModuleChannel().subscribe(incomingMessageHandler);
     }
 
-    public void handleIncomingMessage(RequestMessage requestMessage) throws NoSuchMethodException, InterruptedException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, IOException {
+    public void handleIncomingMessage(RequestMessage requestMessage) throws NoSuchMethodException, InterruptedException, DataOperationException, IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException, ClassNotFoundException, IOException, ExecutionException {
 
         RequestPayload requestPayload = requestMessage.getPayload();
         String payloadType = requestPayload.getPayloadType();
@@ -85,7 +88,7 @@ public abstract class AbstractPluggableModule implements Module {
 
     }
 
-    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage);
+    protected abstract <T> void processPayload(T payload, RequestMessage requestMessage) throws ExecutionException;
 
     @Autowired
     CoreModuleService coreModuleService;
