@@ -1,8 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
 import org.envtools.monitor.model.querylibrary.DataProviderType;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
@@ -18,8 +16,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Exchanger;
 
 import org.junit.Assert;
 
@@ -127,42 +123,5 @@ public class QueryExecutionServiceImplTest {
 
         QueryExecutionResult result = executionService.execute(request);
         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, result.getStatus().ERROR);
-    }
-
-    @Test
-    public void testExecuteNextRows() throws Exception {
-        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
-
-        String query = "SELECT * FROM INFORMATION_SCHEMA.COLLATIONS";
-        Map<String, Object> queryParameters = new HashMap<>();
-        Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 1000;
-        int rowCount = 6;
-        int maxRows = 3;
-
-
-        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
-        dataSourceProperties.put("user", "sa");
-        dataSourceProperties.put("password", "sa");
-        dataSourceProperties.put("driverClassName", "org.h2.Driver");
-
-        QueryExecutionRequest request = requestBuilder
-                .operationId(UUID.randomUUID().toString())
-                .queryType(DataProviderType.JDBC)
-                .query(query)
-                //.queryParameters(queryParameters)
-                .dataSourceProperties(dataSourceProperties)
-                .timeOutMs(timeOut)
-                .rowCount(rowCount)
-                .build();
-        QueryExecutionResult result = executionService.execute(request);
-        QueryExecutionNextResultRequest queryExecutionNextResultRequest =
-                new QueryExecutionNextResultRequest("12",(long)100,6);
-        QueryExecutionListener listener = null;
-
-              //  executionService.submitForNextResult(queryExecutionNextResultRequest,listener);
-       // Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, result.getStatus().COMPLETED);
-       // Assert.assertEquals(maxRows, result.getReturnedRowCount());
-
     }
 }
