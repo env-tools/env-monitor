@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Yury Yakovlev
  */
-public class QueryExecutionNextResultRequest {
+public class QueryExecutionNextResultRequest extends QueryExecutionRequest {
 
     private String operationId;
     private Long timeOutMs;

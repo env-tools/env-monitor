@@ -39,8 +39,8 @@ public interface QueryExecutionService {
     void submitForExecution(QueryExecutionRequest queryExecutionRequest,
                             QueryExecutionListener listener) throws QueryExecutionException;
 
-    //void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
-    //                         QueryExecutionListener listener) throws QueryExecutionException;
+    void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
+                            QueryExecutionListener listener) throws QueryExecutionException;
 
     /**
      * Request query cancel

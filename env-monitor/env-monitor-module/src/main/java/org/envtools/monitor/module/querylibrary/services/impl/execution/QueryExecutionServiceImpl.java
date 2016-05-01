@@ -17,14 +17,9 @@ import org.envtools.monitor.module.querylibrary.services.impl.datasource.JdbcDat
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
@@ -130,6 +125,25 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     }
 
+    @Override
+    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
+        //TODO: Impl
+
+        //Код просто для того чтобы в тесте можно было получить QueryExecutionResult, потом его надо убрать
+        LOGGER.info("Create task with queryExecutionRequest: " +queryExecutionNextResultRequest);
+        AbstractQueryExecutionTask task = createExecutionTask1(queryExecutionNextResultRequest);
+        ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
+        Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
+            public void onSuccess(QueryExecutionResult result) {
+                listener.onQueryCompleted(result);
+            }
+
+            public void onFailure(Throwable t) {
+                listener.onQueryError(t);
+            }
+        });
+    }
+
 
     private AbstractQueryExecutionTask createExecutionTask(QueryExecutionRequest queryExecutionRequest) {
         switch (queryExecutionRequest.getQueryType()) {
@@ -143,6 +157,17 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
         }
 
     }
+
+    private AbstractQueryExecutionTask createExecutionTask1(QueryExecutionNextResultRequest queryExecutionNextResultRequest) {
+
+                LOGGER.info("QueryExecutionServiceImpl.createExecutionTask - " +
+                        "for request " + queryExecutionNextResultRequest);
+                return new JdbcQueryExecutionTask(queryExecutionNextResultRequest, jdbcDataSourceService);
+    }
+
+
+
+
 
     @Override
     public void cancel(QueryExecutionCancelRequest cancelRequest) {

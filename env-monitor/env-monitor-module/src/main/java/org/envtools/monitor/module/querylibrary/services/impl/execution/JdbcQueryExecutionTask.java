@@ -107,8 +107,6 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                         }
 
                     }
-                    //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
-                    // errorMessage, Optional<Throwable> error
                 });
 
 
