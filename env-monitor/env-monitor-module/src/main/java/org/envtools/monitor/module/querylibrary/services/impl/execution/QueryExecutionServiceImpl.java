@@ -14,6 +14,7 @@ import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 import org.envtools.monitor.module.querylibrary.services.impl.datasource.JdbcDataSourceService;
+import org.h2.jdbc.JdbcSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -124,9 +126,18 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             listenableFuture.get();
 
         } catch (InterruptedException | ExecutionException e) {
-            throw new QueryExecutionException(e);
+            LOGGER.error("QueryExecutionServiceImpl.execute - error", e);
+
+        } catch (Throwable t) {
+            QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), t);
+            throw new QueryExecutionException(t);
             //Don't we report the same twice?
         }
+
+    }
+
+    @Override
+    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
 
     }
 
