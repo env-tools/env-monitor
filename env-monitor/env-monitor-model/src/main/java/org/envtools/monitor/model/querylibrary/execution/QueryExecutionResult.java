@@ -1,5 +1,6 @@
 package org.envtools.monitor.model.querylibrary.execution;
 
+import com.google.common.collect.ImmutableSet;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
@@ -7,6 +8,7 @@ import org.envtools.monitor.common.util.ExceptionReportingUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created: 27.02.16 3:31
@@ -16,8 +18,14 @@ import java.util.Optional;
 public class QueryExecutionResult {
 
     public enum ExecutionStatusE {
-        COMPLETED, HAS_MORE_DATA, ERROR, TIMED_OUT
+        COMPLETED, HAS_MORE_DATA, ERROR, TIMED_OUT, CANCELLED
     }
+
+    private static final Set<ExecutionStatusE> FINAL_STATES =
+            ImmutableSet.of(
+                    ExecutionStatusE.COMPLETED,
+                    ExecutionStatusE.ERROR,
+                    ExecutionStatusE.TIMED_OUT);
 
     private final String executionId;
 
@@ -96,6 +104,10 @@ public class QueryExecutionResult {
         return error;
     }
 
+    public boolean isFinal() {
+        return FINAL_STATES.contains(getStatus());
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -167,4 +179,30 @@ public class QueryExecutionResult {
                 .error(t)
                 .build();
     }
+
+    public static QueryExecutionResult ofError(String executionId, String message) {
+        return QueryExecutionResult
+                .builder()
+                .executionId(executionId)
+                .status(ExecutionStatusE.ERROR)
+                .errorMessage(message)
+                .build();
+    }
+
+    public static QueryExecutionResult ofCancel(String executionId) {
+        return QueryExecutionResult
+                .builder()
+                .executionId(executionId)
+                .status(ExecutionStatusE.CANCELLED)
+                .build();
+    }
+
+    public static QueryExecutionResult ofTimeout(String executionId) {
+        return QueryExecutionResult
+                .builder()
+                .executionId(executionId)
+                .status(ExecutionStatusE.TIMED_OUT)
+                .build();
+    }
+
 }

@@ -3,31 +3,23 @@ package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.util.ExceptionReportingUtil;
-import org.envtools.monitor.model.querylibrary.db.LibQuery;
-import org.envtools.monitor.model.querylibrary.db.QueryExecution;
-import org.envtools.monitor.model.querylibrary.db.QueryExecutionParam;
+import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
-import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
-import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
-import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
 import org.envtools.monitor.module.querylibrary.services.DataSourceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.envtools.monitor.module.querylibrary.services.QueryExecutionTaskRegistry;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE.*;
 
@@ -40,100 +32,221 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
     private static final Logger LOGGER = Logger.getLogger(JdbcQueryExecutionTask.class);
 
+    private static final int NEXT_REQUEST_TIMEOUT_SEC = 600;
+
+    private static final List<Map<String, Object>> NOT_USED = Collections.emptyList();
+
     private BasicDataSource jdbcDataSource;
+
+    private StopWatch timer = new StopWatch();
 
     public JdbcQueryExecutionTask(
             QueryExecutionRequest queryExecutionRequest,
+            QueryExecutionTaskRegistry taskRegistry,
             DataSourceService<BasicDataSource> jdbcDataSourceService) {
-        super(queryExecutionRequest);
+        super(queryExecutionRequest, taskRegistry);
 
         jdbcDataSource = jdbcDataSourceService
                 .getDataSourceForParams(
                         queryExecutionRequest.getDataSourceProperties());
     }
 
-    private static class ResultDTO {
-        public ExecutionStatusE status;
-        public String errorMessage;
-        public Throwable error;
+    @Override
+    protected void doRun() {
+
+        JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
+        template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
+
+        try {
+
+            timer.start();
+
+            jdbcTemplate.query(
+                    queryExecutionRequest.getQuery(),
+                    queryExecutionRequest.getQueryParameters(),
+                    (ResultSet rs) -> extractRows(rs));
+        } catch (Throwable t) {
+
+            LOGGER.info("JdbcQueryExecutionTask.doRun - " +
+                    String.format("query execution failed for: %s with params %s",
+                            queryExecutionRequest.getQuery(),
+                            queryExecutionRequest.getQueryParameters())
+                            , t);
+
+            postResult(QueryExecutionResult.ofError(
+                    queryExecutionRequest.getOperationId(),
+                    t));
+        }
     }
 
+    private List<Map<String, Object>> extractRows(ResultSet rs) {
+        {
+            String operationId = queryExecutionRequest.getOperationId();
+            MutableInt currentRowNum = new MutableInt(0);
+            MutableInt maxRowCount = new MutableInt(queryExecutionRequest.getRowCount()); //строки
 
-    @Override
-    @Transactional
-    protected QueryExecutionResult doCall() {
-        try {
-            final ResultDTO resultDTO = new ResultDTO();
+            try {
 
-            JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
-            template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
-            NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
-        /*
-        Получим n строк с запросом queryExecutionRequest.getQuery()
-        * с параметрами queryExecutionRequest.getQueryParameters(),
-        * из базы c параметрами jdbcDataSource
-        * */
+                ResultSetMetaData md = rs.getMetaData();
 
-            List<Map<String, Object>> result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
-                    new ResultSetExtractor<List<Map<String, Object>>>() {
-                        public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                            int rowNum = 0; //строки
-                            try {
+                //Check for cancellation
+                if (isCancelled()) {
+                    postResult(QueryExecutionResult.ofCancel(operationId));
+                    return NOT_USED;
+                }
 
-                                ResultSetMetaData md = rs.getMetaData();
-                                int columnCount = md.getColumnCount();
-                                List<Map<String, Object>> rows = new ArrayList<>();
-                                while (rs.next() && queryExecutionRequest.getRowCount() > rowNum) {
-                                    Map<String, Object> row = new LinkedHashMap<String, Object>(columnCount);
+                List<Map<String, Object>> currentResultRows = Lists.newArrayList();
 
-                                    for (int iColumn = 1; iColumn <= columnCount; iColumn++) {
-                                        row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
-                                    }
-                                    rowNum++;
-                                    rows.add(row);
-                                }
+                while ( !allResultSetRowsProcessed(currentRowNum, maxRowCount,
+                        rs, currentResultRows)) {
 
-                                LOGGER.info(String.format("Found %d rows for query %s ", rowNum, queryExecutionRequest.getQuery()));
+                    //Check for cancellation
+                    if (isCancelled()) {
+                        postResult(QueryExecutionResult.ofCancel(operationId));
+                        return NOT_USED;
+                    }
 
-                                resultDTO.status = COMPLETED;
+                    addRowData(md, currentResultRows, rs);
+                    currentRowNum.increment();
 
-                                return rows;
+                }
 
-                            } catch (Throwable t) {
-                                LOGGER.info("Error executing query " + queryExecutionRequest.getQuery());
-                                resultDTO.status = ERROR;
-                                resultDTO.errorMessage = ExceptionReportingUtil.getExceptionMessage(t);
-                                resultDTO.error = t;
+            } catch (Throwable t) {
 
-                                return Lists.newArrayList();
-                            }
+                LOGGER.info("JdbcQueryExecutionTask.extract - " +
+                        String.format("query result extraction failed for: %s with params %s",
+                                queryExecutionRequest.getQuery(),
+                                queryExecutionRequest.getQueryParameters())
+                        , t);
 
-                        }
-                        //надо получить таймаут, статус, количество полученных строк,List<Map<String, Object>>resultRows,
-                        // errorMessage, Optional<Throwable> error
-                    });
+                postResult(QueryExecutionResult.ofError(
+                        queryExecutionRequest.getOperationId(), t));
+            }
 
-            return QueryExecutionResult
-                    .builder()
-                    .status(resultDTO.status)
-                    .elapsedTimeMs(200) //TODO count
-                    .returnedRowCount(result.size())
-                    .resultRows(result)
-                    .errorMessage(resultDTO.errorMessage)
-                    .error(resultDTO.error)
-                    .build();
-
-
-        } catch (Exception ee) {
-            return QueryExecutionResult
-                    .builder()
-                    .status(ERROR)
-                    .elapsedTimeMs(200) //TODO count
-                    .returnedRowCount(0)
-                    .resultRows(null)
-                    .errorMessage(ee.getMessage())
-                    .error(ee)
-                    .build();
+            return NOT_USED;
         }
+    }
+
+    private void addRowData(
+            ResultSetMetaData md,
+            List<Map<String, Object>> rows,
+            ResultSet rs)  throws SQLException {
+        int columnCount = md.getColumnCount();
+        Map<String, Object> row = new LinkedHashMap<>(columnCount);
+
+        for (int iColumn = 1; iColumn <= columnCount; iColumn++) {
+            row.put(md.getColumnName(iColumn), rs.getObject(iColumn));
+        }
+
+        rows.add(row);
+    }
+
+    private boolean allResultSetRowsProcessed(MutableInt rowNum,
+                                              MutableInt maxRowCount,
+                                              ResultSet rs,
+                                              List<Map<String, Object>> rows) throws SQLException {
+
+        boolean hasMoreRows = rs.next();
+
+        if (rowNum.intValue() > maxRowCount.intValue()) {
+            throw new IllegalArgumentException(
+                    String.format("rowNum %s exceeded maxRowCount %s",
+                            rowNum, maxRowCount));
+        }
+
+        if (rowNum.intValue() < maxRowCount.intValue()) {
+            if (!hasMoreRows) {
+                //No more rows
+                putFinalResult(rows);
+                return true;
+            } else {
+                //We have more rows to read  within current limitation (maxRows)
+                return false;
+            }
+        }
+
+        if (rowNum.intValue() == maxRowCount.intValue()) {
+
+            //Take even 1 more row to see if we should continue
+            if (!rs.next()) {
+                //No more rows
+                //Result set is complete
+                putFinalResult(rows);
+                return true;
+            } else {
+                //Post rows that we already have
+                putIncompleteResult(rows);
+
+                //Wait for next rows to be requested
+                try {
+                    QueryExecutionNextResultRequest nextResultRequest =
+                            nextResultRequests.poll(NEXT_REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
+
+                    if (nextResultRequest == null) {
+                        //Timeout elapsed
+                        //We will terminate this task
+                        //No results are posted
+                        return true;
+                    }
+
+                    //Ready to process next portion of result as requested
+                    maxRowCount.setValue(nextResultRequest.getRowCount());
+                    rows.clear();
+                    rowNum.setValue(0);
+
+                    timer.start();
+
+                    //We have to continue processing
+                    return false;
+
+                } catch (InterruptedException ie) {
+                    LOGGER.info("JdbcQueryExecutionTask.allResultSetRowsProcessed - interrupted while waiting for next result request",
+                            ie);
+                    isCancelled = true;
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void putFinalResult(List<Map<String, Object>> rows) {
+        LOGGER.info("JdbcQueryExecutionTask.putFinalResult : " + rows);
+
+        timer.stop();
+
+        postResult(
+                QueryExecutionResult
+                        .builder()
+                        .status(COMPLETED)
+                        .elapsedTimeMs(timer.getTime())
+                        .returnedRowCount(rows.size())
+                        .resultRows(rows)
+                        .build()
+        );
+
+        //Actually, this timer will no longer be used
+        timer.reset();
+    }
+
+    private void putIncompleteResult(List<Map<String, Object>> rows) {
+        LOGGER.info("JdbcQueryExecutionTask.putIncompleteResult : " + rows);
+
+        timer.stop();
+
+        postResult(
+                QueryExecutionResult
+                        .builder()
+                        .status(HAS_MORE_DATA)
+                        .elapsedTimeMs(timer.getTime())
+                        .returnedRowCount(rows.size())
+                        .resultRows(rows)
+                        .build()
+        );
+
+        //Timer might be reused later
+        timer.reset();
+
     }
 }

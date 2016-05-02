@@ -16,6 +16,7 @@ import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.*;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
+import org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper;
 import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
@@ -42,7 +43,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class QueryLibraryModule extends AbstractPluggableModule {
 
-
     private static final Logger LOGGER = Logger.getLogger(QueryLibraryModule.class);
 
     public static final Map<String, Class<?>> PAYLOAD_TYPES = new HashMap<String, Class<?>>() {
@@ -55,13 +55,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     };
 
     @Autowired
-    QueryExecutionService queryExecutionService;
+    private QueryExecutionService queryExecutionService;
 
     @Autowired
-    org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper mapper;
+    private QueryExecutionResultViewMapper mapper;
 
     @Autowired
-    Serializer serializer;
+    private Serializer serializer;
 
     private AtomicLong responseIdentifier = new AtomicLong(0);
 
@@ -69,12 +69,25 @@ public class QueryLibraryModule extends AbstractPluggableModule {
      * This is incoming channel for QUERY_LIBRARY module
      */
     @Resource(name = "querylibrary.channel")
-    SubscribableChannel queryLibraryModuleChannel;
+    private SubscribableChannel queryLibraryModuleChannel;
 
     //TODO Auth is cross-module functionality
     @Resource(name = "querylibrary.provider")
-    QueryLibraryAuthProvider queryLibraryAuthProvider;
+    private QueryLibraryAuthProvider queryLibraryAuthProvider;
 
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
+    @Autowired
+    DataSource dataSource;
+
+    @Autowired
+    DataOperationService<Long> dataOperationService;
+
+    @Autowired
+    TreeUpdateTriggerService treeUpdateTriggerService;
+
+    @Autowired
+    TreeUpdateService treeUpdateService;
 
     @Override
     protected <T> void processPayload(T payload, RequestMessage requestMessage) throws ExecutionException {
@@ -108,20 +121,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             sendResultMessage(mapper.errorResult(e), requestMessage);
         }
     }
-
-    private ExecutorService executorService = Executors.newCachedThreadPool();
-
-    @Autowired
-    DataSource dataSource;
-
-    @Autowired
-    DataOperationService<Long> dataOperationService;
-
-    @Autowired
-    TreeUpdateTriggerService treeUpdateTriggerService;
-
-    @Autowired
-    TreeUpdateService treeUpdateService;
 
     public void init() throws Exception {
         super.init();

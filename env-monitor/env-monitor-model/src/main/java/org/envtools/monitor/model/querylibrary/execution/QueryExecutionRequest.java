@@ -23,6 +23,7 @@ public class QueryExecutionRequest {
     private Map<String, String> dataSourceProperties;
     private Long timeOutMs;
     private Integer rowCount;
+
     private Long libQuery_id;
     private Long dataSource_id;
 
@@ -184,7 +185,7 @@ public class QueryExecutionRequest {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this.getOperationId(), ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("operationId", operationId)
                 .append("queryType", queryType)
                 .append("query", query)

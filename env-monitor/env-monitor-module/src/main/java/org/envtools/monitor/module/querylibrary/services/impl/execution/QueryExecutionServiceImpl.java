@@ -1,32 +1,24 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
-import com.google.common.util.concurrent.*;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.util.ExceptionReportingUtil;
-import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryExecution;
-import org.envtools.monitor.model.querylibrary.db.QueryExecutionParam;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.module.querylibrary.dao.DataSourceDao;
 import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionParamDao;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
+import org.envtools.monitor.module.querylibrary.services.QueryExecutionTask;
+import org.envtools.monitor.module.querylibrary.services.QueryExecutionTaskRegistry;
 import org.envtools.monitor.module.querylibrary.services.impl.datasource.JdbcDataSourceService;
-import org.h2.jdbc.JdbcSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
@@ -43,20 +35,10 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     @Autowired
     private JdbcDataSourceService jdbcDataSourceService;
 
+    @Autowired
+    private QueryExecutionTaskRegistry taskRegistry;
+
     private ExecutorService threadPool;
-    private ListeningExecutorService threadPoolWithCallbacks;
-
-    @PostConstruct
-    public void init() {
-        threadPool = Executors.newCachedThreadPool();
-        threadPoolWithCallbacks = MoreExecutors.listeningDecorator(threadPool);
-    }
-
-    @PreDestroy
-    public void close() {
-        //TODO close resources ? Ште???
-        threadPool.shutdownNow();
-    }
 
     @Autowired
     DataSourceDao dataSourceDao;
@@ -70,85 +52,109 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     @Autowired
     QueryExecutionDao queryExecutionDao;
 
+    @PostConstruct
+    public void init() {
+        threadPool = Executors.newCachedThreadPool();
+    }
 
-    @Override
-    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException{
-
-        AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
-
-        Future<QueryExecutionResult> future = threadPool.submit(task);
-
-        try {
-            return future.get(queryExecutionRequest.getTimeOutMs(), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.error("QueryExecutionServiceImpl.execute - error", e);
-            return QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), e);
-        } catch (TimeoutException e) {
-            LOGGER.info("QueryExecutionServiceImpl.execute - timeout", e);
-            return QueryExecutionResult
-                    .builder()
-                    .status(QueryExecutionResult.ExecutionStatusE.TIMED_OUT)
-                    .error(e)
-                    .errorMessage(ExceptionReportingUtil.getExceptionMessage(e))
-                    .build();
-        } catch (Throwable t) {
-            return QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), t);
-        }
+    @PreDestroy
+    public void close() {
+        threadPool.shutdownNow();
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException{
-    // try {
-         LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
-         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
+    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException {
 
-         ListenableFuture<QueryExecutionResult> listenableFuture = threadPoolWithCallbacks.submit(task);
-         Futures.addCallback(listenableFuture, new FutureCallback<QueryExecutionResult>() {
-             public void onSuccess(QueryExecutionResult result) {
-                 listener.onQueryCompleted(result);
-             }
+        LOGGER.info("QueryExecutionServiceImpl.execute - Creating task with queryExecutionRequest: "
+                + queryExecutionRequest);
 
-             public void onFailure(Throwable t) {
-                 listener.onQueryError(t);
-             }
-         });
+        QueryExecutionTask task = createExecutionTask(
+                queryExecutionRequest, taskRegistry);
 
-        try {
+        Future<Object> future = threadPool.submit(Executors.callable(task, null /* no result */));
+        taskRegistry.registerTaskFuture(queryExecutionRequest.getOperationId(), future);
+        //This future will be used for cancellations only
 
-            LocalDateTime localDateTime = LocalDateTime.now();
-            QueryExecution queryExecution = new QueryExecution();
-            queryExecution.setStartTimestamp(localDateTime);
-            queryExecution.setText(queryExecutionRequest.getQuery());
-            //queryExecution.setLibQuery(libQueryDao.getOne(queryExecutionRequest.getLibQuery_id()));
-            queryExecution.setLibQuery(libQueryDao.getOne((long) 1));
-            /* просто для теста, потом надо строку выше раскомментить, а эту удалить */
-            //queryExecution.setDataSource(dataSourceDao.getOne(queryExecutionRequest.getDataSource_id()));
-            queryExecutionDao.saveAndFlush(queryExecution);
-            listenableFuture.get();
+        Long executionId = saveExecution(queryExecutionRequest);
+        if (executionId != null) {
+            LOGGER.info("Execution saved : execution id = " + executionId);
+        }
 
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.error("QueryExecutionServiceImpl.execute - error", e);
+        QueryExecutionResult result = processSyncQueryTask(task,
+                queryExecutionRequest.getTimeOutMs(),
+                queryExecutionRequest.getOperationId());
 
-        } catch (Throwable t) {
-            QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), t);
-            throw new QueryExecutionException(t);
-            //Don't we report the same twice?
+        return result;
+    }
+
+    @Override
+    public QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest) throws QueryExecutionException {
+        LOGGER.info("QueryExecutionServiceImpl.execute - Creating task with queryExecutionNextResultRequest: "
+                + queryExecutionNextResultRequest);
+        String operationId = queryExecutionNextResultRequest.getOperationId();
+        QueryExecutionTask task = taskRegistry.find(operationId);
+
+        if (task == null) {
+            return QueryExecutionResult.ofError(operationId, "Result already closed. Please execute query again.");
+        }
+
+        task.postNextResultRequest(queryExecutionNextResultRequest);
+
+        QueryExecutionResult result = processSyncQueryTask(task,
+                queryExecutionNextResultRequest.getTimeOutMs(),
+                queryExecutionNextResultRequest.getOperationId());
+
+        return result;
+    }
+
+    @Override
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
+
+        LOGGER.info("QueryExecutionServiceImpl.submitForExecution - Creating task with queryExecutionRequest: " + queryExecutionRequest);
+
+        QueryExecutionTask task = createExecutionTask(queryExecutionRequest, taskRegistry);
+
+        task.setLastResultListener(listener);
+
+        Future<Object> future = threadPool.submit(Executors.callable(task, null /* no result */));
+        taskRegistry.registerTaskFuture(queryExecutionRequest.getOperationId(), future);
+        //This future will be used for cancellations only
+
+        Long executionId = saveExecution(queryExecutionRequest);
+        if (executionId != null) {
+            LOGGER.info("Execution saved : execution id = " + executionId);
         }
 
     }
 
     @Override
     public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
+        LOGGER.info("QueryExecutionServiceImpl.execute - Creating task with queryExecutionNextResultRequest: "
+                + queryExecutionNextResultRequest);
+        String operationId = queryExecutionNextResultRequest.getOperationId();
+        QueryExecutionTask task = taskRegistry.find(operationId);
 
+        if (task == null) {
+            listener.onQueryError(new QueryExecutionException("Result already closed. Please execute query again."));
+            return;
+        }
+
+        task.setLastResultListener(listener);
+
+        task.postNextResultRequest(queryExecutionNextResultRequest);
     }
 
-
-    private AbstractQueryExecutionTask createExecutionTask(QueryExecutionRequest queryExecutionRequest) {
+    private AbstractQueryExecutionTask createExecutionTask(
+            QueryExecutionRequest queryExecutionRequest,
+            QueryExecutionTaskRegistry taskRegistry) {
         switch (queryExecutionRequest.getQueryType()) {
             case JDBC:
                 LOGGER.info("QueryExecutionServiceImpl.createExecutionTask - " +
                         "for request " + queryExecutionRequest);
-                return new JdbcQueryExecutionTask(queryExecutionRequest, jdbcDataSourceService);
+                return new JdbcQueryExecutionTask(
+                        queryExecutionRequest,
+                        taskRegistry,
+                        jdbcDataSourceService);
             default:
                 throw new UnsupportedOperationException(
                         String.format("Query type %s not supported", queryExecutionRequest.getQueryType()));
@@ -156,8 +162,44 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     }
 
-    @Override
-    public void cancel(QueryExecutionCancelRequest cancelRequest) {
-        //TODO impl cancel
+    @Nullable
+    private Long saveExecution(QueryExecutionRequest request) {
+       try {
+            QueryExecution queryExecution = new QueryExecution();
+            queryExecution.setStartTimestamp(LocalDateTime.now());
+            queryExecution.setText(request.getQuery());
+            queryExecution.setOperationId(request.getOperationId());
+
+           //TODO pass query id and datasource id from request
+            //queryExecution.setLibQuery(libQueryDao.getOne(queryExecutionRequest.getLibQuery_id()));
+            //queryExecution.setDataSource(dataSourceDao.getOne(queryExecutionRequest.getDataSource_id()));
+            return queryExecutionDao.saveAndFlush(queryExecution).getId();
+
+        } catch (Exception e) {
+           LOGGER.error("Could not save execution information for request : " + request, e);
+           return null;
+        }
     }
+
+    @Override
+    public void cancel(QueryExecutionCancelRequest cancelRequest) throws QueryExecutionException{
+        String operationId = cancelRequest.getOperationId();
+        taskRegistry.cancel(operationId);
+    }
+
+    private QueryExecutionResult processSyncQueryTask(QueryExecutionTask task,
+                                                      Long timeOutMs,
+                                                      String operationId) {
+
+        try {
+            return task.getLastResult(timeOutMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.error("QueryExecutionServiceImpl.processSyncQueryTask - error", e);
+            return QueryExecutionResult.ofError(operationId, e);
+        } catch (Throwable t) {
+            LOGGER.error("QueryExecutionServiceImpl.processSyncQueryTask - unknown error", t);
+            return QueryExecutionResult.ofError(operationId, t);
+        }
+    }
+
 }

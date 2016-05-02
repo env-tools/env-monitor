@@ -28,7 +28,7 @@ public interface QueryExecutionService {
      * @return Next result (complete or partial) of the query
      * @throws QueryExecutionException
      */
-    //QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest)  throws QueryExecutionException;
+    QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest)  throws QueryExecutionException;
 
     /**
      * Asynchronous operation to execute query with appropriate result listener
@@ -46,6 +46,6 @@ public interface QueryExecutionService {
      * Request query cancel
      * @param cancelRequest Reference to a query already posted
      */
-    void cancel(QueryExecutionCancelRequest cancelRequest);
+    void cancel(QueryExecutionCancelRequest cancelRequest) throws QueryExecutionException;
 
 }
