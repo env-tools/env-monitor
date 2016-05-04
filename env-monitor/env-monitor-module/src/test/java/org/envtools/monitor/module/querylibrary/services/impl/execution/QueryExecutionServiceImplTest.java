@@ -142,7 +142,7 @@ public class QueryExecutionServiceImplTest {
     }
 
     @Test
-    public void testExecuteFailSQL() throws Exception {
+    public void testExecuteFailSQL() {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
         Map<String, Object> queryParameters = new HashMap<>();
         String query = "SELlECT * FROM INF";
@@ -182,8 +182,8 @@ public class QueryExecutionServiceImplTest {
                         // future.complete(t);
                     }
                 });
-       // future.get().getResultRows().size();
-       // Assert.assertEquals(0, future.get().getResultRows().size());
+
+       // Assert.assertEquals(future, future);
     }
 
   /*  @Test
