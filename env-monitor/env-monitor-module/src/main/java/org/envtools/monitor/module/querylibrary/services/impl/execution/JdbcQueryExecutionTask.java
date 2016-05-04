@@ -62,7 +62,8 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
     @Override
     @Transactional
     protected QueryExecutionResult doCall() {
-        try {
+        List<Map<String, Object>> result = null;
+       // try {
             final ResultDTO resultDTO = new ResultDTO();
 
             JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
@@ -74,7 +75,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         * из базы c параметрами jdbcDataSource
         * */
 
-            List<Map<String, Object>> result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
+             result = jdbcTemplate.query(queryExecutionRequest.getQuery(), queryExecutionRequest.getQueryParameters(),
                     new ResultSetExtractor<List<Map<String, Object>>>() {
                         public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
                             int rowNum = 0; //строки
@@ -124,16 +125,19 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     .build();
 
 
-       } catch (Exception ee) {
+      /*  } catch (Exception ee) {
+            Map<String, Object> empty = null;
+            empty.put("d","d");
+            result.add(empty);
             return QueryExecutionResult
                     .builder()
                     .status(ERROR)
                     .elapsedTimeMs(200) //TODO count
                     .returnedRowCount(0)
-                    .resultRows(null)
+                    .resultRows(result)
                     .errorMessage(ee.getMessage())
                     .error(ee)
                     .build();
-        }
+        }*/
     }
 }

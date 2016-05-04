@@ -6,6 +6,7 @@ import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResul
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
+import org.envtools.monitor.module.querylibrary.QueryLibraryModule;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 
 import org.junit.runner.RunWith;
@@ -143,11 +144,11 @@ public class QueryExecutionServiceImplTest {
     @Test
     public void testExecuteFailSQL() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
-
-        String query = "SELECT FROMd SQL";
+        Map<String, Object> queryParameters = new HashMap<>();
+        String query = "SELlECT * FROM INF";
         Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 5000;
-        int rowCount = 50;
+        long timeOut = 1000;
+        int rowCount = 1;
 
 
         dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
@@ -161,6 +162,7 @@ public class QueryExecutionServiceImplTest {
                 .queryType(DataProviderType.JDBC)
                 .query(query)
                 .dataSourceProperties(dataSourceProperties)
+               // .queryParameters(queryParameters)
                 .timeOutMs(timeOut)
                 .rowCount(rowCount)
                 .build();
@@ -180,8 +182,8 @@ public class QueryExecutionServiceImplTest {
                         // future.complete(t);
                     }
                 });
-        //  QueryExecutionResult result = executionService.execute(request);
-          Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
+       // future.get().getResultRows().size();
+       // Assert.assertEquals(0, future.get().getResultRows().size());
     }
 
   /*  @Test
