@@ -72,7 +72,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
 
     @Override
-    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) throws QueryExecutionException{
+    public QueryExecutionResult execute(QueryExecutionRequest queryExecutionRequest) {
 
         AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
@@ -97,8 +97,8 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException{
-    // try {
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) {
+
          LOGGER.info("Create task with queryExecutionRequest: " + queryExecutionRequest);
          AbstractQueryExecutionTask task = createExecutionTask(queryExecutionRequest);
 
@@ -131,14 +131,14 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
         } catch (Throwable t) {
             QueryExecutionResult.ofError(queryExecutionRequest.getOperationId(), t);
-            throw new QueryExecutionException(t);
+           // throw new QueryExecutionException(t);
             //Don't we report the same twice?
         }
 
     }
 
     @Override
-    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
+    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) {
 
     }
 

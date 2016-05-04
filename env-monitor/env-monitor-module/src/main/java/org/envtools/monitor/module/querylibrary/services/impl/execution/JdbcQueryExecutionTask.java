@@ -124,7 +124,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     .build();
 
 
-        } catch (Exception ee) {
+       } catch (Exception ee) {
             return QueryExecutionResult
                     .builder()
                     .status(ERROR)

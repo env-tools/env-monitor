@@ -46,10 +46,10 @@ public class CategoryDaoIT {
         List<Category> foundQueries1 = categoryDao.getRootCategories();
         Assert.assertEquals(1, foundQueries1.size());
 
-        List<Category> foundQueries2 = categoryDao.getChildCategoriesByParentId((long)1);
+        List<Category> foundQueries2 = categoryDao.getChildCategoriesByParentId((long)1000);
         Assert.assertEquals(1, foundQueries2.size()); //дочерняя категория
 
-        List<Category> foundQueries3 = categoryDao.getChildCategoriesByParentId((long)2);
+        List<Category> foundQueries3 = categoryDao.getChildCategoriesByParentId((long)1);
         Assert.assertEquals(0, foundQueries3.size());
 
 
