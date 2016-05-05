@@ -5,9 +5,9 @@
         .module('applications')
         .controller('ApplicationsPageController', ApplicationsPageController);
 
-    ApplicationsPageController.$inject = ['$scope', '$stomp'];
+    ApplicationsPageController.$inject = ['$scope', 'ngstomp'];
 
-    function ApplicationsPageController($scope, $stomp) {
+    function ApplicationsPageController($scope, ngstomp) {
 
         $scope.applications = [];
         $scope.platforms = [];
@@ -17,22 +17,50 @@
             selectedEnvironment: null
         };
 
+        init();
+
+        function init() {
+            ngstomp.subscribeTo('/call/modules/M_APPLICATIONS/data/platforms').callback(
+                function (msg) {
+                    $scope.$apply(function () {
+                        $scope.platforms = msg.body.payload.jsonContent;
+                        $scope.filters.selectedPlatform = $scope.platforms[0];
+                    });
+                    console.log('Call result for platforms: ' + JSON.stringify(msg.body.payload.jsonContent));
+
+
+                    var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platformId}/environments';
+                    ngstomp.subscribeTo(pattern.replace('{platformId}', $scope.filters.selectedPlatform.id))
+                        .callback(
+                            function (msg) {
+                                $scope.$apply(function () {
+                                    $scope.environments = msg.body.payload.jsonContent;
+                                    $scope.filters.selectedEnvironment = $scope.environments[0];
+                                });
+
+                                console.log('Call result for environments: ' + JSON.stringify(msg.body.payload.jsonContent));
+
+                                $scope.selectedEnvironmentChanged();
+
+                            }).withBodyInJson().connect();
+            }).withBodyInJson().connect();
+        }
+
         $scope.selectedPlatformChanged = function () {
             var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platform}/environments';
 
-            $stomp.subscribe(pattern.replace("{platform}", $scope.filters.selectedPlatform.id),
-                function (msg, headers, res) {
+            ngstomp.subscribeTo(pattern.replace("{platform}", $scope.filters.selectedPlatform.id))
+                .callback(function (msg) {
                     $scope.$apply(function () {
-                        $scope.environments = msg.payload.jsonContent;
+                        $scope.environments = msg.body.payload.jsonContent;
                         $scope.filters.selectedEnvironment = $scope.environments[0];
 
                         $scope.selectedEnvironmentChanged();
 
                     });
 
-                    console.log('Call result for environments: ' + JSON.stringify(msg.payload.jsonContent));
-                }, {});
-
+                    console.log('Call result for environments: ' + JSON.stringify(msg.body.payload.jsonContent));
+                }).withBodyInJson().connect();
         };
 
         $scope.selectedEnvironmentChanged = function () {
@@ -45,68 +73,22 @@
 
             if ($scope.currentApplicationsSubscribeId) {
                 //TODO: check order subsc/unsubscr
-                $stomp.unsubscribe($scope.currentApplicationsSubscribeId);
+                $scope.currentApplicationsSubscribeId.unSubscribeAll();
             }
 
-            $scope.currentApplicationsSubscribeId = $stomp.subscribe(
+            $scope.currentApplicationsSubscribeId = ngstomp.subscribeTo(
                 pattern
                     .replace("{platformId}",
                         $scope.filters.selectedPlatform.id)
                     .replace("{environmentId}",
-                        $scope.filters.selectedEnvironment.id),
-                function (msg, headers, res) {
+                        $scope.filters.selectedEnvironment.id))
+                .callback(function (msg) {
                     $scope.$apply(function () {
-                        $scope.applications = msg.payload.jsonContent;
+                        $scope.applications = msg.body.payload.jsonContent;
                     });
 
-                    console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.payload.jsonContent));
-                }, {});
-
+                    console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.body.payload.jsonContent));
+                }).withBodyInJson().connect();
         }
-
-
-        $stomp.connect('/monitor', [])
-            // frame = CONNECTED headers
-            .then(function (frame) {
-                console.log('Connected!');
-
-                //TODO create wrapper around $stomp to clearly distinguish CALL and SUBSCRIBE
-
-                //TODO configure TomCat to catch hot code updates immediately
-
-                $stomp.subscribe('/call/modules/M_APPLICATIONS/data/platforms', function (msg, headers, res) {
-                    $scope.$apply(function () {
-                        $scope.platforms = msg.payload.jsonContent;
-                        $scope.filters.selectedPlatform = $scope.platforms[0];
-                    });
-                    console.log('Call result for platforms: ' + JSON.stringify(msg.payload.jsonContent));
-
-
-                    var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platformId}/environments'
-                    $stomp.subscribe(pattern.replace('{platformId}', $scope.filters.selectedPlatform.id),
-                        function (msg, headers, res) {
-                            $scope.$apply(function () {
-                                $scope.environments = msg.payload.jsonContent;
-                                $scope.filters.selectedEnvironment = $scope.environments[0];
-                            });
-
-                            console.log('Call result for environments: ' + JSON.stringify(msg.payload.jsonContent));
-
-                            $scope.selectedEnvironmentChanged();
-
-                        }, {});
-
-                }, {});
-
-//                            $stomp.subscribe('/subscribe/modules/M_APPLICATIONS/data/platforms/PLAT1/environments/PL1-ENV1/applications',
-//                                    function (msg, headers, res) {
-//                                        $scope.$apply(function () {
-//                                            $scope.applications = msg.payload.jsonContent;
-//                                        });
-//
-//                                        console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.payload.jsonContent));
-//                                    }, { });
-
-            });
     }
 })();

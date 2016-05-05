@@ -71,13 +71,13 @@
             $scope.$apply(function () {
                 $scope.source = [
                     {
-                        label: "Public categories",
+                        html: '<div class="tree-item" title="Public categories" style="padding-right: 20px;">Public categories</div>',
                         icon: "/images/treeWidget/folder.png",
                         items: publicTree,
                         expanded: true,
                     },
                     {
-                        label: "Private categories (sergey)",
+                        html: '<div class="tree-item" title="Private categories (sergey)" style="padding-right: 20px;">Private categories (sergey)</div>',
                         icon: "/images/treeWidget/folder.png",
                         items: privateTree,
                     }

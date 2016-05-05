@@ -2,5 +2,5 @@
     'use strict';
 
     angular
-        .module('applications', ['ngStomp']);
+        .module('applications', []);
 })();

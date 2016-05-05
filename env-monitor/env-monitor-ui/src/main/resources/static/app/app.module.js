@@ -5,8 +5,7 @@
         .module('envMonitor', [
             'AngularStompDK',
             'ui.router',
-            'queryLib'
-            /* 'core',
-             'applications',*/
+            'queryLib',
+            'applications'
         ]);
 })();
