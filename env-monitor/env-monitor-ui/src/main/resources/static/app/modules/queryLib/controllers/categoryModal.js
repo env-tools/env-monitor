@@ -44,6 +44,11 @@
 
         function create(category) {
             var mesDestination = '/message/modulerequest';
+
+            if (category['parentCategory_id'] == "null") {
+                delete(category['parentCategory_id']);
+            }
+
             var body = {
                 requestId: requestId,
                 destination: subDestination,
@@ -64,6 +69,11 @@
 
         function update(category) {
             var mesDestination = '/message/modulerequest';
+
+            if (category['parentCategory_id'] == "null") {
+                delete(category['parentCategory_id']);
+            }
+
             var body = {
                 requestId: requestId,
                 destination: subDestination,

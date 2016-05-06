@@ -18,6 +18,8 @@
         $scope.categoryCreate = categoryCreate;
         $scope.queryCreate = queryCreate;
         $scope.edit = edit;
+        $scope.closeRemoveModal = closeRemoveModal;
+        $scope.showRemoveModal = showRemoveModal;
         $scope.remove = remove;
 
         $scope.itemSelect = '';
@@ -37,15 +39,27 @@
 
         function getOperationResult(message) {
             var content = message['body']['payload']['jsonContent'];
-            if (content != null && !content['error']['present']) {
-                close();
+            showAlert(content != null && !content['error']['present']);
+        }
+
+        function showRemoveModal() {
+            $('#remove').modal('show');
+        }
+
+        function showAlert(result) {
+            if (result) {
+                closeRemoveModal();
                 $('.alert-main.alert-success').removeClass('hide');
-                $('.alert-main.alert-danger').addClass('hide');
+                $('.alert-remove.alert-danger').addClass('hide');
             } else {
-                close();
+                closeRemoveModal();
                 $('.alert-main.alert-success').addClass('hide');
-                $('.alert-main.alert-danger').removeClass('hide');
+                $('.alert-remove.alert-danger').removeClass('hide');
             }
+        }
+
+        function closeRemoveModal() {
+            $('#remove').modal('hide');
         }
 
         function getMessage(message) {
@@ -153,7 +167,12 @@
             } else {
                 fields = allCategories[$scope.itemSelect];
                 entity = "Category";
+                if (fields['queries'].length > 0 || fields['childCategories'].length > 0) {
+                    showAlert(false);
+                    return;
+                }
             }
+
             var mesDestination = '/message/modulerequest';
             var body = {
                 requestId: requestId,
@@ -176,8 +195,10 @@
         function getParentCategory() {
             if (~$scope.itemSelect.indexOf("query_")) {
                 return allQueries[$scope.itemSelect]['category'];
-            } else {
+            } else if (~$scope.itemSelect.indexOf("category_")) {
                 return allCategories[$scope.itemSelect]['id'];
+            } else {
+                return "null";
             }
         }
 
