@@ -36,9 +36,10 @@ gulp.task('javascript', function () {
             'vendor/Bootflat/js/site.min.js',
             'vendor/Bootflat/js/html5shiv.js',
             'vendor/Bootflat/js/bootflat/*.js',
+
             'vendor/angular-ui-router/release/angular-ui-router.js',
+            'vendor/angular-modal-service/dst/angular-modal-service.js',
             'vendor/angular-uuid-service/angular-uuid-service.js',
-            'vendor/angular-resource/angular-resource.js',
 
             'vendor/sockjs/sockjs.js',
             'vendor/stomp-websocket/lib/stomp.js',
@@ -49,6 +50,7 @@ gulp.task('javascript', function () {
             'app/app.module.js',
             'app/app.config.js',
             'app/app.constant.js',
+            'app/controllers/*.js',
 
             'app/modules/**/module.js',
             'app/modules/**/services/*.js',

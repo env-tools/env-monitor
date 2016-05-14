@@ -50,22 +50,9 @@
                     </div>
                 </nav>
             </div>
-            <div class="col-xs-12">
-                <div class="alert alert-main alert-success hide">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    Changes was success applied!
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="alert alert-main alert-danger hide">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    Changes was not success applied!
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="alert alert-remove alert-danger hide">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    At first you must to delete child categories and queries in them.
+            <div class="col-xs-12" data-ng-controller="Alerts">
+                <div class="alert" ng-cloak data-ng-class="{'alert-danger': type == 'danger', 'alert-success': type == 'success', 'hide': !type && !message}">
+                    {{ message }}
                 </div>
             </div>
             <div class="col-xs-12" data-ui-view></div>

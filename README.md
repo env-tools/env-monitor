@@ -15,7 +15,7 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Student of LETI University*
 
-- Sergey Moldachyov (InnerFlameFact)
+- Sergey Moldachev (InnerFlameFact)
 
 *Student of LETI University*
 

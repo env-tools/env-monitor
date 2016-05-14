@@ -1,0 +1,47 @@
+<div id="query" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-ng-click="cancel()">×</button>
+                <h4 class="modal-title">{{ title }}</h4>
+            </div>
+            <div class="modal-body">
+                <form action="">
+                    <div class="form-group">
+                        <label for="query_title">Title</label>
+                        <input id="query_title" type="text" class="form-control" data-ng-model="query.title">
+                    </div>
+                    <div class="form-group">
+                        <label for="query_description">Description</label>
+                        <input id="query_description" type="text" class="form-control"
+                               data-ng-model="query.description">
+                    </div>
+                    <div class="form-group">
+                        <label for="query_parentCategory">Parent category</label>
+                        <select name="" id="query_parentCategory" class="form-control" data-ng-model="query.category_id">
+                            <option value="null">Select any category</option>
+                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
+                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="query_text">Text</label>
+                        <textarea id="query_text" class="form-control" cols="30" rows="10"
+                                  data-ng-model="query.text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
+                <button data-ng-if="!entity_id" type="button" class="btn btn-success" data-ng-click="create(query)">
+                    Create
+                </button>
+                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(query)">
+                    Update
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
