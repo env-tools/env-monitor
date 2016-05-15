@@ -1,25 +1,21 @@
-(function ($) {
+(function () {
     'use strict';
 
     angular
         .module('queryLib')
         .controller('Tree', Tree);
 
-    Tree.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122'];
+    Tree.$injector = ['$scope', '$rootScope', 'ngstomp', 'ModalService'];
 
-    function Tree($scope, $rootScope, ngstomp, rfc4122) {
-        var requestId = rfc4122.v4();
-        var subOperationDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
+    function Tree($scope, $rootScope, ngstomp, ModalService) {
         var allQueries = {};
         var allCategories = {};
         var categoriesFormat = {};
 
 
-        $scope.categoryCreate = categoryCreate;
-        $scope.queryCreate = queryCreate;
+        $scope.createCategory = createCategory;
+        $scope.createQuery = createQuery;
         $scope.edit = edit;
-        $scope.closeRemoveModal = closeRemoveModal;
-        $scope.showRemoveModal = showRemoveModal;
         $scope.remove = remove;
 
         $scope.itemSelect = '';
@@ -34,53 +30,23 @@
         function init() {
             var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
             ngstomp.subscribeTo(subDestination).callback(getMessage).withBodyInJson().connect();
-            ngstomp.subscribeTo(subOperationDestination).callback(getOperationResult).withBodyInJson().connect();
-        }
-
-        function getOperationResult(message) {
-            var content = message['body']['payload']['jsonContent'];
-            showAlert(content != null && !content['error']['present']);
-        }
-
-        function showRemoveModal() {
-            $('#remove').modal('show');
-        }
-
-        function showAlert(result) {
-            if (result) {
-                closeRemoveModal();
-                $('.alert-main.alert-success').removeClass('hide');
-                $('.alert-remove.alert-danger').addClass('hide');
-            } else {
-                closeRemoveModal();
-                $('.alert-main.alert-success').addClass('hide');
-                $('.alert-remove.alert-danger').removeClass('hide');
-            }
-        }
-
-        function closeRemoveModal() {
-            $('#remove').modal('hide');
         }
 
         function getMessage(message) {
-            allCategories = {};
+
             var publicTree = [];
+            var publicCategories = {};
             angular.forEach(message.body.payload.jsonContent[0], function (category) {
-                publicTree.push(createTree(category, 1));
+                publicTree.push(createTree(category, 1, publicCategories));
             });
-            categoriesFormat["Public categories"] = allCategories;
+            categoriesFormat["Public categories"] = publicCategories;
 
-            //TODO: Переделать это убожество как только руки дойдут
-            var tmp = allCategories;
-
-            allCategories = {};
             var privateTree = [];
+            var privateCategories = {};
             angular.forEach(message.body.payload.jsonContent[1], function (category) {
-                privateTree.push(createTree(category, 1));
+                privateTree.push(createTree(category, 1, privateCategories));
             });
-            categoriesFormat["Private categories (sergey)"] = allCategories;
-
-            allCategories = $.extend({}, tmp, allCategories);
+            categoriesFormat["Private categories (sergey)"] = privateCategories;
 
             $scope.$apply(function () {
                 $scope.source = [
@@ -88,21 +54,24 @@
                         html: '<div class="tree-item" title="Public categories" style="padding-right: 20px;">Public categories</div>',
                         icon: "/images/treeWidget/folder.png",
                         items: publicTree,
-                        expanded: true,
+                        expanded: true
                     },
                     {
                         html: '<div class="tree-item" title="Private categories (sergey)" style="padding-right: 20px;">Private categories (sergey)</div>',
                         icon: "/images/treeWidget/folder.png",
-                        items: privateTree,
+                        items: privateTree
                     }
                 ];
             });
+
+            allCategories = angular.extend({}, publicCategories, privateCategories);
         }
 
-        function createTree(category, depthLevel) {
-            category['depthLevel'] = depthLevel;
+        function createTree(category, depthLevel, _categories) {
             var categoryId = 'category_' + category.id;
-            allCategories[categoryId] = category;
+
+            category['depthLevel'] = depthLevel;
+            _categories[categoryId] = category;
 
             var result = {
                 html: '<div class="tree-item" id="' + categoryId + '" title="' + category.description + '" style="padding-right: 20px;">' + category.title + '</div>',
@@ -115,7 +84,7 @@
 
             if (category.hasOwnProperty("childCategories") && category["childCategories"].length > 0) {
                 angular.forEach(category["childCategories"], function (category) {
-                    categories.push(createTree(category, depthLevel + 1));
+                    categories.push(createTree(category, depthLevel + 1, _categories));
                 });
             }
 
@@ -132,7 +101,7 @@
                 var queryId = 'query_' + query.id;
                 var _query = {
                     html: '<div class="tree-item" id="' + queryId + '" title="' + query.description + '" style="padding-right: 20px;">' + query.title + '</div>',
-                    icon: "/images/treeWidget/sql.png",
+                    icon: "/images/treeWidget/sql.png"
                 };
                 result.push(_query);
                 allQueries[queryId] = query;
@@ -152,44 +121,10 @@
 
         function edit() {
             if (~$scope.itemSelect.indexOf("query_")) {
-                $scope.$broadcast('queryModal::edit', {element: allQueries[$scope.itemSelect], categories: categoriesFormat});
+                editQuery();
             } else {
-                $scope.$broadcast('categoryModal::edit', {element: allCategories[$scope.itemSelect], categories: categoriesFormat});
+                editCategory();
             }
-        }
-
-        function remove() {
-            var fields = {};
-            var entity = "";
-            if (~$scope.itemSelect.indexOf("query_")) {
-                fields = allQueries[$scope.itemSelect];
-                entity = "LibQuery";
-            } else {
-                fields = allCategories[$scope.itemSelect];
-                entity = "Category";
-                if (fields['queries'].length > 0 || fields['childCategories'].length > 0) {
-                    showAlert(false);
-                    return;
-                }
-            }
-
-            var mesDestination = '/message/modulerequest';
-            var body = {
-                requestId: requestId,
-                destination: subOperationDestination,
-                sessionId: requestId,
-                username: 'unknown',
-                targetModuleId: 'M_QUERY_LIBRARY',
-                payload: {
-                    payloadType: 'dataOperation',
-                    content: {
-                        id: fields['id'],
-                        type: 'DELETE',
-                        entity: entity
-                    }
-                }
-            };
-            ngstomp.send(mesDestination, body, {});
         }
 
         function getParentCategory() {
@@ -202,15 +137,128 @@
             }
         }
 
-        function categoryCreate() {
-            var parentCategory = getParentCategory();
-            $scope.$broadcast('categoryModal::create', {categories: categoriesFormat, parentCategoryId: parentCategory})
+        function editQuery() {
+            var element = allQueries[$scope.itemSelect];
+            var categoryId = element['category'] != null ? element['category'].toString() : "null";
+
+            ModalService.showModal({
+                templateUrl: "/app/modules/queryLib/templates/modals/query.html",
+                controller: "QueryModal",
+                inputs: {
+                    categories: categoriesFormat,
+                    query: {
+                        title: element['title'],
+                        description: element['description'],
+                        text: element['text'],
+                        category_id: categoryId
+                    },
+                    entity_id: element['id'],
+                    title: 'Edit query'
+                }
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(closeModal);
+            });
         }
 
-        function queryCreate() {
+        function editCategory() {
+            var element = allCategories[$scope.itemSelect];
+            var parentCategoryId = element['parentCategory'] != null ? element['parentCategory'].toString() : "null";
+
+            ModalService.showModal({
+                templateUrl: "/app/modules/queryLib/templates/modals/category.html",
+                controller: "CategoryModal",
+                inputs: {
+                    categories: categoriesFormat,
+                    category: {
+                        title: element['title'],
+                        description: element['description'],
+                        owner: null,
+                        parentCategory_id: parentCategoryId
+                    },
+                    entity_id: element['id'],
+                    title: 'Edit category'
+                }
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(closeModal);
+            });
+        }
+
+        function createCategory() {
             var parentCategory = getParentCategory();
-            $scope.$broadcast('queryModal::create', {categories: categoriesFormat, parentCategoryId: parentCategory})
+            var parentCategoryId = (parentCategory != "null") ? parentCategory.toString() : "null";
+
+            ModalService.showModal({
+                templateUrl: "/app/modules/queryLib/templates/modals/category.html",
+                controller: "CategoryModal",
+                inputs: {
+                    categories: categoriesFormat,
+                    category: {
+                        title: null,
+                        description: null,
+                        owner: null,
+                        parentCategory_id: parentCategoryId
+                    },
+                    entity_id: null,
+                    title: 'Create category'
+                }
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(closeModal);
+            });
+        }
+
+        function closeModal(result) {
+            $rootScope.$emit('showAlert', result);
+        }
+
+        function createQuery() {
+            var parentCategory = getParentCategory();
+            var categoryId = (parentCategory != "null") ? parentCategory.toString() : "null";
+
+            ModalService.showModal({
+                templateUrl: "/app/modules/queryLib/templates/modals/query.html",
+                controller: "QueryModal",
+                inputs: {
+                    categories: categoriesFormat,
+                    query: {
+                        title: '',
+                        description: '',
+                        text: '',
+                        category_id: categoryId
+                    },
+                    entity_id: null,
+                    title: 'Create query'
+                }
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(closeModal);
+            });
+        }
+
+        function remove(){
+            var  fields, entity;
+            if (~$scope.itemSelect.indexOf("query_")) {
+                fields = allQueries[$scope.itemSelect];
+                entity = "LibQuery";
+            } else {
+                fields = allCategories[$scope.itemSelect];
+                entity = "Category";
+            }
+
+            ModalService.showModal({
+                templateUrl: "/app/modules/queryLib/templates/modals/remove.html",
+                controller: "RemoveModal",
+                inputs: {
+                    fields: fields,
+                    entity: entity
+                }
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(closeModal);
+            });
         }
     }
-})(window.jQuery);
+})();
 

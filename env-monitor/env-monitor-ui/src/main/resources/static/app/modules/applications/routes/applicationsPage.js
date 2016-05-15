@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('core')
+        .module('applications')
         .config(routersConfig);
 
     routersConfig.$inject = ['$stateProvider'];

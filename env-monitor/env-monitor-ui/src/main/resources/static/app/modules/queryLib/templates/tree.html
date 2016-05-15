@@ -1,122 +1,15 @@
 <div class="row">
     <div class="col-xs-4">
-        <input type="button" class="btn btn-sm btn-default" data-ng-click="categoryCreate()" value="Add category">
+        <input type="button" class="btn btn-sm btn-default" data-ng-click="createCategory()" value="Add category">
     </div>
     <div class="col-xs-4">
-        <input type="button" class="btn btn-sm btn-default" data-ng-click="queryCreate()" value="Add query">
+        <input type="button" class="btn btn-sm btn-default" data-ng-click="createQuery()" value="Add query">
     </div>
     <div class="col-xs-4 ng-scope" data-ng-if="itemSelect">
         <div class="tree-controls">
             <span class="glyphicon glyphicon-pencil" data-ng-click="edit()"></span>
-            <span class="glyphicon glyphicon-remove" data-ng-click="showRemoveModal()"></span>
+            <span class="glyphicon glyphicon-remove" data-ng-click="remove()"></span>
         </div>
     </div>
 </div>
 <jqx-tree jqx-on-select="itemSelect" jqx-settings="settings" id="jqxtree"></jqx-tree>
-
-<div id="query" class="modal fade" data-ng-controller="QueryModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-ng-click="close()">×</button>
-                <h4 class="modal-title">{{ title }}</h4>
-            </div>
-            <div class="modal-body">
-                <form action="">
-                    <div class="form-group">
-                        <label for="query_title">Title</label>
-                        <input id="query_title" type="text" class="form-control" data-ng-model="query.title">
-                    </div>
-                    <div class="form-group">
-                        <label for="query_description">Description</label>
-                        <input id="query_description" type="text" class="form-control"
-                               data-ng-model="query.description">
-                    </div>
-                    <div class="form-group">
-                        <label for="query_parentCategory">Parent category</label>
-                        <select name="" id="query_parentCategory" class="form-control" data-ng-model="query.category_id">
-                            <option value="null">Select any category</option>
-                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
-                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="query_text">Text</label>
-                        <textarea id="query_text" class="form-control" cols="30" rows="10"
-                                  data-ng-model="query.text"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!entity_id" type="button" class="btn btn-success" data-ng-click="create(query)">
-                    Create
-                </button>
-                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(query)">
-                    Update
-                </button>
-            </div>
-        </div>
-
-    </div>
-</div>
-<div id="category" class="modal fade" data-ng-controller="CategoryModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-ng-click="close()">×</button>
-                <h4 class="modal-title">{{ title }}</h4>
-            </div>
-            <div class="modal-body">
-                <form action="">
-                    <div class="form-group">
-                        <label for="title">Title</label>
-                        <input id="title" type="text" class="form-control" data-ng-model="category.title">
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <input id="description" type="text" class="form-control" data-ng-model="category.description">
-                    </div>
-                    <div class="form-group">
-                        <label for="category_parentCategory">Parent category</label>
-                        <select name="" id="category_parentCategory" class="form-control" data-ng-model="category.parentCategory_id">
-                            <option value="null">Select any category</option>
-                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
-                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-ng-click="close()">Close</button>
-                <button data-ng-if="!entity_id" type="button" class="btn btn-success"
-                        data-ng-click="create(category)">Create
-                </button>
-                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(category)">
-                    Update
-                </button>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<div id="remove" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-ng-click="closeRemoveModal()">×</button>
-                <h4 class="modal-title">Are you sure that you'd like delete this element?</h4>
-            </div>
-            <div class="modal-body">
-                <p>You can't return deleting element!</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-ng-click="closeRemoveModal()">Cancel</button>
-                <button type="button" class="btn btn-success" data-ng-click="remove()">Remove</button>
-            </div>
-        </div>
-    </div>
-</div>
