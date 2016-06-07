@@ -7,6 +7,10 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Java developer, interested in learning JS, Angular JS, and improving experience with persistence layer technologies for Java.*
 
+- Michal Skuza
+
+*Java and AngularJS developer, Luxoft Poland*
+
 - Ilya Sungurov (bombinmybag)
 
 *Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
