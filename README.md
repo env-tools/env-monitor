@@ -1,4 +1,6 @@
 # env-monitor
+[![Build Status](https://travis-ci.org/env-tools/env-monitor.svg?branch=master)](https://travis-ci.org/env-tools/env-monitor)
+
 Generic web-based monitoring app for distributed multi-process systems
 
 #Project participants:
