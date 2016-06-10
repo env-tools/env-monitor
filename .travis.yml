@@ -3,6 +3,6 @@ jdk:
   - oraclejdk8
 env:
   - BUILD_DIR=env-monitor
-script: cd $BUILD_DIR  && mvn clean install -DskipTests=true
+script: cd $BUILD_DIR  && mvn clean install
 git:
   depth: 150
