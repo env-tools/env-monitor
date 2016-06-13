@@ -114,6 +114,11 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             //What if duplicates here?
                             sendResultMessage(mapper.errorResult(t), requestMessage);
                         }
+
+                        @Override
+                        public void onQueryCancelled() {
+                            sendResultMessage(mapper.cancelledResult(), requestMessage);
+                        }
                     });
         } catch (QueryExecutionException e) {
             //What if duplicates here?

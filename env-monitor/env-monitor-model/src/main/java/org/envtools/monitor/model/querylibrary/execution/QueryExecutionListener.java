@@ -13,4 +13,6 @@ public interface QueryExecutionListener {
 
     void onQueryError(Throwable t);
 
+    void onQueryCancelled();
+
 }

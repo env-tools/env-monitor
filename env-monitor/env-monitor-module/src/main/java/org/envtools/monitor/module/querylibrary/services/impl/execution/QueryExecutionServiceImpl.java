@@ -80,6 +80,8 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             LOGGER.info("Execution saved : execution id = " + executionId);
         }
 
+        //The task should produce a result not later than in [timeout] ms,
+        //or otherwise we get "timeout" result
         QueryExecutionResult result = processSyncQueryTask(task,
                 queryExecutionRequest.getTimeOutMs(),
                 queryExecutionRequest.getOperationId());
@@ -89,7 +91,8 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
 
     @Override
     public QueryExecutionResult executeNext(QueryExecutionNextResultRequest queryExecutionNextResultRequest) throws QueryExecutionException {
-        LOGGER.info("QueryExecutionServiceImpl.execute - Creating task with queryExecutionNextResultRequest: "
+        LOGGER.info("QueryExecutionServiceImpl.executeNext - " +
+                "Executing for next result for task with queryExecutionNextResultRequest: "
                 + queryExecutionNextResultRequest);
         String operationId = queryExecutionNextResultRequest.getOperationId();
         QueryExecutionTask task = taskRegistry.find(operationId);
@@ -125,11 +128,13 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
             LOGGER.info("Execution saved : execution id = " + executionId);
         }
 
+        //TODO support timeout and cancellation
+
     }
 
     @Override
     public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
-        LOGGER.info("QueryExecutionServiceImpl.execute - Creating task with queryExecutionNextResultRequest: "
+        LOGGER.info("QueryExecutionServiceImpl.submitForNextResult - Creating task with queryExecutionNextResultRequest: "
                 + queryExecutionNextResultRequest);
         String operationId = queryExecutionNextResultRequest.getOperationId();
         QueryExecutionTask task = taskRegistry.find(operationId);
@@ -142,6 +147,8 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
         task.setLastResultListener(listener);
 
         task.postNextResultRequest(queryExecutionNextResultRequest);
+
+        //TODO support timeout and cancellation
     }
 
     private AbstractQueryExecutionTask createExecutionTask(

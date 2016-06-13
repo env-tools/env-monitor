@@ -55,8 +55,23 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
 
         QueryExecutionResultView view = new QueryExecutionResultView();
         view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.ERROR));
-        view.setMessage("Error occurred : " + ExceptionReportingUtil.getExceptionMessage(t));
-        view.setDetails(ExceptionUtils.getFullStackTrace(t));
+        if (t != null) {
+            view.setMessage("Error occurred : " + ExceptionReportingUtil.getExceptionMessage(t));
+            view.setDetails(ExceptionUtils.getFullStackTrace(t));
+        } else {
+            view.setMessage("Error occurred ");
+            view.setDetails("No details provided");
+        }
+
+        return view;
+    }
+
+    @Override
+    public QueryExecutionResultView cancelledResult() {
+        QueryExecutionResultView view = new QueryExecutionResultView();
+        view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.CANCELLED));
+        view.setMessage("Query cancelled");
+        view.setDetails("Query cancelled");
 
         return view;
     }

@@ -72,6 +72,8 @@ public abstract class AbstractQueryExecutionTask implements QueryExecutionTask {
                 case HAS_MORE_DATA:
                     currentListener.onQueryCompleted(result);
                     break;
+                case CANCELLED:
+                    currentListener.onQueryCancelled();
                 default:
                     currentListener.onQueryError(result.getError().orElseGet(null));
             }

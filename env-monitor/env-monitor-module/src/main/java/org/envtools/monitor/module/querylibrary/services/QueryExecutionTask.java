@@ -16,8 +16,10 @@ public interface QueryExecutionTask extends Runnable {
 
     /**
      * Get the result posted by the code of this task
-     * This could be partial or full result of the query
-     * @param timeout  How long should we wait
+     * This could be partial or full result of the query, or timeout result
+     * The method is guaranteed to return not later than in [timeout]
+     *
+     * @param timeout  How long should we wait until we give up
      * @param unit How long should we wait (unit of time)
      * @return query result
      * @throws InterruptedException

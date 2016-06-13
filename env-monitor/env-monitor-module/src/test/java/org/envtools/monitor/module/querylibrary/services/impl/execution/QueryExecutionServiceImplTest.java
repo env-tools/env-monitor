@@ -80,6 +80,11 @@ public class QueryExecutionServiceImplTest {
                     public void onQueryError(Throwable t) {
                         //  listener.onQueryError(t);
                     }
+
+                    @Override
+                    public void onQueryCancelled() {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
                 });
 
         Assert.assertEquals(1, future.get().getResultRows().size());
@@ -135,6 +140,11 @@ public class QueryExecutionServiceImplTest {
                     public void onQueryError(Throwable t) {
                         //  listener.onQueryError(t);
                     }
+
+                    @Override
+                    public void onQueryCancelled() {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
                 });
 
         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, future.get().getStatus().TIMED_OUT);
@@ -176,12 +186,17 @@ public class QueryExecutionServiceImplTest {
 
                     @Override
                     public void onQueryError(Throwable t) {
-                      //  listener.onQueryError(t);
+                        //  listener.onQueryError(t);
                         // future.complete(t);
+                    }
+
+                    @Override
+                    public void onQueryCancelled() {
+                        //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
         //  QueryExecutionResult result = executionService.execute(request);
-          Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
     }
 
     @Test
@@ -199,11 +214,11 @@ public class QueryExecutionServiceImplTest {
         dataSourceProperties.put("password", "sa");
         dataSourceProperties.put("driverClassName", "org.h2.Driver");
 
-        for(int i=0;i<10;i++){
-            rowCount=(int)Math.random()*(100-10)+10;
-            maxRows=(int)Math.random()*(100-10)+10;
+        for (int i = 0; i < 10; i++) {
+            rowCount = (int) Math.random() * (100 - 10) + 10;
+            maxRows = (int) Math.random() * (100 - 10) + 10;
             QueryExecutionNextResultRequest queryExecutionNextResultRequest =
-                    new QueryExecutionNextResultRequest(UUID.randomUUID().toString(),timeOut,rowCount);
+                    new QueryExecutionNextResultRequest(UUID.randomUUID().toString(), timeOut, rowCount);
             QueryExecutionListener listener = null;
             CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
             executionService.submitForNextResult(queryExecutionNextResultRequest,
@@ -219,12 +234,17 @@ public class QueryExecutionServiceImplTest {
                             //  listener.onQueryError(t);
                             // future.complete(t);
                         }
+
+                        @Override
+                        public void onQueryCancelled() {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
                     });
 
-            if(maxRows<=rowCount){
+            if (maxRows <= rowCount) {
                 Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, future.get().getStatus().COMPLETED);
                 Assert.assertEquals(maxRows, future.get().getResultRows().size());
-            }else {
+            } else {
                 Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, future.get().getStatus().COMPLETED);
                 Assert.assertEquals(rowCount, future.get().getResultRows().size());
             }
