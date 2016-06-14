@@ -5,7 +5,7 @@
         </div>
     </div>
     <div class="form-group col-xs-12">
-        <textarea name="query" data-ng-model="params.query" id="paramsQuery" cols="30" rows="10"
+        <textarea name="query" data-ng-model="params.text" id="paramsQuery" cols="30" rows="10"
                   class="form-control"></textarea>
     </div>
     <div class="col-xs-5">
@@ -16,9 +16,19 @@
                 <th>Value</th>
             </tr>
             <tr data-ng-repeat="param in params.parameters">
-                <td>{{ param.name }}</td>
-                <td>{{ param.type }}</td>
-                <td><input placeholder="Type the value" class="query-param" type="text" data-ng-model="param.value"></td>
+                <td><input placeholder="Name" class="query-param--name" type="text" data-ng-model="param.name"></td>
+                <td><input placeholder="Type" class="query-param--type" type="text" data-ng-model="param.type"></td>
+                <td><input placeholder="Type the value" class="query-param--value" type="text" data-ng-model="param.value"></td>
+            </tr>
+            <tr>
+                <td><input placeholder="Name" class="query-param--name" type="text" data-ng-model="newParam.name"></td>
+                <td><input placeholder="Type" class="query-param--type" type="text" data-ng-model="newParam.type"></td>
+                <td><input placeholder="Type the value" class="query-param--value" type="text" data-ng-model="newParam.value"></td>
+            </tr>
+            <tr class="add-btn">
+                <td colspan="3" class="text-center">
+                    <input type="button" class="btn btn-success" value="Add" data-ng-click="addParam(newParam); newParam = null">
+                </td>
             </tr>
         </table>
     </div>
@@ -43,9 +53,12 @@
             </div>
         </div>
         <div class="col-xs-6">
+            <label>Controls</label>
             <div class="form-group col-xs-12">
-                <label>Controls</label>
                 <button data-ng-click="execute(params)" class="btn btn-success">Execute Query</button>
+            </div>
+            <div class="form-group col-xs-12">
+                <button data-ng-click="saveQuery(params)" class="btn btn-success">Save Query</button>
             </div>
         </div>
     </div>
