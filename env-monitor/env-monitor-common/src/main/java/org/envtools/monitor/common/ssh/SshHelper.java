@@ -126,7 +126,7 @@ public class SshHelper {
 
         @Override
         public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {
-            if ("PAM Authentication".equals(instruction) && prompt.length > 0 && "Password:".equals(prompt[0]))
+            if ("PAM Authentication".equals(instruction) && prompt.length > 0 && "Password: ".equals(prompt[0]))
                 return new String[]{password};
             else
                 return new String[0];
