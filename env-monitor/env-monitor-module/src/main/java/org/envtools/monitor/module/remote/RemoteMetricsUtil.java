@@ -86,13 +86,11 @@ public class RemoteMetricsUtil {
     private void appendProcessLookup(StringBuilder cmd, TagBasedProcessLookup tagBasedProcessLookup) {
         cmd.append("ps -ef ");
 
-        for (String tag : tagBasedProcessLookup.getIncludeTags()) {
-            if (tag.startsWith("!")) {
-                cmd.append("| grep -v ").append("'" + tag.substring(1) + "'");
-            } else {
-                cmd.append("| grep ").append("'" + tag + "'");
-            }
-        }
+        for (String tag : tagBasedProcessLookup.getIncludeTags())
+            cmd.append("| grep ").append(String.format("'%s'", tag));
+
+        for (String tag : tagBasedProcessLookup.getExcludeTags())
+            cmd.append("| grep -v ").append(String.format("'%s'", tag));
 
         //TODO: the statement below is a thin ice, how to make it better?
         cmd.append("| grep -v grep");
