@@ -49,4 +49,8 @@ public class Platform {
     public void addEnvironment(Environment environment) {
         this.environments.add(environment);
     }
+
+    public List<Environment> getEnvironments() {
+        return environments;
+    }
 }

@@ -24,4 +24,7 @@ public class VersionedApplicationProperties {
         this.platforms.add(platform);
     }
 
+    public List<Platform> getPlatforms() {
+        return platforms;
+    }
 }

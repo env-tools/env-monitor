@@ -124,4 +124,8 @@ public class VersionedApplication {
         }
         this.hostees.add(hostee);
     }
+
+    public List<VersionedApplication> getHostees() {
+        return hostees;
+    }
 }

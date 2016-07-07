@@ -51,4 +51,8 @@ public class Environment {
     public void addApplication(VersionedApplication application) {
         this.applications.add(application);
     }
+
+    public List<VersionedApplication> getApplications() {
+        return applications;
+    }
 }
