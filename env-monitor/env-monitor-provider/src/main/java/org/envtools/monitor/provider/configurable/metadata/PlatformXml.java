@@ -9,7 +9,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "platform")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class Platform {
+public class PlatformXml {
     @XmlAttribute
     private String id;
 
@@ -18,13 +18,13 @@ public class Platform {
 
     @XmlElementWrapper(name = "environments")
     @XmlElement(name = "environment")
-    private List<Environment> environments;
+    private List<EnvironmentXml> environments;
 
-    public Platform() {
+    public PlatformXml() {
         this.environments = new ArrayList<>();
     }
 
-    public Platform(String id, String name) {
+    public PlatformXml(String id, String name) {
         this.id = id;
         this.name = name;
         this.environments = new ArrayList<>();
@@ -46,11 +46,11 @@ public class Platform {
         this.name = name;
     }
 
-    public void addEnvironment(Environment environment) {
-        this.environments.add(environment);
+    public void addEnvironment(EnvironmentXml environmentXml) {
+        this.environments.add(environmentXml);
     }
 
-    public List<Environment> getEnvironments() {
+    public List<EnvironmentXml> getEnvironments() {
         return environments;
     }
 }

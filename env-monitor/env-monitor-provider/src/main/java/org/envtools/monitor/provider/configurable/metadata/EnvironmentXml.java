@@ -1,7 +1,7 @@
 package org.envtools.monitor.provider.configurable.metadata;
 
 
-import org.envtools.monitor.provider.configurable.VersionedApplication;
+import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "environment")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class Environment {
+public class EnvironmentXml {
     @XmlAttribute
     private String id;
 
@@ -21,13 +21,13 @@ public class Environment {
 
     @XmlElementWrapper
     @XmlElement(name = "application")
-    private List<VersionedApplication> applications;
+    private List<VersionedApplicationXml> applications;
 
-    public Environment() {
+    public EnvironmentXml() {
         this.applications = new ArrayList<>();
     }
 
-    public Environment(String id, String name) {
+    public EnvironmentXml(String id, String name) {
         this.id = id;
         this.name = name;
         this.applications = new ArrayList<>();
@@ -49,11 +49,11 @@ public class Environment {
         this.name = name;
     }
 
-    public void addApplication(VersionedApplication application) {
+    public void addApplication(VersionedApplicationXml application) {
         this.applications.add(application);
     }
 
-    public List<VersionedApplication> getApplications() {
+    public List<VersionedApplicationXml> getApplications() {
         return applications;
     }
 }

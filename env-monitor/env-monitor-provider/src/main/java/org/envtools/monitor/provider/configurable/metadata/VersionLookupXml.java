@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
-public abstract class VersionLookup {
+public abstract class VersionLookupXml {
     @XmlElement
     public abstract String getLink();
 

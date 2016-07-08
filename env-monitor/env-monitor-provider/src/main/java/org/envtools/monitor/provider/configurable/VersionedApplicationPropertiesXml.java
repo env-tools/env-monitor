@@ -1,6 +1,6 @@
 package org.envtools.monitor.provider.configurable;
 
-import org.envtools.monitor.provider.configurable.metadata.Platform;
+import org.envtools.monitor.provider.configurable.metadata.PlatformXml;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -11,20 +11,20 @@ import java.util.List;
  */
 @XmlRootElement(name = "applicationsMetadata")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class VersionedApplicationProperties {
+public class VersionedApplicationPropertiesXml {
     @XmlElementWrapper(name = "platforms")
     @XmlElement(name = "platform")
-    private List<Platform> platforms;
+    private List<PlatformXml> platforms;
 
-    public VersionedApplicationProperties() {
+    public VersionedApplicationPropertiesXml() {
         this.platforms = new ArrayList<>();
     }
 
-    public void add(Platform platform) {
-        this.platforms.add(platform);
+    public void add(PlatformXml platformXml) {
+        this.platforms.add(platformXml);
     }
 
-    public List<Platform> getPlatforms() {
+    public List<PlatformXml> getPlatforms() {
         return platforms;
     }
 }

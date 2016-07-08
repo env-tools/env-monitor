@@ -3,9 +3,9 @@ package org.envtools.monitor.module.remote;
 import com.jcraft.jsch.JSchException;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
-import org.envtools.monitor.provider.configurable.VersionedApplication;
-import org.envtools.monitor.provider.configurable.metadata.LinkBasedVersionLookup;
-import org.envtools.monitor.provider.configurable.metadata.TagBasedProcessLookup;
+import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
+import org.envtools.monitor.provider.configurable.metadata.LinkBasedVersionLookupXml;
+import org.envtools.monitor.provider.configurable.metadata.TagBasedProcessLookupXml;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -21,7 +21,7 @@ public class RemoteMetricsUtil {
         this.sshHelperService = sshHelperService;
     }
 
-    public Optional<ApplicationStatus> getProcessStatus(VersionedApplication application, TagBasedProcessLookup tagBasedProcessLookup) {
+    public Optional<ApplicationStatus> getProcessStatus(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
         StringBuilder cmd = new StringBuilder();
 
         appendProcessLookup(cmd, tagBasedProcessLookup);
@@ -42,7 +42,7 @@ public class RemoteMetricsUtil {
         return Optional.of(ApplicationStatus.STOPPED);
     }
 
-    public Optional<String> getApplicationVersion(VersionedApplication application, LinkBasedVersionLookup versionLookup) {
+    public Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup) {
         String cmd = String.format("ls -la %s/current | awk -F \"/\" '{ print $(NF-1); }'", versionLookup.getLink());
         String result = executeCommand(application, cmd);
 
@@ -53,7 +53,7 @@ public class RemoteMetricsUtil {
         }
     }
 
-    public Optional<Double> getProcessMemoryInMb(VersionedApplication application, TagBasedProcessLookup tagBasedProcessLookup) {
+    public Optional<Double> getProcessMemoryInMb(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
         StringBuilder cmd = new StringBuilder();
 
         appendProcessLookup(cmd, tagBasedProcessLookup);
@@ -75,7 +75,7 @@ public class RemoteMetricsUtil {
         return Optional.empty();
     }
 
-    private String executeCommand(VersionedApplication application, String cmd) {
+    private String executeCommand(VersionedApplicationXml application, String cmd) {
         try {
             return sshHelperService.getHelper(application.getHost()).cmd(cmd);
         } catch (JSchException e) {
@@ -83,7 +83,7 @@ public class RemoteMetricsUtil {
         }
     }
 
-    private void appendProcessLookup(StringBuilder cmd, TagBasedProcessLookup tagBasedProcessLookup) {
+    private void appendProcessLookup(StringBuilder cmd, TagBasedProcessLookupXml tagBasedProcessLookup) {
         cmd.append("ps -ef ");
 
         for (String tag : tagBasedProcessLookup.getIncludeTags())

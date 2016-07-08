@@ -1,6 +1,6 @@
 package org.envtools.monitor.provider.configurable;
 
-import org.envtools.monitor.provider.configurable.metadata.Metadata;
+import org.envtools.monitor.provider.configurable.metadata.MetadataXml;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "application")
 @XmlAccessorType(value = XmlAccessType.FIELD)
-public class VersionedApplication {
+public class VersionedApplicationXml {
     @XmlAttribute
     private String id;
 
@@ -34,16 +34,16 @@ public class VersionedApplication {
     private String componentName;
 
     @XmlElement
-    private Metadata metadata;
+    private MetadataXml metadata;
 
     @XmlElementWrapper
     @XmlElement(name = "hostee")
-    List<VersionedApplication> hostees;
+    List<VersionedApplicationXml> hostees;
 
-    public VersionedApplication() {
+    public VersionedApplicationXml() {
     }
 
-    public VersionedApplication(String id, String name, String type, String host, int port, String url, String componentName) {
+    public VersionedApplicationXml(String id, String name, String type, String host, int port, String url, String componentName) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -110,22 +110,22 @@ public class VersionedApplication {
         this.componentName = componentName;
     }
 
-    public Metadata getMetadata() {
+    public MetadataXml getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
+    public void setMetadata(MetadataXml metadataXml) {
+        this.metadata = metadataXml;
     }
 
-    public void addHostee(VersionedApplication hostee) {
+    public void addHostee(VersionedApplicationXml hostee) {
         if (this.hostees == null) {
             this.hostees = new ArrayList<>();
         }
         this.hostees.add(hostee);
     }
 
-    public List<VersionedApplication> getHostees() {
+    public List<VersionedApplicationXml> getHostees() {
         return hostees;
     }
 }

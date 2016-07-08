@@ -2,8 +2,8 @@ package configurable;
 
 import org.envtools.monitor.common.jaxb.JaxbHelper;
 import org.envtools.monitor.provider.configurable.ConfigurableApplicationProvider;
-import org.envtools.monitor.provider.configurable.VersionedApplication;
-import org.envtools.monitor.provider.configurable.VersionedApplicationProperties;
+import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
+import org.envtools.monitor.provider.configurable.VersionedApplicationPropertiesXml;
 import org.envtools.monitor.provider.configurable.metadata.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,40 +18,40 @@ public class ConfigurableApplicationProviderTest {
     @Test
     public void testMarshalling() {
         String marshalledData = createXmlData();
-
+        System.out.println(marshalledData);
         ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
-        VersionedApplicationProperties versionedApplication = provider.createVersionedApplication(marshalledData);
+        VersionedApplicationPropertiesXml versionedApplication = provider.createVersionedApplication(marshalledData);
 
         Assert.assertNotNull(versionedApplication);
     }
 
     private String createXmlData() {
-        VersionedApplicationProperties versionedApplicationProperties = createApplicationProperties();
+        VersionedApplicationPropertiesXml versionedApplicationPropertiesXml = createApplicationProperties();
         try {
-            return JaxbHelper.marshallToString(versionedApplicationProperties);
+            return JaxbHelper.marshallToString(versionedApplicationPropertiesXml);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private VersionedApplicationProperties createApplicationProperties() {
-        VersionedApplicationProperties properties = new VersionedApplicationProperties();
-        Platform platform = new Platform("ULTRON", "ultron");
-        Environment environment = new Environment("Standard DEV (DEV 1)", "standard_dev");
-        VersionedApplication standardDevServer = new VersionedApplication("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", 999, "-", "-");
-        environment.addApplication(standardDevServer);
-        ApplicationLookup applicationLookup = new TagBasedProcessLookup();
-        applicationLookup.includeTag("ultron.component.name=container1");
-        applicationLookup.includeTag("ultron.component.name=container2");
-        applicationLookup.excludeTag("ultron.component.name=container3");
-        applicationLookup.excludeTag("ultron.component.name=container4");
-        Metadata metadata = new Metadata();
-        metadata.setApplicationLookup(applicationLookup);
-        LinkBasedVersionLookup versionLookup = new LinkBasedVersionLookup("/opt1/some_path/", "/opt1/some_other_path/");
-        metadata.setVersionLookup(versionLookup);
-        standardDevServer.setMetadata(metadata);
-        platform.addEnvironment(environment);
-        properties.add(platform);
+    private VersionedApplicationPropertiesXml createApplicationProperties() {
+        VersionedApplicationPropertiesXml properties = new VersionedApplicationPropertiesXml();
+        PlatformXml platformXml = new PlatformXml("ULTRON", "ultron");
+        EnvironmentXml environmentXml = new EnvironmentXml("Standard DEV (DEV 1)", "standard_dev");
+        VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", 999, "-", "-");
+        environmentXml.addApplication(standardDevServer);
+        ApplicationLookupXml applicationLookupXml = new TagBasedProcessLookupXml();
+        applicationLookupXml.includeTag("ultron.component.name=container1");
+        applicationLookupXml.includeTag("ultron.component.name=container2");
+        applicationLookupXml.excludeTag("ultron.component.name=container3");
+        applicationLookupXml.excludeTag("ultron.component.name=container4");
+        MetadataXml metadataXml = new MetadataXml();
+        metadataXml.setApplicationLookupXml(applicationLookupXml);
+        LinkBasedVersionLookupXml versionLookup = new LinkBasedVersionLookupXml("/opt1/some_path/", "/opt1/some_other_path/");
+        metadataXml.setVersionLookup(versionLookup);
+        standardDevServer.setMetadata(metadataXml);
+        platformXml.addEnvironment(environmentXml);
+        properties.add(platformXml);
 
         return properties;
     }

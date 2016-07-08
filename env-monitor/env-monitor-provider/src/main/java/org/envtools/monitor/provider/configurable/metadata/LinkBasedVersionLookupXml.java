@@ -4,14 +4,14 @@ package org.envtools.monitor.provider.configurable.metadata;
  * Created by Michal Skuza on 2016-06-23.
  */
 
-public class LinkBasedVersionLookup extends VersionLookup {
+public class LinkBasedVersionLookupXml extends VersionLookupXml {
     public String link;
     public String linkTargetPattern;
 
-    public LinkBasedVersionLookup() {
+    public LinkBasedVersionLookupXml() {
     }
 
-    public LinkBasedVersionLookup(String link, String linkTargetPattern) {
+    public LinkBasedVersionLookupXml(String link, String linkTargetPattern) {
         this.link = link;
         this.linkTargetPattern = linkTargetPattern;
     }

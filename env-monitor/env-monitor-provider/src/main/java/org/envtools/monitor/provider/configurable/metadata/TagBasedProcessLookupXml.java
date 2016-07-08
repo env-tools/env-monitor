@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * Created by Michal Skuza on 2016-06-23.
  */
-public class TagBasedProcessLookup extends ApplicationLookup {
+public class TagBasedProcessLookupXml extends ApplicationLookupXml {
     private List<String> includeTags;
     private List<String> excludeTags;
 
-    public TagBasedProcessLookup() {
+    public TagBasedProcessLookupXml() {
         this.includeTags = new ArrayList<>();
         this.excludeTags = new ArrayList<>();
     }

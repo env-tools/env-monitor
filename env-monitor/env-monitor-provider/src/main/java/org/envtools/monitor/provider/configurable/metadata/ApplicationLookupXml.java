@@ -6,10 +6,10 @@ import java.util.List;
 /**
  * Created by Michal Skuza on 2016-06-23.
  */
-@XmlRootElement
 
+@XmlRootElement(name = "metadata")
 @XmlAccessorType(value = XmlAccessType.PROPERTY)
-public abstract class ApplicationLookup {
+public abstract class ApplicationLookupXml {
 
     @XmlElementWrapper
     @XmlElement(name = "tag")

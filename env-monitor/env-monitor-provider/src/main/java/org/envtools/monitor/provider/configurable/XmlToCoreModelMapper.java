@@ -1,6 +1,8 @@
 package org.envtools.monitor.provider.configurable;
 
 import org.envtools.monitor.model.applications.*;
+import org.envtools.monitor.provider.configurable.metadata.EnvironmentXml;
+import org.envtools.monitor.provider.configurable.metadata.PlatformXml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,74 +11,74 @@ import java.util.List;
  * Created by Michal Skuza on 07/07/16.
  */
 public class XmlToCoreModelMapper {
-    public static ApplicationsData convertToApplicationsData(VersionedApplicationProperties applicationProperties) {
+    public static ApplicationsData convertToApplicationsData(VersionedApplicationPropertiesXml applicationProperties) {
         ApplicationsData applicationsData = new ApplicationsData();
         applicationsData.setPlatforms(mapPlatforms(applicationProperties));
         return applicationsData;
     }
 
-    private static List<Platform>  mapPlatforms(VersionedApplicationProperties applicationProperties) {
+    private static List<Platform>  mapPlatforms(VersionedApplicationPropertiesXml applicationProperties) {
         List<Platform> platforms = new ArrayList<>();
-        for (org.envtools.monitor.provider.configurable.metadata.Platform platform : applicationProperties.getPlatforms()) {
-            platforms.add(convertPlatform(platform));
+        for (PlatformXml platformXml : applicationProperties.getPlatforms()) {
+            platforms.add(convertPlatform(platformXml));
         }
 
         return platforms;
     }
 
-    private static ArrayList<Environment> mapEnvironments(org.envtools.monitor.provider.configurable.metadata.Platform platform) {
+    private static ArrayList<Environment> mapEnvironments(PlatformXml platformXml) {
         ArrayList<Environment> environments = new ArrayList<Environment>();
-        for (org.envtools.monitor.provider.configurable.metadata.Environment environment : platform.getEnvironments()) {
-            environments.add(convertEnvironment(environment));
+        for (EnvironmentXml environmentXml : platformXml.getEnvironments()) {
+            environments.add(convertEnvironment(environmentXml));
         }
         return environments;
     }
 
-    private static List<Application> mapApplications(org.envtools.monitor.provider.configurable.metadata.Environment environment) {
+    private static List<Application> mapApplications(EnvironmentXml environmentXml) {
         List<Application> applications = new ArrayList<>();
-        for (VersionedApplication versionedApplication : environment.getApplications()) {
-            applications.add(convertApplication(versionedApplication));
+        for (VersionedApplicationXml versionedApplicationXml : environmentXml.getApplications()) {
+            applications.add(convertApplication(versionedApplicationXml));
         }
         return applications;
     }
 
-    private static ArrayList<Application> mapHostees(VersionedApplication versionedApplication) {
+    private static ArrayList<Application> mapHostees(VersionedApplicationXml versionedApplicationXml) {
         ArrayList<Application> hostees = new ArrayList<>();
 
-        if (versionedApplication.getHostees() != null) {
-            for (VersionedApplication hosteeApp : versionedApplication.getHostees()) {
+        if (versionedApplicationXml.getHostees() != null) {
+            for (VersionedApplicationXml hosteeApp : versionedApplicationXml.getHostees()) {
                 hostees.add(convertHostee(hosteeApp));
             }
         }
         return hostees;
     }
 
-    private static Platform convertPlatform(org.envtools.monitor.provider.configurable.metadata.Platform platform) {
+    private static Platform convertPlatform(PlatformXml platformXml) {
         Platform platformTmp = new Platform();
-        platformTmp.setId(platform.getId());
-        platformTmp.setName(platform.getName());
-        platformTmp.setEnvironments(mapEnvironments(platform));
+        platformTmp.setId(platformXml.getId());
+        platformTmp.setName(platformXml.getName());
+        platformTmp.setEnvironments(mapEnvironments(platformXml));
         return platformTmp;
     }
 
-    private static Environment convertEnvironment(org.envtools.monitor.provider.configurable.metadata.Environment environment) {
+    private static Environment convertEnvironment(EnvironmentXml environmentXml) {
         Environment environmentTmp = new Environment();
-        environmentTmp.setId(environment.getId());
-        environmentTmp.setName(environment.getName());
-        environmentTmp.setApplications(mapApplications(environment));
+        environmentTmp.setId(environmentXml.getId());
+        environmentTmp.setName(environmentXml.getName());
+        environmentTmp.setApplications(mapApplications(environmentXml));
         return environmentTmp;
     }
 
-    private static Application convertApplication(VersionedApplication versionedApplication) {
+    private static Application convertApplication(VersionedApplicationXml versionedApplicationXml) {
         Application application = new Application();
-        application.setName(versionedApplication.getName());
-        application.setId(versionedApplication.getId());
+        application.setName(versionedApplicationXml.getName());
+        application.setId(versionedApplicationXml.getId());
         application.setStatus(ApplicationStatus.RUNNING);
-        application.setHostees(mapHostees(versionedApplication));
+        application.setHostees(mapHostees(versionedApplicationXml));
         return application;
     }
 
-    private static Application convertHostee(VersionedApplication hosteeApp) {
+    private static Application convertHostee(VersionedApplicationXml hosteeApp) {
         Application hostee = new Application();
         hostee.setName(hosteeApp.getName());
         hostee.setId(hosteeApp.getId());
