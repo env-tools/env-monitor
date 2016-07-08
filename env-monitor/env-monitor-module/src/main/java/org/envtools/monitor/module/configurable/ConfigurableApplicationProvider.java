@@ -1,7 +1,6 @@
 package org.envtools.monitor.module.configurable;
 
 import org.envtools.monitor.common.jaxb.JaxbHelper;
-import org.envtools.monitor.module.querylibrary.services.Credentials;
 
 import javax.xml.bind.JAXBException;
 

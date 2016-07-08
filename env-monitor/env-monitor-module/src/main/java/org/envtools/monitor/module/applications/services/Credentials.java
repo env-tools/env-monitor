@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.querylibrary.services;
+package org.envtools.monitor.module.applications.services;
 
 import javax.xml.bind.annotation.*;
 
@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement(name = "credentials")
 @XmlAccessorType(value = XmlAccessType.NONE)
-//@XmlType(name = "Credentials", propOrder = {"user", "host", "password"})
 public class Credentials {
     private String user;
     private String host;

@@ -1,8 +1,6 @@
-package org.envtools.monitor.module.querylibrary.services.impl;
+package org.envtools.monitor.module.applications.services;
 
 import org.envtools.monitor.common.jaxb.JaxbHelper;
-import org.envtools.monitor.module.querylibrary.services.Credentials;
-import org.envtools.monitor.module.querylibrary.services.SshCredentialsService;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
