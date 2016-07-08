@@ -12,6 +12,14 @@
     <name>env-monitor</name>
     <url>https://github.com/yyakovlev/env-monitor</url>
 
+    <modules>
+        <module>env-monitor-model</module>
+        <module>env-monitor-module</module>
+        <module>env-monitor-provider</module>
+        <module>env-monitor-ui</module>
+        <module>env-monitor-common</module>
+    </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -21,6 +29,15 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <org.testng.version>6.9.8</org.testng.version>
+        <com.google.guava.version>18.0</com.google.guava.version>
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
+        <com.fasterxml.jackson.core.version>2.6.2</com.fasterxml.jackson.core.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <org.codehaus.jackson.version>1.9.2</org.codehaus.jackson.version>
+        <org.json.version>20150729</org.json.version>
+        <net.sf.json-lib.version>2.2.3</net.sf.json-lib.version>
+
     </properties>
 
     <dependencies>
@@ -35,14 +52,14 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.9.8</version>
+            <version>${org.testng.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>${com.google.guava.version}</version>
         </dependency>
 
         <!--dependency>
@@ -82,20 +99,12 @@
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
-                <version>1.9.2</version>
+                <version>${commons-beanutils.version}</version>
             </dependency>
         </dependencies>
 
 
     </dependencyManagement>
-
-    <modules>
-        <module>env-monitor-model</module>
-        <module>env-monitor-module</module>
-        <module>env-monitor-provider</module>
-        <module>env-monitor-ui</module>
-        <module>env-monitor-common</module>
-    </modules>
 
 
 </project>
