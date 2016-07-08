@@ -1,36 +1,28 @@
-package org.envtools.monitor.module.configurable;
+package configurable;
 
-import org.envtools.monitor.common.jaxb.JaxbHelper;
-import org.envtools.monitor.module.configurable.applicationsMetadata.*;
+import com.gs.collections.impl.multimap.list.SynchronizedPutFastListMultimap;
+import org.envtools.monitor.model.applications.ApplicationsData;
+import org.envtools.monitor.provider.configurable.VersionedApplication;
+import org.envtools.monitor.provider.configurable.VersionedApplicationProperties;
+import org.envtools.monitor.provider.configurable.XmlToCoreModelMapper;
+import org.envtools.monitor.provider.configurable.applicationsMetadata.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
+import static org.junit.Assert.*;
 
 /**
- * Created by Michal Skuza on 2016-06-23.
+ * Created by Michal on 07/07/16.
  */
-public class ConfigurableApplicationProviderTest {
+public class XmlToCoreModelMapperTest {
 
-    @Ignore
     @Test
-    public void testMarshalling() {
-        String marshalledData = createXmlData();
+    public void successfullyConvertToApplicationsData() throws Exception {
+        VersionedApplicationProperties applicationProperties = createApplicationProperties();
+        ApplicationsData applicationsData = XmlToCoreModelMapper.convertToApplicationsData(applicationProperties);
 
-        ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
-        VersionedApplicationProperties versionedApplication = provider.createVersionedApplication(marshalledData);
-
-        Assert.assertNotNull(versionedApplication);
-    }
-
-    private String createXmlData()  {
-        VersionedApplicationProperties versionedApplicationProperties = createApplicationProperties();
-        try {
-            return JaxbHelper.marshallToString(versionedApplicationProperties);
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
-        }
+        Assert.assertNotNull(applicationsData);
+        Assert.assertTrue(!applicationsData.getPlatforms().isEmpty());
     }
 
     private VersionedApplicationProperties createApplicationProperties() {

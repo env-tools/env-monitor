@@ -1,6 +1,9 @@
-package org.envtools.monitor.module.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.applicationsMetadata;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by MSkuza on 2016-06-23.

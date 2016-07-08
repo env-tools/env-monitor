@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.configurable;
+package org.envtools.monitor.provider.configurable;
 
 import org.envtools.monitor.common.jaxb.JaxbHelper;
 

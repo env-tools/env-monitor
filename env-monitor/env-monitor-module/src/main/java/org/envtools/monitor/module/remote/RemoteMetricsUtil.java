@@ -3,9 +3,9 @@ package org.envtools.monitor.module.remote;
 import com.jcraft.jsch.JSchException;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
-import org.envtools.monitor.module.configurable.VersionedApplication;
-import org.envtools.monitor.module.configurable.applicationsMetadata.LinkBasedVersionLookup;
-import org.envtools.monitor.module.configurable.applicationsMetadata.TagBasedProcessLookup;
+import org.envtools.monitor.provider.configurable.VersionedApplication;
+import org.envtools.monitor.provider.configurable.applicationsMetadata.LinkBasedVersionLookup;
+import org.envtools.monitor.provider.configurable.applicationsMetadata.TagBasedProcessLookup;
 
 import java.util.Optional;
 import java.util.regex.Matcher;

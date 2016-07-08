@@ -1,25 +1,37 @@
-package org.envtools.monitor.module.configurable;
+package configurable;
 
-import com.gs.collections.impl.multimap.list.SynchronizedPutFastListMultimap;
-import org.envtools.monitor.model.applications.ApplicationsData;
-import org.envtools.monitor.module.configurable.applicationsMetadata.*;
+import org.envtools.monitor.common.jaxb.JaxbHelper;
+import org.envtools.monitor.provider.configurable.ConfigurableApplicationProvider;
+import org.envtools.monitor.provider.configurable.VersionedApplication;
+import org.envtools.monitor.provider.configurable.VersionedApplicationProperties;
+import org.envtools.monitor.provider.configurable.applicationsMetadata.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import javax.xml.bind.JAXBException;
 
 /**
- * Created by Michal on 07/07/16.
+ * Created by Michal Skuza on 2016-06-23.
  */
-public class XmlToCoreModelMapperTest {
+public class ConfigurableApplicationProviderTest {
 
     @Test
-    public void successfullyConvertToApplicationsData() throws Exception {
-        VersionedApplicationProperties applicationProperties = createApplicationProperties();
-        ApplicationsData applicationsData = XmlToCoreModelMapper.convertToApplicationsData(applicationProperties);
+    public void testMarshalling() {
+        String marshalledData = createXmlData();
 
-        Assert.assertNotNull(applicationsData);
-        Assert.assertTrue(!applicationsData.getPlatforms().isEmpty());
+        ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
+        VersionedApplicationProperties versionedApplication = provider.createVersionedApplication(marshalledData);
+
+        Assert.assertNotNull(versionedApplication);
+    }
+
+    private String createXmlData() {
+        VersionedApplicationProperties versionedApplicationProperties = createApplicationProperties();
+        try {
+            return JaxbHelper.marshallToString(versionedApplicationProperties);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private VersionedApplicationProperties createApplicationProperties() {
