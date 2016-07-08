@@ -3,6 +3,7 @@ package org.envtools.monitor.module.configurable;
 import com.gs.collections.impl.multimap.list.SynchronizedPutFastListMultimap;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.module.configurable.applicationsMetadata.*;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -17,7 +18,8 @@ public class XmlToCoreModelMapperTest {
         VersionedApplicationProperties applicationProperties = createApplicationProperties();
         ApplicationsData applicationsData = XmlToCoreModelMapper.convertToApplicationsData(applicationProperties);
 
-        System.out.println(applicationsData);
+        Assert.assertNotNull(applicationsData);
+        Assert.assertTrue(!applicationsData.getPlatforms().isEmpty());
     }
 
     private VersionedApplicationProperties createApplicationProperties() {
