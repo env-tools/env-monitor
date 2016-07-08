@@ -14,13 +14,14 @@ import java.util.regex.Pattern;
 /**
  * Created by Michal Skuza on 27/06/16.
  */
-public class RemoteMetricsUtil {
+public class RemoteMetricsServiceImpl implements RemoteMetricsService {
     private SshHelperService sshHelperService;
 
-    public RemoteMetricsUtil(SshHelperService sshHelperService) {
+    public RemoteMetricsServiceImpl(SshHelperService sshHelperService) {
         this.sshHelperService = sshHelperService;
     }
 
+    @Override
     public Optional<ApplicationStatus> getProcessStatus(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
         StringBuilder cmd = new StringBuilder();
 
@@ -42,6 +43,7 @@ public class RemoteMetricsUtil {
         return Optional.of(ApplicationStatus.STOPPED);
     }
 
+    @Override
     public Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup) {
         String cmd = String.format("ls -la %s/current | awk -F \"/\" '{ print $(NF-1); }'", versionLookup.getLink());
         String result = executeCommand(application, cmd);
@@ -53,6 +55,7 @@ public class RemoteMetricsUtil {
         }
     }
 
+    @Override
     public Optional<Double> getProcessMemoryInMb(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
         StringBuilder cmd = new StringBuilder();
 
