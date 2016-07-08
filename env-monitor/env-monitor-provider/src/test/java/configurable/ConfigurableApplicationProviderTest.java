@@ -4,7 +4,7 @@ import org.envtools.monitor.common.jaxb.JaxbHelper;
 import org.envtools.monitor.provider.configurable.ConfigurableApplicationProvider;
 import org.envtools.monitor.provider.configurable.VersionedApplication;
 import org.envtools.monitor.provider.configurable.VersionedApplicationProperties;
-import org.envtools.monitor.provider.configurable.applicationsMetadata.*;
+import org.envtools.monitor.provider.configurable.metadata.*;
 import org.junit.Assert;
 import org.junit.Test;
 

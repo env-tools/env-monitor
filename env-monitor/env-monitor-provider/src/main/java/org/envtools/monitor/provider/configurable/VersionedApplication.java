@@ -1,6 +1,6 @@
 package org.envtools.monitor.provider.configurable;
 
-import org.envtools.monitor.provider.configurable.applicationsMetadata.Metadata;
+import org.envtools.monitor.provider.configurable.metadata.Metadata;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;

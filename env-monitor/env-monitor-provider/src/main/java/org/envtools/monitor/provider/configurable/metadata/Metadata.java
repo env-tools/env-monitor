@@ -1,19 +1,17 @@
-package org.envtools.monitor.provider.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.metadata;
 
 import javax.xml.bind.annotation.*;
 
 /**
- * Created by MSkuza on 2016-06-23.
+ * Created by Michal Skuza on 2016-06-23.
  */
 @XmlRootElement(name = "metadata")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class Metadata {
-    //    @XmlElement
     @XmlElements({@XmlElement(name = "tagBasedProcessLookup", type = TagBasedProcessLookup.class)})
     private ApplicationLookup applicationLookup;
 
-    //    @XmlElement
-//@XmlElementRef
+
     @XmlElements({@XmlElement(name = "linkBasedVersionLookup", type = LinkBasedVersionLookup.class)})
     private VersionLookup versionLookup;
 

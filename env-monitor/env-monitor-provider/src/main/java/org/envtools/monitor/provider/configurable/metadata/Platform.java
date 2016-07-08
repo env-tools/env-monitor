@@ -1,11 +1,11 @@
-package org.envtools.monitor.provider.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.metadata;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by MSkuza on 2016-06-23.
+ * Created by Michal Skuza on 2016-06-23.
  */
 @XmlRootElement(name = "platform")
 @XmlAccessorType(value = XmlAccessType.FIELD)

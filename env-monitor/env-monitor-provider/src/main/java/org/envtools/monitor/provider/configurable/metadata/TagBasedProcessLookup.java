@@ -1,10 +1,10 @@
-package org.envtools.monitor.provider.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by MSkuza on 2016-06-23.
+ * Created by Michal Skuza on 2016-06-23.
  */
 public class TagBasedProcessLookup extends ApplicationLookup {
     private List<String> includeTags;

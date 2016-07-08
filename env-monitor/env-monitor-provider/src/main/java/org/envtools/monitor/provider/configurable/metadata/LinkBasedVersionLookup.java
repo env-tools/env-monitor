@@ -1,7 +1,7 @@
-package org.envtools.monitor.provider.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.metadata;
 
 /**
- * Created by MSkuza on 2016-06-23.
+ * Created by Michal Skuza on 2016-06-23.
  */
 
 public class LinkBasedVersionLookup extends VersionLookup {

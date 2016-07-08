@@ -1,18 +1,15 @@
 package configurable;
 
-import com.gs.collections.impl.multimap.list.SynchronizedPutFastListMultimap;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.provider.configurable.VersionedApplication;
 import org.envtools.monitor.provider.configurable.VersionedApplicationProperties;
 import org.envtools.monitor.provider.configurable.XmlToCoreModelMapper;
-import org.envtools.monitor.provider.configurable.applicationsMetadata.*;
+import org.envtools.monitor.provider.configurable.metadata.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
- * Created by Michal on 07/07/16.
+ * Created by Michal Skuza on 07/07/16.
  */
 public class XmlToCoreModelMapperTest {
 

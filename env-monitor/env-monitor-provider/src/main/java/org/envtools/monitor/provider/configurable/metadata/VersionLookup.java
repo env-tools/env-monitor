@@ -1,4 +1,4 @@
-package org.envtools.monitor.provider.configurable.applicationsMetadata;
+package org.envtools.monitor.provider.configurable.metadata;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by MSkuza on 2016-06-23.
+ * Created by Michal Skuza on 2016-06-23.
  */
 @XmlRootElement
 @XmlAccessorType(value = XmlAccessType.PROPERTY)

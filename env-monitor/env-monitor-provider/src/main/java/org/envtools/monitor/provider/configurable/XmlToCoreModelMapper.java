@@ -17,22 +17,22 @@ public class XmlToCoreModelMapper {
 
     private static List<Platform>  mapPlatforms(VersionedApplicationProperties applicationProperties) {
         List<Platform> platforms = new ArrayList<>();
-        for (org.envtools.monitor.provider.configurable.applicationsMetadata.Platform platform : applicationProperties.getPlatforms()) {
+        for (org.envtools.monitor.provider.configurable.metadata.Platform platform : applicationProperties.getPlatforms()) {
             platforms.add(convertPlatform(platform));
         }
 
         return platforms;
     }
 
-    private static ArrayList<Environment> mapEnvironments(org.envtools.monitor.provider.configurable.applicationsMetadata.Platform platform) {
+    private static ArrayList<Environment> mapEnvironments(org.envtools.monitor.provider.configurable.metadata.Platform platform) {
         ArrayList<Environment> environments = new ArrayList<Environment>();
-        for (org.envtools.monitor.provider.configurable.applicationsMetadata.Environment environment : platform.getEnvironments()) {
+        for (org.envtools.monitor.provider.configurable.metadata.Environment environment : platform.getEnvironments()) {
             environments.add(convertEnvironment(environment));
         }
         return environments;
     }
 
-    private static List<Application> mapApplications(org.envtools.monitor.provider.configurable.applicationsMetadata.Environment environment) {
+    private static List<Application> mapApplications(org.envtools.monitor.provider.configurable.metadata.Environment environment) {
         List<Application> applications = new ArrayList<>();
         for (VersionedApplication versionedApplication : environment.getApplications()) {
             applications.add(convertApplication(versionedApplication));
@@ -51,7 +51,7 @@ public class XmlToCoreModelMapper {
         return hostees;
     }
 
-    private static Platform convertPlatform(org.envtools.monitor.provider.configurable.applicationsMetadata.Platform platform) {
+    private static Platform convertPlatform(org.envtools.monitor.provider.configurable.metadata.Platform platform) {
         Platform platformTmp = new Platform();
         platformTmp.setId(platform.getId());
         platformTmp.setName(platform.getName());
@@ -59,7 +59,7 @@ public class XmlToCoreModelMapper {
         return platformTmp;
     }
 
-    private static Environment convertEnvironment(org.envtools.monitor.provider.configurable.applicationsMetadata.Environment environment) {
+    private static Environment convertEnvironment(org.envtools.monitor.provider.configurable.metadata.Environment environment) {
         Environment environmentTmp = new Environment();
         environmentTmp.setId(environment.getId());
         environmentTmp.setName(environment.getName());
