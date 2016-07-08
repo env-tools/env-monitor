@@ -1,6 +1,8 @@
-package org.envtools.monitor.provider.configurable;
+package org.envtools.monitor.provider.configurable.metadata.mapper;
 
 import org.envtools.monitor.model.applications.*;
+import org.envtools.monitor.provider.configurable.VersionedApplicationPropertiesXml;
+import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
 import org.envtools.monitor.provider.configurable.metadata.EnvironmentXml;
 import org.envtools.monitor.provider.configurable.metadata.PlatformXml;
 
@@ -10,14 +12,15 @@ import java.util.List;
 /**
  * Created by Michal Skuza on 07/07/16.
  */
-public class XmlToCoreModelMapper {
-    public static ApplicationsData convertToApplicationsData(VersionedApplicationPropertiesXml applicationProperties) {
+public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
+    @Override
+    public ApplicationsData map(VersionedApplicationPropertiesXml configurableAppProperties) {
         ApplicationsData applicationsData = new ApplicationsData();
-        applicationsData.setPlatforms(mapPlatforms(applicationProperties));
+        applicationsData.setPlatforms(mapPlatforms(configurableAppProperties));
         return applicationsData;
     }
 
-    private static List<Platform>  mapPlatforms(VersionedApplicationPropertiesXml applicationProperties) {
+    private List<Platform> mapPlatforms(VersionedApplicationPropertiesXml applicationProperties) {
         List<Platform> platforms = new ArrayList<>();
         for (PlatformXml platformXml : applicationProperties.getPlatforms()) {
             platforms.add(convertPlatform(platformXml));
@@ -26,7 +29,7 @@ public class XmlToCoreModelMapper {
         return platforms;
     }
 
-    private static ArrayList<Environment> mapEnvironments(PlatformXml platformXml) {
+    private ArrayList<Environment> mapEnvironments(PlatformXml platformXml) {
         ArrayList<Environment> environments = new ArrayList<Environment>();
         for (EnvironmentXml environmentXml : platformXml.getEnvironments()) {
             environments.add(convertEnvironment(environmentXml));
@@ -34,7 +37,7 @@ public class XmlToCoreModelMapper {
         return environments;
     }
 
-    private static List<Application> mapApplications(EnvironmentXml environmentXml) {
+    private List<Application> mapApplications(EnvironmentXml environmentXml) {
         List<Application> applications = new ArrayList<>();
         for (VersionedApplicationXml versionedApplicationXml : environmentXml.getApplications()) {
             applications.add(convertApplication(versionedApplicationXml));
@@ -42,7 +45,7 @@ public class XmlToCoreModelMapper {
         return applications;
     }
 
-    private static ArrayList<Application> mapHostees(VersionedApplicationXml versionedApplicationXml) {
+    private ArrayList<Application> mapHostees(VersionedApplicationXml versionedApplicationXml) {
         ArrayList<Application> hostees = new ArrayList<>();
 
         if (versionedApplicationXml.getHostees() != null) {
@@ -53,7 +56,7 @@ public class XmlToCoreModelMapper {
         return hostees;
     }
 
-    private static Platform convertPlatform(PlatformXml platformXml) {
+    private Platform convertPlatform(PlatformXml platformXml) {
         Platform platformTmp = new Platform();
         platformTmp.setId(platformXml.getId());
         platformTmp.setName(platformXml.getName());
@@ -61,7 +64,7 @@ public class XmlToCoreModelMapper {
         return platformTmp;
     }
 
-    private static Environment convertEnvironment(EnvironmentXml environmentXml) {
+    private Environment convertEnvironment(EnvironmentXml environmentXml) {
         Environment environmentTmp = new Environment();
         environmentTmp.setId(environmentXml.getId());
         environmentTmp.setName(environmentXml.getName());
@@ -69,7 +72,7 @@ public class XmlToCoreModelMapper {
         return environmentTmp;
     }
 
-    private static Application convertApplication(VersionedApplicationXml versionedApplicationXml) {
+    private Application convertApplication(VersionedApplicationXml versionedApplicationXml) {
         Application application = new Application();
         application.setName(versionedApplicationXml.getName());
         application.setId(versionedApplicationXml.getId());
@@ -78,7 +81,7 @@ public class XmlToCoreModelMapper {
         return application;
     }
 
-    private static Application convertHostee(VersionedApplicationXml hosteeApp) {
+    private Application convertHostee(VersionedApplicationXml hosteeApp) {
         Application hostee = new Application();
         hostee.setName(hosteeApp.getName());
         hostee.setId(hosteeApp.getId());

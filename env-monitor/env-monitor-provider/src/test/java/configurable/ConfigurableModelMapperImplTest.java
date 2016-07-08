@@ -1,22 +1,23 @@
 package configurable;
 
 import org.envtools.monitor.model.applications.ApplicationsData;
-import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
 import org.envtools.monitor.provider.configurable.VersionedApplicationPropertiesXml;
-import org.envtools.monitor.provider.configurable.XmlToCoreModelMapper;
+import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
 import org.envtools.monitor.provider.configurable.metadata.*;
+import org.envtools.monitor.provider.configurable.metadata.mapper.ConfigurableModelMapperImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Created by Michal Skuza on 07/07/16.
  */
-public class XmlToCoreModelMapperTest {
+public class ConfigurableModelMapperImplTest {
 
     @Test
     public void successfullyConvertToApplicationsData() throws Exception {
         VersionedApplicationPropertiesXml applicationProperties = createApplicationProperties();
-        ApplicationsData applicationsData = XmlToCoreModelMapper.convertToApplicationsData(applicationProperties);
+        ConfigurableModelMapperImpl configurableModelMapper = new ConfigurableModelMapperImpl();
+        ApplicationsData applicationsData = configurableModelMapper.map(applicationProperties);
 
         Assert.assertNotNull(applicationsData);
         Assert.assertTrue(!applicationsData.getPlatforms().isEmpty());
@@ -27,6 +28,7 @@ public class XmlToCoreModelMapperTest {
         PlatformXml platformXml = new PlatformXml("ULTRON", "ultron");
         EnvironmentXml environmentXml = new EnvironmentXml("Standard DEV (DEV 1)", "standard_dev");
         VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", 999, "-", "-");
+        standardDevServer.addHostee(new VersionedApplicationXml("standardDevServer", "IRON Server", "IRON Server", "IRON.net", 999, "-", "-"));
         environmentXml.addApplication(standardDevServer);
         ApplicationLookupXml applicationLookupXml = new TagBasedProcessLookupXml();
         applicationLookupXml.includeTag("ultron.component.name=container1");

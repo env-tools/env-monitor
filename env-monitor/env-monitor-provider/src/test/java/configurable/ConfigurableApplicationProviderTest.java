@@ -39,6 +39,7 @@ public class ConfigurableApplicationProviderTest {
         PlatformXml platformXml = new PlatformXml("ULTRON", "ultron");
         EnvironmentXml environmentXml = new EnvironmentXml("Standard DEV (DEV 1)", "standard_dev");
         VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", 999, "-", "-");
+        standardDevServer.addHostee(new VersionedApplicationXml("standardDevServer", "IRON Server", "IRON Server", "IRON.net", 999, "-", "-"));
         environmentXml.addApplication(standardDevServer);
         ApplicationLookupXml applicationLookupXml = new TagBasedProcessLookupXml();
         applicationLookupXml.includeTag("ultron.component.name=container1");
