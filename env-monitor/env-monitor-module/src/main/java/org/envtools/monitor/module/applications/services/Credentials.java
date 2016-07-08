@@ -3,7 +3,7 @@ package org.envtools.monitor.module.applications.services;
 import javax.xml.bind.annotation.*;
 
 /**
- * Created by MSkuza on 2016-06-17.
+ * Created by Michal Skuza on 2016-06-17.
  */
 @XmlRootElement(name = "credentials")
 @XmlAccessorType(value = XmlAccessType.NONE)
@@ -11,14 +11,16 @@ public class Credentials {
     private String user;
     private String host;
     private String password;
+    private String encryptedPassword;
 
     public Credentials() {
     }
 
-    public Credentials(String user, String host, String password) {
+    public Credentials(String user, String host, String password, String encryptedPassword) {
         this.user = user;
         this.host = host;
         this.password = password;
+        this.encryptedPassword = encryptedPassword;
     }
 
     @XmlElement(name = "user", required = true)
@@ -48,12 +50,12 @@ public class Credentials {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "Credentials{" +
-                "user='" + user + '\'' +
-                ", host='" + host + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    @XmlElement(name = "encrypted-password", required = true)
+    public String getEncryptedPassword() {
+        return encryptedPassword;
+    }
+
+    public void setEncryptedPassword(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
     }
 }
