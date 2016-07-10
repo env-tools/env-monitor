@@ -1,11 +1,16 @@
-package org.envtools.monitor.provider.configurable.metadata;
+package org.envtools.monitor.provider.applications.configurable.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Michal Skuza on 2016-06-23.
  */
+@XmlAccessorType(value = XmlAccessType.PROPERTY)
 public class TagBasedProcessLookupXml extends ApplicationLookupXml {
     private List<String> includeTags;
     private List<String> excludeTags;
@@ -15,12 +20,14 @@ public class TagBasedProcessLookupXml extends ApplicationLookupXml {
         this.excludeTags = new ArrayList<>();
     }
 
-    @Override
+    @XmlElementWrapper
+    @XmlElement(name = "tag")
     public List<String> getIncludeTags() {
         return includeTags;
     }
 
-    @Override
+    @XmlElementWrapper
+    @XmlElement(name = "tag")
     public List<String> getExcludeTags() {
         return excludeTags;
     }

@@ -1,8 +1,6 @@
-package org.envtools.monitor.provider.mock;
+package org.envtools.monitor.provider.applications.mock;
 
 import org.apache.log4j.Logger;
-
-import java.util.Random;
 
 /**
  * Created: 10/31/15 1:53 AM

@@ -1,4 +1,4 @@
-package org.envtools.monitor.provider.mock.model;
+package org.envtools.monitor.provider.applications.mock.model;
 
 import org.envtools.monitor.model.applications.Application;
 import org.envtools.monitor.model.applications.ApplicationStatus;

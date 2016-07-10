@@ -1,10 +1,10 @@
-package org.envtools.monitor.provider.configurable.metadata.mapper;
+package org.envtools.monitor.provider.applications.configurable.mapper;
 
 import org.envtools.monitor.model.applications.*;
-import org.envtools.monitor.provider.configurable.VersionedApplicationPropertiesXml;
-import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
-import org.envtools.monitor.provider.configurable.metadata.EnvironmentXml;
-import org.envtools.monitor.provider.configurable.metadata.PlatformXml;
+import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationPropertiesXml;
+import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
+import org.envtools.monitor.provider.applications.configurable.model.EnvironmentXml;
+import org.envtools.monitor.provider.applications.configurable.model.PlatformXml;
 
 import java.util.ArrayList;
 import java.util.List;

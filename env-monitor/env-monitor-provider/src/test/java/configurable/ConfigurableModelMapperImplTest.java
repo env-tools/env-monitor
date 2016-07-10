@@ -1,10 +1,10 @@
 package configurable;
 
 import org.envtools.monitor.model.applications.ApplicationsData;
-import org.envtools.monitor.provider.configurable.VersionedApplicationPropertiesXml;
-import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
-import org.envtools.monitor.provider.configurable.metadata.*;
-import org.envtools.monitor.provider.configurable.metadata.mapper.ConfigurableModelMapperImpl;
+import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationPropertiesXml;
+import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
+import org.envtools.monitor.provider.applications.configurable.model.*;
+import org.envtools.monitor.provider.applications.configurable.mapper.ConfigurableModelMapperImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class ConfigurableModelMapperImplTest {
         VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", 999, "-", "-");
         standardDevServer.addHostee(new VersionedApplicationXml("standardDevServer", "IRON Server", "IRON Server", "IRON.net", 999, "-", "-"));
         environmentXml.addApplication(standardDevServer);
-        ApplicationLookupXml applicationLookupXml = new TagBasedProcessLookupXml();
+        TagBasedProcessLookupXml applicationLookupXml = new TagBasedProcessLookupXml();
         applicationLookupXml.includeTag("ultron.component.name=container1");
         applicationLookupXml.includeTag("ultron.component.name=container2");
         applicationLookupXml.excludeTag("ultron.component.name=container3");

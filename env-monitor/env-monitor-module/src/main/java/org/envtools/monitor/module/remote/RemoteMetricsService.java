@@ -1,9 +1,9 @@
 package org.envtools.monitor.module.remote;
 
 import org.envtools.monitor.model.applications.ApplicationStatus;
-import org.envtools.monitor.provider.configurable.VersionedApplicationXml;
-import org.envtools.monitor.provider.configurable.metadata.LinkBasedVersionLookupXml;
-import org.envtools.monitor.provider.configurable.metadata.TagBasedProcessLookupXml;
+import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
+import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
+import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
 
 import java.util.Optional;
 
