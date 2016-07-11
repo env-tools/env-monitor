@@ -1,11 +1,13 @@
-package org.envtools.monitor.module.remote;
+package org.envtools.monitor.module.applications.services.remote;
 
 import com.jcraft.jsch.JSchException;
+import org.apache.log4j.Logger;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
 import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
 import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -15,6 +17,9 @@ import java.util.regex.Pattern;
  * Created by Michal Skuza on 27/06/16.
  */
 public class RemoteMetricsServiceImpl implements RemoteMetricsService {
+
+    private static final Logger LOGGER = Logger.getLogger(RemoteMetricsServiceImpl.class);
+
     private SshHelperService sshHelperService;
 
     public RemoteMetricsServiceImpl(SshHelperService sshHelperService) {
@@ -45,13 +50,37 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     @Override
     public Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup) {
-        String cmd = String.format("ls -la %s/current | awk -F \"/\" '{ print $(NF-1); }'", versionLookup.getLink());
+
+        final String LINK_PRINTOUT_DELIMITER = " -> ";
+        final String AWK_INSTRUCTION = " {print $2;} ";
+        final int DEFAULT_GROUP_INDEX = 1;
+
+        String cmd = String.format("ls -la %s | awk -F \"%s\" '%s'",
+                versionLookup.getLink(),
+                LINK_PRINTOUT_DELIMITER,
+                AWK_INSTRUCTION);
+
         String result = executeCommand(application, cmd);
 
-        if (result.isEmpty()) {
+        if (StringUtils.isEmpty(result)) {
             return Optional.empty();
         } else {
-            return Optional.of(result);
+            String regex = versionLookup.getLinkTargetPattern();
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(result);
+
+            if (!matcher.matches()) {
+               LOGGER.warn(String.format("RemoteMetricsServiceImpl.getApplicationVersion - actual link target '%s' does not match pattern '%s', " +
+               " please check configuration!", result, regex));
+                return Optional.empty();
+            }
+
+            String version = matcher.group(DEFAULT_GROUP_INDEX);
+            if (!StringUtils.isEmpty(version)) {
+               return Optional.of(result);
+            } else {
+                return Optional.empty();
+            }
         }
     }
 
