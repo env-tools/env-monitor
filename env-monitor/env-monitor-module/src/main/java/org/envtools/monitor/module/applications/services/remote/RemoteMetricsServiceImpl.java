@@ -20,6 +20,10 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     private static final Logger LOGGER = Logger.getLogger(RemoteMetricsServiceImpl.class);
 
+    private static final String LINK_PRINTOUT_DELIMITER = " -> ";
+    private static final String AWK_INSTRUCTION = " {print $2;} ";
+    private static final int DEFAULT_GROUP_INDEX = 1;
+
     private SshHelperService sshHelperService;
 
     public RemoteMetricsServiceImpl(SshHelperService sshHelperService) {
@@ -50,10 +54,6 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     @Override
     public Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup) {
-
-        final String LINK_PRINTOUT_DELIMITER = " -> ";
-        final String AWK_INSTRUCTION = " {print $2;} ";
-        final int DEFAULT_GROUP_INDEX = 1;
 
         String cmd = String.format("ls -la %s | awk -F \"%s\" '%s'",
                 versionLookup.getLink(),
