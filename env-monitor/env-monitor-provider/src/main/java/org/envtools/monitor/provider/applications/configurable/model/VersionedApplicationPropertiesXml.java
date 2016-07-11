@@ -1,6 +1,7 @@
 package org.envtools.monitor.provider.applications.configurable.model;
 
-import org.envtools.monitor.provider.applications.configurable.model.PlatformXml;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -26,5 +27,12 @@ public class VersionedApplicationPropertiesXml {
 
     public List<PlatformXml> getPlatforms() {
         return platforms;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("platforms", platforms).
+                toString();
     }
 }

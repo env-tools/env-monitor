@@ -1,5 +1,8 @@
 package org.envtools.monitor.provider.applications.configurable.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -46,5 +49,13 @@ public class TagBasedProcessLookupXml extends ApplicationLookupXml {
 
     public void excludeTag(String tag) {
         this.excludeTags.add(tag);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("includeTags", includeTags).
+                append("excludeTags", excludeTags).
+                toString();
     }
 }

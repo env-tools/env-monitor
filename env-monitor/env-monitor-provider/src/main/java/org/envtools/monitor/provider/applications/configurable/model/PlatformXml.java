@@ -1,5 +1,8 @@
 package org.envtools.monitor.provider.applications.configurable.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,5 +55,14 @@ public class PlatformXml {
 
     public List<EnvironmentXml> getEnvironments() {
         return environments;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("id", id).
+                append("name", name).
+                append("environments", environments).
+                toString();
     }
 }

@@ -1,15 +1,19 @@
 package configurable;
 
+import org.apache.commons.io.FileUtils;
 import org.envtools.monitor.common.jaxb.JaxbHelper;
 import org.envtools.monitor.provider.applications.configurable.ConfigurableApplicationProvider;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationPropertiesXml;
 import org.envtools.monitor.provider.applications.configurable.model.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Michal Skuza on 2016-06-23.
@@ -29,6 +33,25 @@ public class ConfigurableApplicationProviderTest {
         Assert.assertNotNull(unmarshalledApplicationProperties);
         ReflectionAssert.assertReflectionEquals(
                 applicationProperties, unmarshalledApplicationProperties);
+    }
+
+    @Ignore
+    @Test
+    public void testFromExternalFile() throws IOException {
+        String xmlFileContents = FileUtils.readFileToString(
+                new File(
+                        //"" //Put file path here
+                        "C:\\work\\env-monitor\\app-module-citi-test\\applications-metadata.xml"
+                ));
+
+        System.out.println(xmlFileContents);
+
+        ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
+        VersionedApplicationPropertiesXml unmarshalledApplicationProperties = provider.readConfiguration(xmlFileContents);
+
+        Assert.assertNotNull(unmarshalledApplicationProperties);
+        System.out.println(String.format("Unmarshalled object: %s", unmarshalledApplicationProperties));
+
     }
 
     private String marshalToXml(VersionedApplicationPropertiesXml applicationProperties) {

@@ -1,5 +1,8 @@
 package org.envtools.monitor.provider.applications.configurable.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,5 +128,20 @@ public class VersionedApplicationXml {
 
     public List<VersionedApplicationXml> getHostees() {
         return hostees;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
+                append("id", id).
+                append("name", name).
+                append("type", type).
+                append("host", host).
+                append("port", port).
+                append("url", url).
+                append("componentName", componentName).
+                append("metadata", metadata).
+                append("hostees", hostees).
+                toString();
     }
 }

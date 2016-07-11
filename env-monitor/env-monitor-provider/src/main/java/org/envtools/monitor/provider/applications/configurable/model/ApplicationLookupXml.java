@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.*;
  */
 
 @XmlRootElement(name = "metadata")
-//@XmlSeeAlso(TagBasedProcessLookupXml.class)
 public abstract class ApplicationLookupXml {
 
 }
