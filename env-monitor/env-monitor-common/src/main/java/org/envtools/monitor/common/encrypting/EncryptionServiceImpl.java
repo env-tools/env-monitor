@@ -7,11 +7,11 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
  */
 public class EncryptionServiceImpl implements EncryptionService {
 
-    StandardPBEStringEncryptor encryptor;
+    private StandardPBEStringEncryptor encryptor;
 
     public EncryptionServiceImpl(String masterKey, String algorithm) {
 
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(masterKey);
         encryptor.setAlgorithm(algorithm);
 
@@ -19,12 +19,11 @@ public class EncryptionServiceImpl implements EncryptionService {
 
     @Override
     public String encrypt(String decryptedString) {
-
         return encryptor.encrypt(decryptedString);
     }
 
     @Override
     public String decrypt(String encryptedString) {
-        return decrypt(encryptedString);
+        return encryptor.decrypt(encryptedString);
     }
 }
