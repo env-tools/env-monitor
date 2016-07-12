@@ -97,6 +97,7 @@
                     <include>**/static/app/modules/**/templates/*.html</include>
                     <include>**/static/index*.html</include>
                     <include>**/static/tree.json</include>
+                    <include>**/static/ui-grid*</include>
                     <include>**/application.properties</include>
                 </includes>
             </resource>

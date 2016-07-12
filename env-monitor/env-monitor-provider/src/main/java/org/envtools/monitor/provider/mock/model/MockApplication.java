@@ -100,7 +100,6 @@ public class MockApplication extends Application {
         private String version;
         private Double processMemory;
 
-
         public Builder id(String id) {
             this.id = id;
             return this;

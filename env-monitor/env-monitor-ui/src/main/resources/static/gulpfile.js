@@ -8,8 +8,9 @@ gulp.task('stylesheets', function () {
             'vendor/Bootflat/css/site.min.css',
             'vendor/jqwidgets/jqwidgets/styles/jqx.base.css',
             'vendor/jqwidgets/jqwidgets/styles/jqx.bootstrap.css',
+            'vendor/angular-ui-grid/ui-grid.min.css',
 
-            'css/custom.css',
+            'css/custom.css'
         ])
         .pipe(concat('styles.css'))
         .pipe(gulp.dest('./'));
@@ -38,6 +39,7 @@ gulp.task('javascript', function () {
             'vendor/Bootflat/js/bootflat/*.js',
 
             'vendor/angular-ui-router/release/angular-ui-router.js',
+            'vendor/angular-ui-grid/ui-grid.min.js',
             'vendor/angular-modal-service/dst/angular-modal-service.js',
             'vendor/angular-uuid-service/angular-uuid-service.js',
 

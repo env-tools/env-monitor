@@ -5,9 +5,9 @@
         .module('applications')
         .controller('ApplicationsPageController', ApplicationsPageController);
 
-    ApplicationsPageController.$inject = ['$scope', 'ngstomp'];
+    ApplicationsPageController.$inject = ['$scope', 'ngstomp', 'uiGridConstants'];
 
-    function ApplicationsPageController($scope, ngstomp) {
+    function ApplicationsPageController($scope, ngstomp, uiGridConstants) {
 
         $scope.applications = [];
         $scope.platforms = [];
@@ -20,6 +20,29 @@
         init();
 
         function init() {
+
+            $scope.gridOptions =
+            {
+                columnDefs: [
+                    {name : "Name", field : "name"},
+                    {name : "Type", field : "applicationType"},
+                    {name : "Host", field : "host"},
+                    {name : "Port", field : "port"},
+                    {name : "Url", field : "url"},
+                    {name : "Version", field : "version"},
+                    {name : "Component Name", field : "componentName"},
+                    {name : "Memory (Mb)", field : "processMemory"},
+                    {name : "Status", field : "status"}
+                ],
+
+                showTreeExpandNoChildren: false,
+
+                onRegisterApi: function(gridApi)
+                {
+                    $scope.gridApi = gridApi;
+                }
+            };
+
             ngstomp.subscribeTo('/call/modules/M_APPLICATIONS/data/platforms').callback(
                 function (msg) {
                     $scope.$apply(function () {
@@ -85,6 +108,55 @@
                 .callback(function (msg) {
                     $scope.$apply(function () {
                         $scope.applications = msg.body.payload.jsonContent;
+                        $scope.gridOptions.data = convertToDataForGrid($scope.applications);
+
+//                                [
+//                                    {"name":"app1_1-1","applicationType":"applicationType1","host":"host1","port":7000 + 1000 * Math.random(),"url":"http://host1:7000/app/login","version":"1.12_Q20-SNAPSHOT","componentName":"component-1","processMemory":3398,"status":"RUNNING", $$treeLevel : 0},
+//                                    {"name":"app2_1-1","applicationType":"applicationType2","host":"host2","port":7001,"url":"http://host1:7001/app/login","version":"1.12_E20","componentName":"component-2-1-1","processMemory":11335,"status":"RUNNING", $$treeLevel : 1}
+//                                ],
+
+                            //$scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+                            function convertToDataForGrid(applications) {
+                                var dataForGrid = [];
+
+                                //Currently we support only one level of nesting
+                                angular.forEach(applications, function(application, index) {
+
+                                    var collector = this;
+                                    addApplicationForGrid(collector, application, 0);
+
+                                    //Go into depth and process hostees (nested applications)
+                                    if (application.hostees && application.hostees.length > 0) {
+                                        angular.forEach(application.hostees, function(hostee, index) {
+                                            addApplicationForGrid(collector, hostee, 1);
+                                        }, collector);
+                                    }
+
+                                }, dataForGrid);
+
+                                console.log('dataForGrid=' + JSON.stringify(dataForGrid));
+
+                                function addApplicationForGrid(applicationsForGrid, application, level) {
+                                    var applicationForGrid = {
+                                      name : application.name,
+                                      applicationType : application.applicationType,
+                                      host : application.host,
+                                      port : application.port,
+                                      url : application.url,
+                                      version : application.version,
+                                      componentName : application.componentName,
+                                      processMemory : application.processMemory,
+                                      status : application.status,
+                                        //,
+
+                                      $$treeLevel : level
+                                    };
+
+                                    applicationsForGrid.push(applicationForGrid);
+                                }
+
+                                return dataForGrid;
+                            }
                     });
 
                     console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.body.payload.jsonContent));

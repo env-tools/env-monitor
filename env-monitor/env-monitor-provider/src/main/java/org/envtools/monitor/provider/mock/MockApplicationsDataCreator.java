@@ -81,9 +81,12 @@ public class MockApplicationsDataCreator {
                 .componentName("component-2-" + label)
                 .url("http://host1:7001/app/login")
                 .version("1.12_E20")
-                .processMemory(randomMemory()).build();
+                .processMemory(randomMemory())
+                .build();
 
-        return Arrays.asList(application1, application2);
+        application1.setHostees(Arrays.asList(application2));
+
+        return Arrays.asList(application1);
     }
 
     private static Double randomMemory() {
