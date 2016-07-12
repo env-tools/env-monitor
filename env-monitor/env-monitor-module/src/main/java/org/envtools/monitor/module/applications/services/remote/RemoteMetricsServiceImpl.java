@@ -90,16 +90,31 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
         appendProcessLookup(cmd, tagBasedProcessLookup);
 
-        //Get memory by pid
-        cmd.append("| awk '{ print $2; }' | xargs pmap | grep total | awk '{print $2; }'");
+        //Get pid
+        cmd.append("| awk '{ print $2; }' ");
 
-        String result = executeCommand(application, cmd.toString());
+        // pmap requires sudo
+        //| xargs pmap | grep total | awk '{print $2; }'");
 
-        if (result.isEmpty()) {
+        String pidCmdResult = executeCommand(application, cmd.toString());
+
+        if (pidCmdResult.isEmpty()) {
             return Optional.empty();
         }
 
-        Optional<Integer> intMemoryInKb = extractInt(result);
+        Optional<Integer> pid = extractInt(pidCmdResult);
+        if (!pid.isPresent()) {
+            return Optional.empty();
+        }
+
+        String memCmdInKb = String.format(String.format("cat /proc/%d/status | grep VmSize | awk -F' ' '{print $2; }'", pid.get()));
+        String memCmdResult = executeCommand(application, memCmdInKb.toString());
+
+        if (memCmdResult.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Optional<Integer> intMemoryInKb = extractInt(memCmdResult);
         if (intMemoryInKb.isPresent()) {
             return Optional.of(intMemoryInKb.get() / 1000.0);
         }
