@@ -14,8 +14,11 @@ public class MetadataXml {
     @XmlElements({@XmlElement(name = "tagBasedProcessLookup", type = TagBasedProcessLookupXml.class)})
     private ApplicationLookupXml applicationLookupXml;
 
-
-    @XmlElements({@XmlElement(name = "linkBasedVersionLookup", type = LinkBasedVersionLookupXml.class)})
+    @XmlElements(
+            {
+                    @XmlElement(name = "linkBasedVersionLookup", type = LinkBasedVersionLookupXml.class),
+                    @XmlElement(name = "scriptBasedVersionLookup", type = ScriptBasedVersionLookupXml.class),
+            })
     private VersionLookupXml versionLookup;
 
     public MetadataXml() {

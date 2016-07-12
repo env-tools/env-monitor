@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
+import org.envtools.monitor.provider.applications.configurable.model.ScriptBasedVersionLookupXml;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
 import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
 import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
@@ -70,17 +71,32 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
             Matcher matcher = pattern.matcher(result);
 
             if (!matcher.matches()) {
-               LOGGER.warn(String.format("RemoteMetricsServiceImpl.getApplicationVersion - actual link target '%s' does not match pattern '%s', " +
-               " please check configuration!", result, regex));
+                LOGGER.warn(String.format("RemoteMetricsServiceImpl.getApplicationVersion - actual link target '%s' does not match pattern '%s', " +
+                        " please check configuration!", result, regex));
                 return Optional.empty();
             }
 
             String version = matcher.group(DEFAULT_GROUP_INDEX);
             if (!StringUtils.isEmpty(version)) {
-               return Optional.of(result);
+                return Optional.of(result);
             } else {
                 return Optional.empty();
             }
+        }
+    }
+
+    @Override
+    public Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup) {
+        String cmd = String.format("/bin/bash -c '%s %s'",
+                versionLookup.getScriptPath(),
+                versionLookup.getScriptParameters()
+        );
+        String result = executeCommand(application, cmd);
+
+        if (StringUtils.isEmpty(result)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(result);
         }
     }
 
