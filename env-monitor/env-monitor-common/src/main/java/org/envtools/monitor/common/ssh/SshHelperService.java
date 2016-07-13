@@ -5,6 +5,7 @@ package org.envtools.monitor.common.ssh;
  */
 public interface SshHelperService {
 
-   SshHelper getHelper(String host);
+    void register(String host, SshHelper sshHelper);
 
+    SshHelper getHelper(String host);
 }

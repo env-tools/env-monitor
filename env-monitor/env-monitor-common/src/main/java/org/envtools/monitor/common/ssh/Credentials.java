@@ -1,6 +1,9 @@
-package org.envtools.monitor.module.applications.services;
+package org.envtools.monitor.common.ssh;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by Michal Skuza on 2016-06-17.
@@ -12,15 +15,17 @@ public class Credentials {
     private String host;
     private String password;
     private String encryptedPassword;
+    private boolean loadAtStartup;
 
     public Credentials() {
     }
 
-    public Credentials(String user, String host, String password, String encryptedPassword) {
+    public Credentials(String user, String host, String password, String encryptedPassword, boolean loadAtStartup) {
         this.user = user;
         this.host = host;
         this.password = password;
         this.encryptedPassword = encryptedPassword;
+        this.loadAtStartup = loadAtStartup;
     }
 
     @XmlElement(name = "user", required = true)
@@ -57,5 +62,14 @@ public class Credentials {
 
     public void setEncryptedPassword(String encryptedPassword) {
         this.encryptedPassword = encryptedPassword;
+    }
+
+    @XmlElement(name = "load-at-startup", required = true)
+    public boolean isLoadAtStartup() {
+        return loadAtStartup;
+    }
+
+    public void setLoadAtStartup(boolean loadAtStartup) {
+        this.loadAtStartup = loadAtStartup;
     }
 }

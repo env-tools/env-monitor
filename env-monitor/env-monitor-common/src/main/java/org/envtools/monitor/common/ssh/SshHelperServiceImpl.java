@@ -13,12 +13,13 @@ public class SshHelperServiceImpl implements SshHelperService {
         this.sshHelpersMap = new HashMap<>();
     }
 
-    public void register(String host, SshHelper sshHelper) {
-        sshHelpersMap.put(host, sshHelper);
-    }
-
     @Override
     public SshHelper getHelper(String host) {
         return this.sshHelpersMap.get(host);
+    }
+
+    @Override
+    public void register(String host, SshHelper sshHelper) {
+        sshHelpersMap.put(host, sshHelper);
     }
 }

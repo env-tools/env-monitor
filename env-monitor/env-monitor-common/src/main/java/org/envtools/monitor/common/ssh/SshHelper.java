@@ -20,8 +20,8 @@ public class SshHelper {
 
     public SshHelper(String user, String host, int port) {
         this.host = host;
-        this.port = port;
         this.user = user;
+        this.port = port;
     }
 
     private MyUserInfo createUserInfo(final String password) {

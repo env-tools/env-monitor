@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.applications.services;
+package org.envtools.monitor.common.ssh;
 
 import org.envtools.monitor.common.jaxb.JaxbHelper;
 
