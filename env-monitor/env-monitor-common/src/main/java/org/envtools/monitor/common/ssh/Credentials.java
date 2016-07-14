@@ -46,7 +46,7 @@ public class Credentials {
         this.host = host;
     }
 
-    @XmlElement(name = "password", required = true)
+    @XmlElement(name = "password", required = false)
     public String getPassword() {
         return password;
     }
