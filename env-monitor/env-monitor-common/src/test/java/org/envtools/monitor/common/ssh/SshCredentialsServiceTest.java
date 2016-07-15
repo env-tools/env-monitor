@@ -13,11 +13,10 @@ import java.io.IOException;
  */
 public class SshCredentialsServiceTest {
 
-    //TODO: Finish the test;
     private static final Logger LOG = Logger.getLogger(SshCredentialsServiceTest.class);
 
     private final String expectedPassword = "password";
-    private final String fileName = "test.xml";
+    private final String fileName = "test";
     private final String directoryPath = "src/test/resource/";
     private File testXml;
 
@@ -25,7 +24,7 @@ public class SshCredentialsServiceTest {
     @Before
     public void setUp() throws JAXBException, IOException {
 
-        testXml = new File(String.format("%s%s", directoryPath, fileName));
+        testXml = new File(String.format("%s%s.xml", directoryPath, fileName));
         Credentials credentials = new Credentials();
 
         credentials.setHost("some host");
@@ -38,7 +37,6 @@ public class SshCredentialsServiceTest {
 
     }
 
-    @Ignore
     @Test
     public void decryptPasswordTest() {
 
