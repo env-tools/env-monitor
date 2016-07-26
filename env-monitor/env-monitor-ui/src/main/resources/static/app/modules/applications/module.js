@@ -2,5 +2,5 @@
     'use strict';
 
     angular
-        .module('applications', []);
+        .module('applications', ['ui.grid', 'ui.grid.treeView']);
 })();

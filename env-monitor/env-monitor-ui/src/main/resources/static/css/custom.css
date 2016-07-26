@@ -159,3 +159,8 @@ input.query-param {
     width: 100px;
     border: none;
 }
+
+.applications-grid {
+    width: 100%;
+    height: 400px;
+}
