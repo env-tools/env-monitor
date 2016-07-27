@@ -2,8 +2,10 @@ package org.envtools.monitor.provider.applications.configurable.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.applications.ApplicationStatus;
 
 import javax.xml.bind.annotation.*;
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,15 @@ public class VersionedApplicationXml {
     @XmlElementWrapper
     @XmlElement(name = "hostee")
     List<VersionedApplicationXml> hostees;
+
+    @XmlTransient
+    private ApplicationStatus status;
+
+    @XmlTransient
+    private String version;
+
+    @XmlTransient
+    private Double processMemory;
 
     public VersionedApplicationXml() {
     }
@@ -128,6 +139,30 @@ public class VersionedApplicationXml {
 
     public List<VersionedApplicationXml> getHostees() {
         return hostees;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public Double getProcessMemory() {
+        return processMemory;
+    }
+
+    public void setProcessMemory(Double processMemory) {
+        this.processMemory = processMemory;
     }
 
     @Override

@@ -8,4 +8,6 @@ public interface SshHelperService {
     void register(String host, SshHelper sshHelper);
 
     SshHelper getHelper(String host);
+
+    void logoutAllSshHelpers();
 }

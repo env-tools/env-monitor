@@ -22,4 +22,11 @@ public class SshHelperServiceImpl implements SshHelperService {
     public void register(String host, SshHelper sshHelper) {
         sshHelpersMap.put(host, sshHelper);
     }
+
+    @Override
+    public void logoutAllSshHelpers() {
+        for (SshHelper helper : sshHelpersMap.values()) {
+            helper.logout();
+        }
+    }
 }
