@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.applications.services.remote;
+package org.envtools.monitor.provider.applications.remote;
 
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.provider.applications.configurable.model.ScriptBasedVersionLookupXml;

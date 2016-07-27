@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<applicationsMetadata>
+    <platforms>
+        <platform id="ULTRON" name="ultron">
+            <environments>
+                <environment id="Standard DEV (DEV 1)" name="standard_dev">
+                    <applications>
+                        <application id="standardDevServer">
+                            <name>ULTRON Server</name>
+                            <type>ULTRON Server</type>
+                            <host>ULTRON.net</host>
+                            <port>999</port>
+                            <url>-</url>
+                            <componentname>-</componentname>
+                            <metadata>
+                                <tagBasedProcessLookup>
+                                    <excludeTags>
+                                        <tag>ultron.component.name=container3</tag>
+                                        <tag>ultron.component.name=container4</tag>
+                                    </excludeTags>
+                                    <includeTags>
+                                        <tag>ultron.component.name=container1</tag>
+                                        <tag>ultron.component.name=container2</tag>
+                                    </includeTags>
+                                </tagBasedProcessLookup>
+                                <linkBasedVersionLookup>
+                                    <link>/opt1/some_path/</link>
+                                    <linkTargetPattern>/opt1/some_other_path/(.*)</linkTargetPattern>
+                                </linkBasedVersionLookup>
+                            </metadata>
+                            <hostees>
+                                <hostee id="standardDevServer">
+                                    <name>IRON Server</name>
+                                    <type>IRON Server</type>
+                                    <host>IRON.net</host>
+                                    <port>999</port>
+                                    <url>-</url>
+                                    <componentname>-</componentname>
+                                </hostee>
+                            </hostees>
+                        </application>
+                    </applications>
+                </environment>
+            </environments>
+        </platform>
+    </platforms>
+</applicationsMetadata>

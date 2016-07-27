@@ -5,6 +5,7 @@ import org.envtools.monitor.provider.applications.configurable.model.VersionedAp
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
 import org.envtools.monitor.provider.applications.configurable.model.EnvironmentXml;
 import org.envtools.monitor.provider.applications.configurable.model.PlatformXml;
+import org.envtools.monitor.provider.applications.mock.model.MockApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,19 +74,32 @@ public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
     }
 
     private Application convertApplication(VersionedApplicationXml versionedApplicationXml) {
-        Application application = new Application();
-        application.setName(versionedApplicationXml.getName());
-        application.setId(versionedApplicationXml.getId());
-        application.setStatus(ApplicationStatus.RUNNING);
-        application.setHostees(mapHostees(versionedApplicationXml));
-        return application;
+        return new MockApplication.Builder()
+                .id(versionedApplicationXml.getId())
+                .name(versionedApplicationXml.getName())
+                .host(versionedApplicationXml.getHost())
+                .applicationType(versionedApplicationXml.getType())
+                .port(versionedApplicationXml.getPort())
+                .componentName(versionedApplicationXml.getComponentName())
+                .url(versionedApplicationXml.getUrl())
+                .status(versionedApplicationXml.getStatus())
+                .version(versionedApplicationXml.getVersion())
+                .processMemory(versionedApplicationXml.getProcessMemory())
+                .build();
     }
 
     private Application convertHostee(VersionedApplicationXml hosteeApp) {
-        Application hostee = new Application();
-        hostee.setName(hosteeApp.getName());
-        hostee.setId(hosteeApp.getId());
-        hostee.setStatus(ApplicationStatus.RUNNING);
-        return hostee;
+        return new MockApplication.Builder()
+                .id(hosteeApp.getId())
+                .name(hosteeApp.getName())
+                .host(hosteeApp.getHost())
+                .applicationType(hosteeApp.getType())
+                .port(hosteeApp.getPort())
+                .componentName(hosteeApp.getComponentName())
+                .url(hosteeApp.getUrl())
+                .status(hosteeApp.getStatus())
+                .version(hosteeApp.getVersion())
+                .processMemory(hosteeApp.getProcessMemory())
+                .build();
     }
 }

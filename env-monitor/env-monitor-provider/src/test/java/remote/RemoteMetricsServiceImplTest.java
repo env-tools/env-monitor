@@ -1,4 +1,4 @@
-package org.envtools.monitor.module.applications.services.remote;
+package remote;
 
 import junit.framework.Assert;
 import org.junit.Test;
