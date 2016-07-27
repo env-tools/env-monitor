@@ -11,5 +11,8 @@
     "angular-uuid-service": "0.1.0",
     "AngularStompDK": "^0.8.2",
     "angular-modal-service": "^0.10.1"
+  },
+  "resolutions": {
+    "angular": "~1.5.x"
   }
 }
