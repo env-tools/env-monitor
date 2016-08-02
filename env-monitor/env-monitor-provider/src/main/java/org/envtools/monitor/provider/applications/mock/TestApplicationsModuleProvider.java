@@ -17,11 +17,13 @@ import org.envtools.monitor.provider.applications.remote.RemoteMetricsService;
 import org.envtools.monitor.provider.applications.remote.RemoteMetricsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -152,7 +154,12 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     }
 
     private VersionedApplicationPropertiesXml loadVersionedApplicationPropertiesXml(String filePath) {
-        return configurableApplicationProvider.readConfigurationFromFile(new File(filePath));
+        try {
+            ClassPathResource classPathResource = new ClassPathResource(filePath);
+            return configurableApplicationProvider.readConfigurationFromFile(classPathResource.getFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<Platform> loadPlatforms() {
