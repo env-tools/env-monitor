@@ -20,5 +20,4 @@ public interface RemoteMetricsService {
     Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup);
 
     Optional<Double> getProcessMemoryInMb(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup);
-
 }

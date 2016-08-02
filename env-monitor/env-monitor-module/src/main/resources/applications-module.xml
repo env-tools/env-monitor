@@ -27,17 +27,29 @@
     <bean id="configurableApplicationProvider"
           class="org.envtools.monitor.provider.applications.configurable.ConfigurableApplicationProvider"/>
 
-    <bean id="sshHelperService" class="org.envtools.monitor.common.ssh.SshHelperServiceImpl"/>
-
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 
-    <bean id="sshHelperServiceFactory" class="org.envtools.monitor.common.ssh.SshHelperServiceFactory">
+    <bean id="instanceFactory" class="org.envtools.monitor.common.ssh.SshHelperServiceFactory">
         <constructor-arg index="0" ref="sshCredentialsService"/>
         <constructor-arg index="1" ref="encryptionService"/>
     </bean>
 
+    <bean id="sshHelperService" class="org.envtools.monitor.common.ssh.SshHelperServiceImpl"
+          factory-bean="instanceFactory" factory-method="buildSshHelperService" init-method="loginAllSshHelpers"
+            destroy-method="logoutAllSshHelpers">
+        <constructor-arg>
+            <bean id="list" class="java.util.ArrayList">
+                <constructor-arg type="java.util.Collection" value="#{T(java.util.Arrays).asList('${hosts.list}')}"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
     <bean id="sshCredentialsService" class="org.envtools.monitor.common.ssh.SshCredentialsServiceImpl">
         <constructor-arg value="${hosts.directory}"/>
+    </bean>
+
+    <bean id="remoteMetricsService" class="org.envtools.monitor.provider.applications.remote.RemoteMetricsServiceImpl">
+        <constructor-arg ref="sshHelperService"/>
     </bean>
 
     <bean id="encryptionService" class="org.envtools.monitor.common.encrypting.EncryptionServiceImpl">
