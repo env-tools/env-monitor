@@ -2,6 +2,7 @@ package org.envtools.monitor.provider.applications.mock;
 
 import com.jcraft.jsch.JSchException;
 import org.apache.log4j.Logger;
+import org.envtools.monitor.common.encrypting.EncryptionService;
 import org.envtools.monitor.common.encrypting.EncryptionServiceImpl;
 import org.envtools.monitor.common.ssh.*;
 import org.envtools.monitor.model.applications.ApplicationStatus;
@@ -51,6 +52,9 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Autowired
     private MemoryDataProvider memoryDataProvider;
 
+    @Autowired
+    private EncryptionService encryptionService;
+
     @Value("${hosts.list}")
     private List<String> hosts;
 
@@ -64,7 +68,7 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     public void registerSshHelpers() throws IOException {
         ClassPathResource classPathResource = new ClassPathResource(hostsDirectory);
         SshCredentialsService sshCredentialsService = new SshCredentialsServiceImpl(classPathResource.getFile().getPath());
-        sshHelperServiceFactory = new SshHelperServiceFactory(sshCredentialsService, null);
+        sshHelperServiceFactory = new SshHelperServiceFactory(sshCredentialsService, encryptionService);
         sshHelperService = sshHelperServiceFactory.buildSshHelperService(hosts);
         sshHelperService.loginAllSshHelpers();
         remoteMetricsService = new RemoteMetricsServiceImpl(sshHelperService);
