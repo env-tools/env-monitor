@@ -32,6 +32,10 @@ Generic web-based monitoring app for distributed multi-process systems
 #How to run:
 *Build web UI:*
 - Install npm (is part of node js)
+- If you're behind proxy, set up proxy parameters:
+```sh
+set HTTP_PROXY=http://DOMAIN%5Cusername:password@server.com:PORT
+```
 - Install global bower
 ```sh
 npm i bower -g
