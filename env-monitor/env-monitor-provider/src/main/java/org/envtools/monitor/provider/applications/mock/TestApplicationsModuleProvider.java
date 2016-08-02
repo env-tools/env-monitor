@@ -2,9 +2,8 @@ package org.envtools.monitor.provider.applications.mock;
 
 import com.jcraft.jsch.JSchException;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.ssh.SshHelper;
-import org.envtools.monitor.common.ssh.SshHelperService;
-import org.envtools.monitor.common.ssh.SshHelperServiceImpl;
+import org.envtools.monitor.common.encrypting.EncryptionServiceImpl;
+import org.envtools.monitor.common.ssh.*;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
@@ -43,7 +42,8 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Autowired
     private ConfigurableApplicationProvider configurableApplicationProvider;
 
-    @Autowired
+    private SshHelperServiceFactory sshHelperServiceFactory;
+
     private SshHelperService sshHelperService;
 
     private RemoteMetricsService remoteMetricsService;
@@ -51,26 +51,25 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Autowired
     private MemoryDataProvider memoryDataProvider;
 
-    @Value("${list.hosts}")
+    @Value("${hosts.list}")
     private List<String> hosts;
+
+    @Value("${hosts.directory}")
+    String hostsDirectory;
 
     @Value("${dataPath}")
     String dataPath;
 
     @PostConstruct
-    public void registerSshHelpers(){
-        //TODO use SshCredentialsService to create SshHelper
-        sshHelperService = new SshHelperServiceImpl();
-        SshHelper sshHelper = new SshHelper("", "", 22);
-        sshHelper.setPassword("");
-        try {
-            sshHelper.login();
-        } catch (JSchException e) {
-           throw new RuntimeException(e);
-        }
-        sshHelperService.register("", sshHelper);
-        LOGGER.info("Registered SshHelpers");
+    public void registerSshHelpers() throws IOException {
+        ClassPathResource classPathResource = new ClassPathResource(hostsDirectory);
+        SshCredentialsService sshCredentialsService = new SshCredentialsServiceImpl(classPathResource.getFile().getPath());
+        sshHelperServiceFactory = new SshHelperServiceFactory(sshCredentialsService, null);
+        sshHelperService = sshHelperServiceFactory.buildSshHelperService(hosts);
+        sshHelperService.loginAllSshHelpers();
         remoteMetricsService = new RemoteMetricsServiceImpl(sshHelperService);
+
+        LOGGER.info("Registered SshHelpers");
     }
 
     @PreDestroy

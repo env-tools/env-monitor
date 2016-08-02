@@ -11,6 +11,7 @@ import java.io.IOException;
 /**
  * Created by esemenov on 14.07.16.
  */
+@Ignore
 public class SshCredentialsServiceTest {
 
     private static final Logger LOG = Logger.getLogger(SshCredentialsServiceTest.class);
@@ -24,7 +25,7 @@ public class SshCredentialsServiceTest {
     @Before
     public void setUp() throws JAXBException, IOException {
 
-        testXml = new File(String.format("%s%s.xml", directoryPath, fileName));
+//        testXml = new File(String.format("%s%s.xml", directoryPath, fileName));
         Credentials credentials = new Credentials();
 
         credentials.setHost("some host");
@@ -32,8 +33,9 @@ public class SshCredentialsServiceTest {
         credentials.setLoadAtStartup(true);
         credentials.setEncryptedPassword("kXwtAlotRoiPCCy2KyteL8Pp1rPu5uba");
 
-        testXml.createNewFile();
-        JaxbHelper.marshallToFile(credentials, testXml);
+        System.out.println(JaxbHelper.marshallToString(credentials));
+//        testXml.createNewFile();
+//        JaxbHelper.marshallToFile(credentials, testXml);
 
     }
 

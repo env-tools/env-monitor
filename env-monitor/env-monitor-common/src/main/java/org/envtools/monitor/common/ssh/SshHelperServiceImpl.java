@@ -1,5 +1,7 @@
 package org.envtools.monitor.common.ssh;
 
+import com.jcraft.jsch.JSchException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +23,17 @@ public class SshHelperServiceImpl implements SshHelperService {
     @Override
     public void register(String host, SshHelper sshHelper) {
         sshHelpersMap.put(host, sshHelper);
+    }
+
+    @Override
+    public void loginAllSshHelpers() {
+        for (SshHelper helper : sshHelpersMap.values()) {
+            try {
+                helper.login();
+            } catch (JSchException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override

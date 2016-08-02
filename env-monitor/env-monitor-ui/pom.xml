@@ -98,7 +98,7 @@
                     <include>**/static/index*.html</include>
                     <include>**/static/tree.json</include>
                     <include>**/application.properties</include>
-                    <include>**/configuration/*</include>
+                    <include>**/configuration/**</include>
                 </includes>
             </resource>
         </resources>

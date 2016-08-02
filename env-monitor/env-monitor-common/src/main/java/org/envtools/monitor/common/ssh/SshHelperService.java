@@ -9,5 +9,7 @@ public interface SshHelperService {
 
     SshHelper getHelper(String host);
 
+    void loginAllSshHelpers();
+
     void logoutAllSshHelpers();
 }

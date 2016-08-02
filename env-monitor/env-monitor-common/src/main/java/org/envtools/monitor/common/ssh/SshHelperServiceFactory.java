@@ -28,7 +28,7 @@ public class SshHelperServiceFactory {
             Credentials credentials = entry.getValue();
 
             try {
-                SshHelper sshHelper = createAndLoginSshHelper(credentials);
+                SshHelper sshHelper = createSshHelper(credentials);
                 sshHelperService.register(entry.getKey(), sshHelper);
             } catch (JSchException e) {
                 throw new RuntimeException(e);
@@ -38,10 +38,10 @@ public class SshHelperServiceFactory {
         return sshHelperService;
     }
 
-    SshHelper createAndLoginSshHelper(Credentials credentials) throws JSchException {
-        SshHelper sshHelper = new SshHelper(credentials.getHost(), credentials.getUser(), SSH_PORT);
-        sshHelper.setPassword(decryptPassword(credentials));
-        sshHelper.login();
+    SshHelper createSshHelper(Credentials credentials) throws JSchException {
+        SshHelper sshHelper = new SshHelper(credentials.getUser(), credentials.getHost(), SSH_PORT);
+//        sshHelper.setPassword(decryptPassword(credentials));
+        sshHelper.setPassword(credentials.getPassword());
         return sshHelper;
     }
 
