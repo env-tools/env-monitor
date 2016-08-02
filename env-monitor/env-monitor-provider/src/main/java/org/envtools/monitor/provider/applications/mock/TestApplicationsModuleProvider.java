@@ -44,41 +44,13 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     private ConfigurableApplicationProvider configurableApplicationProvider;
 
     @Autowired
-    private SshCredentialsService sshCredentialsService;
-
-    @Autowired
-    private SshHelperServiceFactory sshHelperServiceFactory;
-
-    private SshHelperService sshHelperService;
-
     private RemoteMetricsService remoteMetricsService;
 
     @Autowired
     private MemoryDataProvider memoryDataProvider;
 
-    @Autowired
-    private EncryptionService encryptionService;
-
-    @Value("${hosts.list}")
-    private List<String> hosts;
-
     @Value("${dataPath}")
     String dataPath;
-
-    @PostConstruct
-    public void registerSshHelpers() throws IOException {
-        sshHelperService = sshHelperServiceFactory.buildSshHelperService(hosts);
-        sshHelperService.loginAllSshHelpers();
-        remoteMetricsService = new RemoteMetricsServiceImpl(sshHelperService);
-
-        LOGGER.info("Registered SshHelpers");
-    }
-
-    @PreDestroy
-    public void logoutSshHelpers(){
-        sshHelperService.logoutAllSshHelpers();
-        LOGGER.info("SshHelpers logged out");
-    }
 
     @Override
     public void initialize(UpdateNotificationHandler handler) {

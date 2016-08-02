@@ -1,6 +1,7 @@
 package org.envtools.monitor.common.ssh;
 
 import com.jcraft.jsch.JSchException;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.Map;
  * Created by MSkuza on 2016-07-01.
  */
 public class SshHelperServiceImpl implements SshHelperService {
+    private static final Logger LOGGER = Logger.getLogger(SshHelperServiceImpl.class);
+
     private Map<String, SshHelper> sshHelpersMap;
 
     public SshHelperServiceImpl() {
@@ -34,6 +37,8 @@ public class SshHelperServiceImpl implements SshHelperService {
                 throw new RuntimeException(e);
             }
         }
+
+        LOGGER.info("SshHelpers logged in");
     }
 
     @Override
@@ -41,5 +46,6 @@ public class SshHelperServiceImpl implements SshHelperService {
         for (SshHelper helper : sshHelpersMap.values()) {
             helper.logout();
         }
+        LOGGER.info("SshHelpers logged out");
     }
 }
