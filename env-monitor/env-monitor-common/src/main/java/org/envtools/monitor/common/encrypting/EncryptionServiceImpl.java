@@ -13,7 +13,6 @@ public class EncryptionServiceImpl implements EncryptionService {
         encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(masterKey);
         encryptor.setAlgorithm(algorithm);
-
     }
 
     @Override

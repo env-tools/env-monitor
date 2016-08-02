@@ -40,8 +40,7 @@ public class SshHelperServiceFactory {
 
     SshHelper createSshHelper(Credentials credentials) throws JSchException {
         SshHelper sshHelper = new SshHelper(credentials.getUser(), credentials.getHost(), SSH_PORT);
-//        sshHelper.setPassword(decryptPassword(credentials));
-        sshHelper.setPassword(credentials.getPassword());
+        sshHelper.setPassword(decryptPassword(credentials));
         return sshHelper;
     }
 
