@@ -1,0 +1,7 @@
+<credentials>
+    <user></user>
+    <host></host>
+    <password></password>
+    <encrypted-password></encrypted-password>
+    <load-at-startup>true</load-at-startup>
+</credentials>

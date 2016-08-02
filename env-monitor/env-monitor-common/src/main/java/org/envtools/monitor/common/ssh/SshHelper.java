@@ -19,8 +19,8 @@ public class SshHelper {
     private Session session;
 
     public SshHelper(String user, String host, int port) {
-        this.host = host;
         this.user = user;
+        this.host = host;
         this.port = port;
     }
 

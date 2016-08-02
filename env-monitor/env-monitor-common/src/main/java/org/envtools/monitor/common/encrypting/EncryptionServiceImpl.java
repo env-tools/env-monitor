@@ -10,7 +10,6 @@ public class EncryptionServiceImpl implements EncryptionService {
     private StandardPBEStringEncryptor encryptor;
 
     public EncryptionServiceImpl(String masterKey, String algorithm) {
-
         encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(masterKey);
         encryptor.setAlgorithm(algorithm);

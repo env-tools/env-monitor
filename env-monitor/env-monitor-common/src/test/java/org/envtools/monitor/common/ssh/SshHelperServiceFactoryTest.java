@@ -38,7 +38,7 @@ public class SshHelperServiceFactoryTest {
         Mockito.doReturn("password").when(encryptionService).decrypt(Mockito.anyString());
 
         sshHelperServiceFactory = Mockito.spy(new SshHelperServiceFactory(sshCredentialsService, encryptionService));
-        Mockito.doReturn(new SshHelper("some_host", "user", 22)).when(sshHelperServiceFactory).createAndLoginSshHelper(Mockito.any(Credentials.class));
+        Mockito.doReturn(new SshHelper("some_host", "user", 22)).when(sshHelperServiceFactory).createSshHelper(Mockito.any(Credentials.class));
     }
 
     @Test

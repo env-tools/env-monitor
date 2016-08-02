@@ -99,7 +99,7 @@
                     <include>**/static/tree.json</include>
                     <include>**/static/ui-grid*</include>
                     <include>**/application.properties</include>
-                    <include>**/configuration/*</include>
+                    <include>**/configuration/**</include>
                 </includes>
             </resource>
         </resources>
