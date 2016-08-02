@@ -51,13 +51,13 @@ public class SshHelperServiceFactory {
             Credentials credentials = sshCredentialsService.getCredentials(host);
 
             if (credentials.isLoadAtStartup())
-                credentialsMap.put(host, credentials);
+                credentialsMap.put(credentials.getHost(), credentials);
         }
 
         return credentialsMap;
     }
 
     private String decryptPassword(Credentials credentials) {
-        return encryptionService.decrypt(credentials.getPassword());
+        return encryptionService.decrypt(credentials.getEncryptedPassword());
     }
 }

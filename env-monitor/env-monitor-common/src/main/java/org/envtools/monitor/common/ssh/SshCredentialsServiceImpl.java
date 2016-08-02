@@ -17,14 +17,14 @@ public class SshCredentialsServiceImpl implements SshCredentialsService {
     private final String directoryPath;
 
     public SshCredentialsServiceImpl(String credentialsDirectory) {
-        this.directoryPath = credentialsDirectory;
+        this.directoryPath = SshCredentialsServiceImpl.class.getClassLoader().getResource(credentialsDirectory).getPath();
     }
 
     @Override
     public Credentials getCredentials(String host) {
         try {
             Credentials credentials = JaxbHelper.unmarshallFromFile(getCredentialFile(host), Credentials.class, null);
-            credentials.setPassword(credentials.getEncryptedPassword());
+            credentials.setEncryptedPassword(credentials.getEncryptedPassword());
             return credentials;
 
         } catch (JAXBException e) {

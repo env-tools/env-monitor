@@ -43,6 +43,10 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Autowired
     private ConfigurableApplicationProvider configurableApplicationProvider;
 
+    @Autowired
+    private SshCredentialsService sshCredentialsService;
+
+    @Autowired
     private SshHelperServiceFactory sshHelperServiceFactory;
 
     private SshHelperService sshHelperService;
@@ -58,17 +62,11 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Value("${hosts.list}")
     private List<String> hosts;
 
-    @Value("${hosts.directory}")
-    String hostsDirectory;
-
     @Value("${dataPath}")
     String dataPath;
 
     @PostConstruct
     public void registerSshHelpers() throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource(hostsDirectory);
-        SshCredentialsService sshCredentialsService = new SshCredentialsServiceImpl(classPathResource.getFile().getPath());
-        sshHelperServiceFactory = new SshHelperServiceFactory(sshCredentialsService, encryptionService);
         sshHelperService = sshHelperServiceFactory.buildSshHelperService(hosts);
         sshHelperService.loginAllSshHelpers();
         remoteMetricsService = new RemoteMetricsServiceImpl(sshHelperService);
