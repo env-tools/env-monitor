@@ -9,7 +9,7 @@
     "ng-stomp": "^0.0.2",
     "jqwidgets": "^4.0.0",
     "angular-uuid-service": "0.1.0",
-    "AngularStompDK": "^0.8.2",
+    "AngularStompDK": "^0.9.3",
     "angular-modal-service": "^0.10.1"
   },
   "resolutions": {

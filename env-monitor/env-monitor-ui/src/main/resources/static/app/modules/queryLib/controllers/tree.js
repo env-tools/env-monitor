@@ -48,21 +48,19 @@
             });
             categoriesFormat["Private categories (sergey)"] = privateCategories;
 
-            $scope.$apply(function () {
-                $scope.source = [
-                    {
-                        html: '<div class="tree-item" title="Public categories" style="padding-right: 20px;">Public categories</div>',
-                        icon: "/images/treeWidget/folder.png",
-                        items: publicTree,
-                        expanded: true
-                    },
-                    {
-                        html: '<div class="tree-item" title="Private categories (sergey)" style="padding-right: 20px;">Private categories (sergey)</div>',
-                        icon: "/images/treeWidget/folder.png",
-                        items: privateTree
-                    }
-                ];
-            });
+            $scope.source = [
+                {
+                    html: '<div class="tree-item" title="Public categories" style="padding-right: 20px;">Public categories</div>',
+                    icon: "/images/treeWidget/folder.png",
+                    items: publicTree,
+                    expanded: true
+                },
+                {
+                    html: '<div class="tree-item" title="Private categories (sergey)" style="padding-right: 20px;">Private categories (sergey)</div>',
+                    icon: "/images/treeWidget/folder.png",
+                    items: privateTree
+                }
+            ];
 
             allCategories = angular.extend({}, publicCategories, privateCategories);
         }
