@@ -13,16 +13,21 @@ public class Encrypting {
 
     public static void main(String[] args) {
 
+        if (args.length != 2) {
+            System.out.println("Usage: Encrypting <masterkey> <algorithm>");
+            System.exit(1);
+        }
+
         EncryptionService encryptionService =
                 new EncryptionServiceImpl(args[0], args[1]);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 
             while (true) {
-                System.out.print("please enter password what should to be encrypt: ");
+                System.out.print("please enter password what should to be encrypted: ");
                 System.out.println();
 
-                System.out.println("This is yours encrypted password: " + encryptionService.encrypt(reader.readLine()));
+                System.out.println("This is your encrypted password: " + encryptionService.encrypt(reader.readLine()));
 
                 System.out.println("encrypt another one ? (Y\\N) ");
 

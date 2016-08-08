@@ -11,7 +11,7 @@ import java.io.File;
  * Created by Michal Skuza on 2016-06-22.
  */
 
-public class ConfigurableApplicationProvider {
+public class ConfigurationReader {
 
     public VersionedApplicationPropertiesXml readConfiguration(String marshalledData) {
         try {

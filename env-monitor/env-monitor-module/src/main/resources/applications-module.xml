@@ -25,7 +25,7 @@
           class="org.envtools.monitor.provider.applications.configurable.mapper.ConfigurableModelMapperImpl"/>
 
     <bean id="configurableApplicationProvider"
-          class="org.envtools.monitor.provider.applications.configurable.ConfigurableApplicationProvider"/>
+          class="org.envtools.monitor.provider.applications.configurable.ConfigurationReader"/>
 
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"/>
 

@@ -9,7 +9,7 @@ import java.io.InputStream;
  * Created by Michal Skuza on 09/06/16.
  */
 public class SshHelper {
-    private static final Logger logger = Logger.getLogger(SshHelper.class);
+    private static final Logger LOGGER = Logger.getLogger(SshHelper.class);
 
     private final String user;
     private final String host;
@@ -37,20 +37,21 @@ public class SshHelper {
         session = jsch.getSession(user, host, port);
         session.setUserInfo(userInfo);
         session.connect();
-        logger.info("logged in as " + user);
+        LOGGER.info(String.format("logged in as %s@%s",  user, host));
 
     }
 
     public void logout() {
         session.disconnect();
-        logger.info("logged out");
+        LOGGER.info(String.format("%s@%s logged out",  user, host));
     }
 
     public String cmd(String command) throws JSchException {
-        logger.info("exec : " + command);
-        InputStream in = null;
+        LOGGER.info("exec : " + command);
+        InputStream in;
         StringBuilder str = new StringBuilder();
         Channel channel = session.openChannel("exec");
+
         try {
 
             ((ChannelExec) channel).setCommand(command);
@@ -71,7 +72,7 @@ public class SshHelper {
                 }
 
                 if (channel.isClosed()) {
-                    logger.info("exit-status: " + channel.getExitStatus());
+                    LOGGER.info("exit-status: " + channel.getExitStatus());
                     break;
                 }
                 try {

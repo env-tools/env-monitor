@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by MSkuza on 2016-07-01.
  */
 public class SshHelperServiceImpl implements SshHelperService {
+
     private static final Logger LOGGER = Logger.getLogger(SshHelperServiceImpl.class);
 
     private Map<String, SshHelper> sshHelpersMap;
@@ -20,6 +21,12 @@ public class SshHelperServiceImpl implements SshHelperService {
 
     @Override
     public SshHelper getHelper(String host) {
+
+        if (!this.sshHelpersMap.containsKey(host)) {
+            throw new RuntimeException(String.format("No SSH connection configured for host %s, configured hosts: %s",
+                    host, this.sshHelpersMap.keySet()));
+        }
+
         return this.sshHelpersMap.get(host);
     }
 

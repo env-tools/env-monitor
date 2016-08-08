@@ -1,28 +1,20 @@
-package org.envtools.monitor.provider.applications.mock;
+package org.envtools.monitor.provider.applications.configurable;
 
-import com.jcraft.jsch.JSchException;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.encrypting.EncryptionService;
-import org.envtools.monitor.common.encrypting.EncryptionServiceImpl;
-import org.envtools.monitor.common.ssh.*;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
 import org.envtools.monitor.model.applications.Platform;
 import org.envtools.monitor.model.applications.update.UpdateNotificationHandler;
-import org.envtools.monitor.provider.applications.configurable.ConfigurableApplicationProvider;
 import org.envtools.monitor.provider.applications.configurable.mapper.ConfigurableModelMapper;
 import org.envtools.monitor.provider.applications.configurable.model.*;
+import org.envtools.monitor.provider.applications.mock.MemoryDataProvider;
 import org.envtools.monitor.provider.applications.remote.RemoteMetricsService;
-import org.envtools.monitor.provider.applications.remote.RemoteMetricsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +22,8 @@ import java.util.Optional;
 /**
  * Created by Michal Skuza on 27/07/16.
  */
-public class TestApplicationsModuleProvider implements ApplicationsModuleProvider {
-    private static final Logger LOGGER = Logger.getLogger(TestApplicationsModuleProvider.class);
+public class ConfigurableApplicationsModuleProvider implements ApplicationsModuleProvider {
+    private static final Logger LOGGER = Logger.getLogger(ConfigurableApplicationsModuleProvider.class);
 
     private UpdateNotificationHandler handler;
 
@@ -41,7 +33,7 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     private ConfigurableModelMapper configurableModelMapper;
 
     @Autowired
-    private ConfigurableApplicationProvider configurableApplicationProvider;
+    private ConfigurationReader configurationReader;
 
     @Autowired
     private RemoteMetricsService remoteMetricsService;
@@ -49,12 +41,12 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     @Autowired
     private MemoryDataProvider memoryDataProvider;
 
-    @Value("${dataPath}")
+    @Value("${configuration.dataPath}")
     String dataPath;
 
     @Override
     public void initialize(UpdateNotificationHandler handler) {
-        LOGGER.info("TestApplicationsModuleProvider.initialize - populating data model...");
+        LOGGER.info("ConfigurableApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
         updateFreeMemory();
         updateTestApplicationsModel();
@@ -82,7 +74,7 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
             if (handler != null) {
                 handler.sendUpdateNotification();
             } else {
-                LOGGER.warn("TestApplicationsModuleProvider.updateFreeMemory - handler not initialized!");
+                LOGGER.warn("ConfigurableApplicationsModuleProvider.updateFreeMemory - handler not initialized!");
             }
         }
     }
@@ -96,7 +88,7 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
         if (handler != null) {
             handler.sendUpdateNotification();
         } else {
-            LOGGER.warn("TestApplicationsModuleProvider.updateMockApplicationsModel - handler not initialized!");
+            LOGGER.warn("ConfigurableApplicationsModuleProvider.updateMockApplicationsModel - handler not initialized!");
         }
     }
 
@@ -129,7 +121,7 @@ public class TestApplicationsModuleProvider implements ApplicationsModuleProvide
     private VersionedApplicationPropertiesXml loadVersionedApplicationPropertiesXml(String filePath) {
         try {
             ClassPathResource classPathResource = new ClassPathResource(filePath);
-            return configurableApplicationProvider.readConfigurationFromFile(classPathResource.getFile());
+            return configurationReader.readConfigurationFromFile(classPathResource.getFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

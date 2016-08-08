@@ -2,7 +2,7 @@ package configurable;
 
 import org.apache.commons.io.FileUtils;
 import org.envtools.monitor.common.jaxb.JaxbHelper;
-import org.envtools.monitor.provider.applications.configurable.ConfigurableApplicationProvider;
+import org.envtools.monitor.provider.applications.configurable.ConfigurationReader;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationPropertiesXml;
 import org.envtools.monitor.provider.applications.configurable.model.*;
@@ -27,7 +27,7 @@ public class ConfigurableApplicationProviderTest {
 
         System.out.println(marshalledApplicationProperties);
 
-        ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
+        ConfigurationReader provider = new ConfigurationReader();
         VersionedApplicationPropertiesXml unmarshalledApplicationProperties = provider.readConfiguration(marshalledApplicationProperties);
 
         Assert.assertNotNull(unmarshalledApplicationProperties);
@@ -46,7 +46,7 @@ public class ConfigurableApplicationProviderTest {
 
         System.out.println(xmlFileContents);
 
-        ConfigurableApplicationProvider provider = new ConfigurableApplicationProvider();
+        ConfigurationReader provider = new ConfigurationReader();
         VersionedApplicationPropertiesXml unmarshalledApplicationProperties = provider.readConfiguration(xmlFileContents);
 
         Assert.assertNotNull(unmarshalledApplicationProperties);
