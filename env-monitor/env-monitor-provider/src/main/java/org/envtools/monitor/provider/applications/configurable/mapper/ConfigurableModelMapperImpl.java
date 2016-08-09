@@ -39,8 +39,17 @@ public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
     }
 
     private List<Application> mapApplications(EnvironmentXml environmentXml) {
+        return mapApplications(environmentXml.getApplications());
+    }
+
+    private List<Application> mapApplications(List<VersionedApplicationXml> applicationsXml) {
+
+        if (applicationsXml == null) {
+            return null;
+        }
+
         List<Application> applications = new ArrayList<>();
-        for (VersionedApplicationXml versionedApplicationXml : environmentXml.getApplications()) {
+        for (VersionedApplicationXml versionedApplicationXml : applicationsXml) {
             applications.add(convertApplication(versionedApplicationXml));
         }
         return applications;
@@ -85,6 +94,7 @@ public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
                 .status(versionedApplicationXml.getStatus())
                 .version(versionedApplicationXml.getVersion())
                 .processMemory(versionedApplicationXml.getProcessMemory())
+                .hostees(mapApplications(versionedApplicationXml.getHostees()))
                 .build();
     }
 

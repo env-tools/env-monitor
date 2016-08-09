@@ -63,6 +63,7 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
                 AWK_INSTRUCTION);
 
         String result = executeCommand(application, cmd);
+        result = StringUtils.trimWhitespace(result);
 
         if (StringUtils.isEmpty(result)) {
             return Optional.empty();
@@ -79,7 +80,7 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
             String version = matcher.group(DEFAULT_GROUP_INDEX);
             if (!StringUtils.isEmpty(version)) {
-                return Optional.of(result);
+                return Optional.of(version);
             } else {
                 return Optional.empty();
             }

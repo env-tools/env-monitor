@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -105,23 +106,40 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
     private void updateStatus(VersionedApplicationXml application) {
         String host = application.getHost();
 
-        if (host != null) {
-            Optional<ApplicationStatus> processStatus = remoteMetricsService.getProcessStatus(application, (TagBasedProcessLookupXml) application.getMetadata().getApplicationLookupXml());
-            application.setStatus(processStatus.get());
+        if (host != null && application.getMetadata() != null) {
 
-            Optional<Double> processMemoryInMb = remoteMetricsService.getProcessMemoryInMb(application, (TagBasedProcessLookupXml) application.getMetadata().getApplicationLookupXml());
-            if (processMemoryInMb.isPresent()) {
-                application.setProcessMemory(processMemoryInMb.get());
-            } else {
-                application.setProcessMemory(null);
+            Optional<ApplicationStatus> processStatus = Optional.empty();
+            Optional<Double> processMemoryInMb = Optional.empty();
+            Optional<String> version = Optional.empty();
+
+            if (application.getMetadata().getApplicationLookupXml() instanceof TagBasedProcessLookupXml)   {
+                TagBasedProcessLookupXml tagBased = (TagBasedProcessLookupXml) application.getMetadata().getApplicationLookupXml();
+                processStatus = remoteMetricsService.getProcessStatus(application, tagBased);
+                processMemoryInMb = remoteMetricsService.getProcessMemoryInMb(application, tagBased);
+            }
+
+            application.setStatus(processStatus.orElse(ApplicationStatus.UNKNOWN));
+            application.setProcessMemory(processMemoryInMb.orElse(null));
+
+            if (application.getMetadata().getVersionLookup() instanceof LinkBasedVersionLookupXml) {
+                LinkBasedVersionLookupXml linkBased = (LinkBasedVersionLookupXml)application.getMetadata().getVersionLookup();
+                version = remoteMetricsService.getApplicationVersion(application, linkBased);
+            }
+
+            application.setVersion(version.orElse(null));
+
+        }
+
+        if (application.getHostees() != null) {
+            for (VersionedApplicationXml hostee : application.getHostees()) {
+                updateStatus(hostee);
             }
         }
     }
 
-    private VersionedApplicationPropertiesXml loadVersionedApplicationPropertiesXml(String filePath) {
+    private VersionedApplicationPropertiesXml loadVersionedApplicationPropertiesXml(String resourcePath) {
         try {
-            ClassPathResource classPathResource = new ClassPathResource(filePath);
-            return configurationReader.readConfigurationFromFile(classPathResource.getFile());
+            return configurationReader.readConfigurationFromFile(ResourceUtils.getFile(resourcePath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

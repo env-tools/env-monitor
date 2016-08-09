@@ -24,15 +24,15 @@
             $scope.gridOptions =
             {
                 columnDefs: [
-                    {name : "Name", field : "name"},
-                    {name : "Type", field : "applicationType"},
-                    {name : "Host", field : "host"},
-                    {name : "Port", field : "port"},
-                    {name : "Url", field : "url"},
-                    {name : "Version", field : "version"},
-                    {name : "Component Name", field : "componentName"},
-                    {name : "Memory (Mb)", field : "processMemory"},
-                    {name : "Status", field : "status"}
+                    {name : "Name", field : "name", width : "150", resizable : "true"},
+                    {name : "Type", field : "applicationType", width : "150", resizable : "true"},
+                    {name : "Host", field : "host", width : "150", resizable : "true"},
+                    {name : "Port", field : "port", width : "150", resizable : "true"},
+                    {name : "Url", field : "url", width : "150", cellTemplate : "<a href='{{COL_FIELD}}'>{{COL_FIELD}}</a>", resizable : "true"},
+                    {name : "Version", field : "version", width : "150",  resizable : "true"},
+                    {name : "Component Name", field : "componentName", width : "150" , resizable : "true"},
+                    {name : "Memory (Mb)", field : "processMemory", width : "150" , resizable : "true"},
+                    {name : "Status", field : "status", width : "150" , resizable : "true"}
                 ],
 
                 showTreeExpandNoChildren: false,
