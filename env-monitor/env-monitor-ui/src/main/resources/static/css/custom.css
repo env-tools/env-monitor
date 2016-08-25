@@ -164,3 +164,11 @@ input.query-param {
     width: 100%;
     height: 400px;
 }
+
+.green {
+    color: #31a148;
+}
+
+.red {
+    color: #cf6255;
+}
