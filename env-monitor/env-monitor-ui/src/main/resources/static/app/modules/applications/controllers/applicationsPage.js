@@ -24,19 +24,20 @@
             $scope.gridOptions =
             {
                 enableColumnResizing: true,
+                enableAutoResizing: true,
 
                 columnDefs: [
                     {name: "Name", field: "name", width: "150", resizable: true},
-                    {name: "Type", field: "applicationType", width: "150", resizable: true},
+                    {name: "Type", field: "applicationType", width: "75", resizable: true},
                     {name: "Host", field: "host", width: "150", resizable: true},
-                    {name: "Port", field: "port", width: "150", resizable: true},
+                    {name: "Port", field: "port", width: "75", resizable: true},
                     {
                         name: "Url",
                         field: "url",
-                        width: "150",
-                        cellTemplate: "<a href='{{COL_FIELD}}'>{{COL_FIELD}}</a>"
+                        width: "200",
+                        cellTemplate: "<a href='{{COL_FIELD}}'>{{COL_FIELD}}</a>", autoResize: true
                     },
-                    {name: "Version", field: "version", width: "150", resizable: true},
+                    {name: "Version", field: "version", width: "75", resizable: true},
                     {name: "Component Name", field: "componentName", width: "150", resizable: true},
                     {name: "Memory (Mb)", field: "processMemory", width: "150", resizable: true},
                     {
