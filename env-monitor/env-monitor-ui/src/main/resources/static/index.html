@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-ng-app="envMonitor">
+<html lang="en" data-ng-app="envMonitor" data-ng-controller="Settings">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,9 +7,25 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Env monitor</title>
+    <title data-ng-bind="settings['ui.title']">...</title>
     <base href="/">
     <link href="styles.css" rel="stylesheet">
+
+    <!-- Configure foreground and background -->
+    <style type="text/css" parse-style>
+        #sidebar-wrapper {
+            background: {{ settings['ui.main-bg-color'] }};
+        }
+
+        #navigation-wrapper{
+            background: {{ settings['ui.main-bg-color'] }};
+            border-color: {{ settings['ui.main-color'] }};
+        }
+
+        #menu-toggle{
+            color: {{ settings['ui.main-color'] }};
+        }
+    </style>
 </head>
 <body>
 <div id="wrapper" class="">
@@ -18,7 +34,7 @@
             <li class="sidebar-brand">
                 <div class="profile-image">
                     <a href="#profile">
-                        <img src="/images/profile/avatar.png" alt="">
+                        <img src="{{settings['ui.logo-image']}}" alt="">
                     </a>
                 </div>
             </li>

@@ -53,6 +53,7 @@ gulp.task('javascript', function () {
             'app/app.config.js',
             'app/app.constant.js',
             'app/controllers/*.js',
+            'app/directives/*.js',
 
             'app/modules/**/module.js',
             'app/modules/**/services/*.js',

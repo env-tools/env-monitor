@@ -17,6 +17,10 @@
             selectedEnvironment: null
         };
 
+        $scope.refreshGrid = function() {
+            $scope.gridApi.core.refresh();
+        }
+
         init();
 
         function init() {
@@ -25,23 +29,26 @@
             {
                 enableColumnResizing: true,
                 enableAutoResizing: true,
+                autoResize: true,
 
                 columnDefs: [
-                    {name: "Name", field: "name", width: "150", resizable: true},
-                    {name: "Type", field: "applicationType", width: "75", resizable: true},
-                    {name: "Host", field: "host", width: "150", resizable: true},
-                    {name: "Port", field: "port", width: "75", resizable: true},
+                    {name: "Name", field: "name", width: "150", resizable: true, enableColumnResizing: true},
+                    {name: "Type", field: "applicationType", width: "75", resizable: true,  enableColumnResizing: true},
+                    {name: "Host", field: "host", width: "150", resizable: true,  enableColumnResizing: true},
+                    {name: "Port", field: "port", width: "75", resizable: true,  enableColumnResizing: true},
                     {
                         name: "Url",
                         field: "url",
-                        width: "200",
+                        width: "*",
+                        enableColumnResizing: true,
                         cellTemplate: "<a href='{{COL_FIELD}}'>{{COL_FIELD}}</a>", autoResize: true
                     },
-                    {name: "Version", field: "version", width: "75", resizable: true},
-                    {name: "Component Name", field: "componentName", width: "150", resizable: true},
-                    {name: "Memory (Mb)", field: "processMemory", width: "150", resizable: true},
+                    {name: "Version", field: "version", width: "75", resizable: true,  enableColumnResizing: true},
+                    {name: "Component Name", field: "componentName", width: "*", resizable: true,  enableColumnResizing: true},
+                    {name: "Memory (Mb)", field: "processMemory", width: "*", resizable: true,  enableColumnResizing: true},
                     {
-                        name: "Status", field: "status", width: "150", resizable: true,
+                        name: "Status", field: "status", width: "*", resizable: true,
+                        enableColumnResizing: true,
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             return grid.getCellValue(row, col) === 'RUNNING' ? 'green' : 'red';
                         }
@@ -53,6 +60,22 @@
                 onRegisterApi: function (gridApi) {
                     $scope.gridApi = gridApi;
                 }
+                /*
+                ,
+                data: [
+                    {
+                        name: "Application name",
+                        applicationType: "Application type",
+                        host: "Some host",
+                        port: "00000",
+                        url: "Url that represents app",
+                        version: "Application version",
+                        componentName: "Some component name",
+                        processMemory: "0000000",
+                        status: "UNKNOWN"
+                    }
+                ]
+                */
             };
 
             ngstomp.subscribeTo('/call/modules/M_APPLICATIONS/data/platforms').callback(
@@ -112,6 +135,10 @@
                 .callback(function (msg) {
                     $scope.applications = msg.body.payload.jsonContent;
                     $scope.gridOptions.data = convertToDataForGrid($scope.applications);
+                    $scope.gridOptions.columnDefs = $scope.adjustColDefsForAutoWidth(
+                        $scope.gridOptions.columnDefs,
+                        $scope.gridOptions.data
+                    );
 
 //                                [
 //                                    {"name":"app1_1-1","applicationType":"applicationType1","host":"host1","port":7000 + 1000 * Math.random(),"url":"http://host1:7000/app/login","version":"1.12_Q20-SNAPSHOT","componentName":"component-1","processMemory":3398,"status":"RUNNING", $$treeLevel : 0},
@@ -161,6 +188,34 @@
                         return dataForGrid;
                     }
 
+                    function enableAutoResize() {
+
+                        $scope.charToPixelRatio = 9;
+                         //change this value if u change the font size
+
+                        $scope.adjustColDefsForAutoWidth = function(colDefs, rows) {
+                            var totalChars = {};
+
+                            //Calculate maximum width for data
+                            for (var iRow = 0, nRows = rows.length; iRow < nRows; iRow++) {
+                                var tempTotalChars = {};
+                                for (var colName in rows[iRow]) {
+                                    tempTotalChars[colName] = rows[iRow][colName].toString().length;
+                                    if(iRow == 0 || tempTotalChars[colName] > totalChars[colName]){
+                                        totalChars[colName] = tempTotalChars[colName]
+                                    }
+                                }
+                            }
+
+                            for (var iCol = 0, nCols = colDefs.length; iCol < nCols; iCol++) {
+                                var fieldToMatch = colDefs[iCol].field;
+                                colDefs[iCol].width = (totalChars[fieldToMatch] * $scope.charToPixelRatio) + "px";
+                            }
+
+                            return colDefs;
+                        }
+
+                    }
                     console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.body.payload.jsonContent));
                 }).withBodyInJson().connect();
         }
