@@ -13,21 +13,26 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Java and AngularJS developer, Luxoft Poland*
 
-- Ilya Sungurov (bombinmybag)
+- Evgeniy Semenov
 
-*Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
+*Java developer, Luxoft Poland*
 
-- Anastasiya Plotnikova (anastasiya14)
+- Sergey Moldachev (InnerFlameFact)
 
 *Student of LETI University*
 
-- Sergey Moldachev (InnerFlameFact)
+- Anastasiya Plotnikova (anastasiya14)
 
 *Student of LETI University*
 
 - Maksim Fyodorov (jesa29)
 
 *Student of LETI University*
+
+- Ilya Sungurov (bombinmybag)
+
+*Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
+
 
 #How to run:
 *Build web UI:*
@@ -60,6 +65,12 @@ bower install
 ```sh
 gulp dist
 ```
+- If you're doing UI development, start tracking changes in js/css files 
+(so that scripts.js and styles.css are re-generated automatically)
+```sh
+gulp watch
+```
+
 
 *To run the prototype standalone (from command line, using java):*
 - Build with maven 3
@@ -76,6 +87,8 @@ gulp dist
 - Import root maven pom.xml into your project
 - Find class "Application" and method "main", run it from IDE 
 - In your run configuration (Java startup settings) use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
+- If you're doing UI development, make sure your current directory is where 'env-monitor-ui' folder is located.
+This will allow for instant web content re-loading when you refresh Browser page (don't forget 'gulp watch' also).
 
 *Final step:*
 - Access http://localhost:8080
