@@ -102,6 +102,13 @@ This will allow for instant web content re-loading when you refresh Browser page
 *To debug from your IDE*
  - Run Application::main in debug mode
 
+
+*Caveats*
+
+*If SSH is blocked at your PC or there are other SSH connection issues, modify configuration:
+ - set applications.provider=org.envtools.monitor.provider.applications.mock.MockApplicationsModuleProvider in application.properties
+ - set load-at-startup to false in shell.xShellz.com.xml
+ 
 #Developers guide
 
 Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.
