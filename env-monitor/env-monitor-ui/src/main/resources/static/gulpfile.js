@@ -1,5 +1,12 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var replace = require('gulp-replace-task');
+var insert = require('gulp-insert');
+var rename = require('gulp-rename');
+//var debug = require('gulp-debug');
+
+var yargs = require('yargs');
+var propertiesReader = require('properties-reader');
 
 var paths = {
     cssSrc: [
@@ -55,7 +62,9 @@ var paths = {
         'app/modules/**/routes/*.js',
         'app/modules/**/controllers/*.js',
         'app/modules/**/directives/*.js'
-    ]
+    ],
+    htmlTemplateSrc: 'index-template.html'
+
 };
 
 
@@ -73,16 +82,63 @@ gulp.task('javascript', function () {
         .pipe(gulp.dest('./'));
 });
 
-gulp.task('dist', ['stylesheets', 'javascript'], function () {
+gulp.task('html', function () {
+    return gulp.src(paths.htmlTemplateSrc
+        )
+//     .pipe(debug({title: 'stage 1'}))
+        .pipe(replace({
+            patterns: readReplacements()
+
+        }))
+        .pipe(insert.prepend('<!-- AUTO GENERATED FILE - DO NOT MODIFY ! -->\n'))
+        .pipe(rename(renameTemplates))
+        .pipe(gulp.dest('generated'))
+        ;
+});
+
+gulp.task('dist', ['stylesheets', 'javascript', 'html'], function () {
     return true;
 });
 
-gulp.task('css:watch', function() {
+gulp.task('css:watch', function () {
     gulp.watch(paths.cssSrc, ['stylesheets'])
 });
 
-gulp.task('js:watch', function() {
+gulp.task('js:watch', function () {
     gulp.watch(paths.jsSrc, ['javascript'])
 });
 
-gulp.task('watch',['css:watch','js:watch']);
+gulp.task('watch', ['css:watch', 'js:watch']);
+
+
+// --- Functions ---
+
+function readReplacements() {
+    var profile = (yargs.argv.profile) ? yargs.argv.profile : 'default';
+    var path = '../settings-' + profile + '.properties'
+
+    console.log('Using settings file ' + path + ' for replacements');
+
+    var settings = propertiesReader(path).path();
+
+    var replacements = [];
+
+    for (var setting in settings) {
+        console.log('Processing setting: ' + setting);
+
+        if (typeof settings[setting] !== 'string') {
+            console.log('Skipping invalid setting: ' + setting + ' - expected String value but was: ' + JSON.stringify(settings[setting]));
+            continue;
+        }
+
+        replacements.push({ "match": setting, "replacement": settings[setting] });
+    }
+
+    console.log(replacements.length + ' replacement(s) configured.');
+    return replacements;
+
+}
+
+function renameTemplates(path) {
+    path.basename = path.basename.replace('-template', '');
+}

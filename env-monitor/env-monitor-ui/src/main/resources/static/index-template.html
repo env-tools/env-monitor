@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" data-ng-app="envMonitor" data-ng-controller="Settings">
+
+<!-- This file is a template for index.html
+     which means that it may contain placeholders replaced at build time
+     like e.g. @@propertyname -->
+
+<!-- After processing at gulp build (when you call 'gulp dist'),
+     the processed file is copied to 'generated' folder as 'index.html'  -->
+
+<!-- Placeholders are put to settings-{profile}.properties file in resources,
+     where default {profile} is 'default'. So by default, 'settings-default.properties'
+     is used -->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,23 +19,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title data-ng-bind="settings['ui.title']">...</title>
+    <title>@@title</title>
     <base href="/">
     <link href="styles.css" rel="stylesheet">
 
     <!-- Configure foreground and background -->
     <style type="text/css" parse-style>
         #sidebar-wrapper {
-            background: {{ settings['ui.main-bg-color'] }};
+            background: @@mainBgColor;
         }
 
         #navigation-wrapper{
-            background: {{ settings['ui.main-bg-color'] }};
-            border-color: {{ settings['ui.main-color'] }};
+            background: @@mainBgColor;
+            border-color: @@mainColor;
         }
 
         #menu-toggle{
-            color: {{ settings['ui.main-color'] }};
+            color: @@mainColor;
         }
     </style>
 </head>
@@ -34,7 +46,7 @@
             <li class="sidebar-brand">
                 <div class="profile-image">
                     <a href="#profile">
-                        <img src="{{settings['ui.logo-image']}}" alt="">
+                        <img src="@@logoImage" alt="">
                     </a>
                 </div>
             </li>
@@ -44,7 +56,7 @@
                     Applications
                 </a>
             </li>
-            <li data-ui-sref-active="active">
+            <li data-ng-if="@@showQueryLibrary" data-ui-sref-active="active">
                 <a data-ui-sref="query_dashboard">
                     <span class="glyphicon glyphicon-question-sign"></span>
                     Query Library
