@@ -18,9 +18,6 @@ import javax.persistence.PersistenceContext;
  *
  * @author Yury Yakovlev
  */
-//@Component
-//@Profile("mock")
-//@Repository
 
 public class MockApplicationsModuleProvider implements ApplicationsModuleProvider {
 
@@ -29,50 +26,13 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
     private ApplicationsData data = new ApplicationsData();
 
     private UpdateNotificationHandler handler;
-    @PersistenceContext
-    protected EntityManager em;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Autowired
-    private MemoryDataProvider memoryDataProvider;
-
-    @Autowired
-    @Qualifier("transactionManager")
-    protected PlatformTransactionManager transactionManager;
 
     @Override
     public void initialize(UpdateNotificationHandler handler) {
-        LOGGER.info("MockApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-        updateFreeMemory();
+
+        LOGGER.info("MockApplicationsModuleProvider.initialize - populating applications data model...");
         updateMockApplicationsModel();
-
-    }
-
-
-    @Scheduled(initialDelay = 2000, fixedDelay = 5000)
-    protected void updateFreeMemory() {
-        Long newFreeMemory = memoryDataProvider.getFreeMemory();
-        boolean sendUpdate = false;
-        if (!newFreeMemory.equals(data.getFreeMemory())) {
-            synchronized (data) {
-                if (newFreeMemory != data.getFreeMemory()) {
-                    data.setFreeMemory(newFreeMemory);
-                    sendUpdate = true;
-                }
-            }
-        }
-
-        if (sendUpdate) {
-            if (handler != null) {
-                handler.sendUpdateNotification();
-            } else {
-                LOGGER.warn("MockApplicationsModuleProvider.updateFreeMemory - handler not initialized!");
-
-            }
-        }
     }
 
     @Scheduled(initialDelay = 1000, fixedDelay = 10000)
@@ -91,5 +51,4 @@ public class MockApplicationsModuleProvider implements ApplicationsModuleProvide
     public ApplicationsData getApplicationsData() {
         return data;
     }
-
 }

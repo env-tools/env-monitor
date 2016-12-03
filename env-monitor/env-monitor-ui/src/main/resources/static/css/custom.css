@@ -183,3 +183,12 @@ input.query-param {
 .red {
     color: #cf6255;
 }
+/*
+The selector below is for stylingh subrows of the applications tree grid.
+
+Done according to advice from Jason Cust
+at https://github.com/angular-ui/ui-grid/issues/2448
+*/
+.ui-grid-row .ui-grid-cell.SUBROW, .ui-grid-row .ui-grid-cell.SUBROW ~ .ui-grid-cell {
+    font-style: italic;
+}

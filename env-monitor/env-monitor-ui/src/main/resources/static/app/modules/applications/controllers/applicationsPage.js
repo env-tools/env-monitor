@@ -17,13 +17,22 @@
             selectedEnvironment: null
         };
 
-        $scope.refreshGrid = function() {
+        $scope.refreshGrid = function () {
             $scope.gridApi.core.refresh();
         }
 
         init();
 
+        function calculateStatusCellClass(cellValue) {
+            if (cellValue == 'RUNNING') {
+                return 'green';
+            } else {
+                return 'red';
+            }
+        }
+
         function init() {
+
 
             $scope.gridOptions =
             {
@@ -32,25 +41,37 @@
                 autoResize: true,
 
                 columnDefs: [
-                    {name: "Name", field: "name", width: "150", resizable: true, enableColumnResizing: true},
-                    {name: "Type", field: "applicationType", width: "75", resizable: true,  enableColumnResizing: true},
-                    {name: "Host", field: "host", width: "150", resizable: true,  enableColumnResizing: true},
-                    {name: "Port", field: "port", width: "75", resizable: true,  enableColumnResizing: true},
+                    {name: "Name", field: "name", width: "10%", resizable: true, enableColumnResizing: true,
+                        //The below cell class is responsible for styling the whole row (using a trick)
+                        cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
+                            if (row.treeLevel > 0)
+                                return 'SUBROW';
+                        }
+                    },
+                    {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true},
+                    {name: "Host", field: "host", width: "10%", resizable: true, enableColumnResizing: true},
+                    {name: "Port", field: "port", width: "5%", resizable: true, enableColumnResizing: true},
                     {
                         name: "Url",
                         field: "url",
-                        width: "*",
+                        width: "30%",
                         enableColumnResizing: true,
-                        cellTemplate: "<a href='{{COL_FIELD}}'>{{COL_FIELD}}</a>", autoResize: true
+                        cellTemplate: "<a title='{{COL_FIELD}}' target=_blank href='{{COL_FIELD}}'>{{COL_FIELD}}</a>",
+                        autoResize: true
                     },
-                    {name: "Version", field: "version", width: "75", resizable: true,  enableColumnResizing: true},
-                    {name: "Component Name", field: "componentName", width: "*", resizable: true,  enableColumnResizing: true},
-                    {name: "Memory (Mb)", field: "processMemory", width: "*", resizable: true,  enableColumnResizing: true},
+
+                    {name: "Version", field: "version", width: "10%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.version;
+                        }
+                    },
+                    {name: "Component Name", field: "componentName", width: "5%", resizable: true, enableColumnResizing: true},
+                    {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true},
                     {
-                        name: "Status", field: "status", width: "*", resizable: true,
+                        name: "Status", field: "status", width: "12%", resizable: true,
                         enableColumnResizing: true,
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
-                            return grid.getCellValue(row, col) === 'RUNNING' ? 'green' : 'red';
+                            return calculateStatusCellClass( grid.getCellValue(row, col) );
                         }
                     }
                 ],
@@ -59,23 +80,18 @@
 
                 onRegisterApi: function (gridApi) {
                     $scope.gridApi = gridApi;
+
+                    //Have UI Grid expanded initially
+                    // http://stackoverflow.com/questions/30893210/how-to-make-angular-ui-grid-expand-all-rows-initially
+
+                    //I think this means that every time gridOptions.data changes completely,
+                    //we do the expansion
+                    gridApi.grid.registerDataChangeCallback(function () {
+                        if ($scope.gridApi.grid.treeBase.tree instanceof Array) {
+                            $scope.gridApi.treeBase.expandAllRows();
+                        }
+                    });
                 }
-                /*
-                ,
-                data: [
-                    {
-                        name: "Application name",
-                        applicationType: "Application type",
-                        host: "Some host",
-                        port: "00000",
-                        url: "Url that represents app",
-                        version: "Application version",
-                        componentName: "Some component name",
-                        processMemory: "0000000",
-                        status: "UNKNOWN"
-                    }
-                ]
-                */
             };
 
             ngstomp.subscribeTo('/call/modules/M_APPLICATIONS/data/platforms').callback(
@@ -127,25 +143,49 @@
             }
 
             $scope.currentApplicationsSubscribeId = ngstomp.subscribeTo(
-                pattern
-                    .replace("{platformId}",
-                    $scope.filters.selectedPlatform.id)
-                    .replace("{environmentId}",
-                    $scope.filters.selectedEnvironment.id))
+                    pattern
+                        .replace("{platformId}",
+                            $scope.filters.selectedPlatform.id)
+                        .replace("{environmentId}",
+                            $scope.filters.selectedEnvironment.id))
                 .callback(function (msg) {
                     $scope.applications = msg.body.payload.jsonContent;
-                    $scope.gridOptions.data = convertToDataForGrid($scope.applications);
-                    $scope.gridOptions.columnDefs = $scope.adjustColDefsForAutoWidth(
-                        $scope.gridOptions.columnDefs,
-                        $scope.gridOptions.data
-                    );
 
-//                                [
-//                                    {"name":"app1_1-1","applicationType":"applicationType1","host":"host1","port":7000 + 1000 * Math.random(),"url":"http://host1:7000/app/login","version":"1.12_Q20-SNAPSHOT","componentName":"component-1","processMemory":3398,"status":"RUNNING", $$treeLevel : 0},
-//                                    {"name":"app2_1-1","applicationType":"applicationType2","host":"host2","port":7001,"url":"http://host1:7001/app/login","version":"1.12_E20","componentName":"component-2-1-1","processMemory":11335,"status":"RUNNING", $$treeLevel : 1}
-//                                ],
+                    var newData = convertToDataForGrid($scope.applications);
+                    //If data arrives for the first time, set it
+                    if (!$scope.gridOptions.data || $scope.gridOptions.data.length == 0) {
+                        $scope.gridOptions.data = newData;
+                    } else {
+                        //If data is already present,
+                        // to avoid losing grid row collapse/expand state,
+                        // we merge data by individual elements
+                        var mergeResult = mergeChanges(newData, $scope.gridOptions.data);
+                        if (!mergeResult) {
+                            //Smart merge failed, we have to just copy data as a whole
+                            $scope.gridOptions.data = newData;
+                            console.log('Rewritten gridOptions.data')
+                        }
+                    }
 
-                    //$scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+                    //Tries to merge changes from newData to old data
+                    //returns False if it fails to do so
+                    function mergeChanges(newData, oldData) {
+                        if (!(newData instanceof Array) || !(oldData instanceof Array) ||
+                            oldData.length != newData.length) {
+                            return false;
+                        }
+                        for (var index in newData) {
+                            for (var field in newData[index]) {
+                                if (newData[index][field] !== oldData[index][field]) {
+                                    //console.log('[' + index + '] ' + field + ': ' + oldData[index][field] + '->' + newData[index][field]);
+                                    oldData[index][field] = newData[index][field];
+                                }
+                            }
+                        }
+                        return true;
+                    }
+
+                    //Converts data from server to UI-Grid compliant format
                     function convertToDataForGrid(applications) {
                         var dataForGrid = [];
 
@@ -164,7 +204,7 @@
 
                         }, dataForGrid);
 
-                        console.log('dataForGrid=' + JSON.stringify(dataForGrid));
+                        console.log('convertToDataForGrid : conversion result=' + JSON.stringify(dataForGrid));
 
                         function addApplicationForGrid(applicationsForGrid, application, level) {
                             var applicationForGrid = {
@@ -177,7 +217,6 @@
                                 componentName: application.componentName,
                                 processMemory: application.processMemory,
                                 status: application.status,
-                                //,
 
                                 $$treeLevel: level
                             };
@@ -188,35 +227,9 @@
                         return dataForGrid;
                     }
 
-                    function enableAutoResize() {
+                    console.log('Processed new data for subscription: ' +
+                        JSON.stringify(msg.body.payload.jsonContent));
 
-                        $scope.charToPixelRatio = 9;
-                         //change this value if u change the font size
-
-                        $scope.adjustColDefsForAutoWidth = function(colDefs, rows) {
-                            var totalChars = {};
-
-                            //Calculate maximum width for data
-                            for (var iRow = 0, nRows = rows.length; iRow < nRows; iRow++) {
-                                var tempTotalChars = {};
-                                for (var colName in rows[iRow]) {
-                                    tempTotalChars[colName] = rows[iRow][colName].toString().length;
-                                    if(iRow == 0 || tempTotalChars[colName] > totalChars[colName]){
-                                        totalChars[colName] = tempTotalChars[colName]
-                                    }
-                                }
-                            }
-
-                            for (var iCol = 0, nCols = colDefs.length; iCol < nCols; iCol++) {
-                                var fieldToMatch = colDefs[iCol].field;
-                                colDefs[iCol].width = (totalChars[fieldToMatch] * $scope.charToPixelRatio) + "px";
-                            }
-
-                            return colDefs;
-                        }
-
-                    }
-                    console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.body.payload.jsonContent));
                 }).withBodyInJson().connect();
         }
     }

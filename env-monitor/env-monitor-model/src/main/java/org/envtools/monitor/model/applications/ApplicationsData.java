@@ -11,18 +11,9 @@ import java.util.List;
  *         This is model object for Applications module
  */
 public class ApplicationsData implements Serializable {
-    private Long freeMemory;
     private List<Platform> platforms;
 
     public ApplicationsData() {
-    }
-
-    public Long getFreeMemory() {
-        return freeMemory;
-    }
-
-    public void setFreeMemory(Long freeMemory) {
-        this.freeMemory = freeMemory;
     }
 
     public List<Platform> getPlatforms() {

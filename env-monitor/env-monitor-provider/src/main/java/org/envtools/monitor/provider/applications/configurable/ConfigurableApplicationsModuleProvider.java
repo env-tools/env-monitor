@@ -12,7 +12,6 @@ import org.envtools.monitor.provider.applications.mock.MemoryDataProvider;
 import org.envtools.monitor.provider.applications.remote.RemoteMetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ResourceUtils;
 
@@ -39,18 +38,15 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
     @Autowired
     private RemoteMetricsService remoteMetricsService;
 
-    @Autowired
-    private MemoryDataProvider memoryDataProvider;
-
     @Value("${configuration.dataPath}")
     String dataPath;
 
     @Override
     public void initialize(UpdateNotificationHandler handler) {
-        LOGGER.info("ConfigurableApplicationsModuleProvider.initialize - populating data model...");
         this.handler = handler;
-        updateFreeMemory();
-        updateTestApplicationsModel();
+
+        LOGGER.info("ConfigurableApplicationsModuleProvider.initialize - populating data model...");
+        updateConfigurableApplicationsModel();
     }
 
     @Override
@@ -58,30 +54,8 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
         return data;
     }
 
-    @Scheduled(initialDelay = 2000, fixedDelay = 5000)
-    protected void updateFreeMemory() {
-        Long newFreeMemory = memoryDataProvider.getFreeMemory();
-        boolean sendUpdate = false;
-        if (!newFreeMemory.equals(data.getFreeMemory())) {
-            synchronized (data) {
-                if (newFreeMemory != data.getFreeMemory()) {
-                    data.setFreeMemory(newFreeMemory);
-                    sendUpdate = true;
-                }
-            }
-        }
-
-        if (sendUpdate) {
-            if (handler != null) {
-                handler.sendUpdateNotification();
-            } else {
-                LOGGER.warn("ConfigurableApplicationsModuleProvider.updateFreeMemory - handler not initialized!");
-            }
-        }
-    }
-
     @Scheduled(initialDelay = 240000, fixedDelay = 240000)
-    private void updateTestApplicationsModel() {
+    private void updateConfigurableApplicationsModel() {
         synchronized (data) {
             data.setPlatforms(loadPlatforms());
         }
@@ -89,7 +63,7 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
         if (handler != null) {
             handler.sendUpdateNotification();
         } else {
-            LOGGER.warn("ConfigurableApplicationsModuleProvider.updateMockApplicationsModel - handler not initialized!");
+            LOGGER.warn("ConfigurableApplicationsModuleProvider.updateConfigurableApplicationsModel - handler not initialized!");
         }
     }
 
