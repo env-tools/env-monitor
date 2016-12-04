@@ -32,6 +32,7 @@
     <bean id="instanceFactory" class="org.envtools.monitor.common.ssh.SshHelperServiceFactory">
         <constructor-arg index="0" ref="sshCredentialsService"/>
         <constructor-arg index="1" ref="encryptionService"/>
+        <constructor-arg index="2" value="${configurable.provider.ssh.read.interval.ms}"/>
     </bean>
 
     <bean id="sshHelperService" class="org.envtools.monitor.common.ssh.SshHelperServiceImpl"

@@ -54,7 +54,8 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
         return data;
     }
 
-    @Scheduled(initialDelay = 240000, fixedDelay = 240000)
+    @Scheduled(initialDelayString = "${configurable.provider.refresh.initial.delay.ms}",
+            fixedDelayString = "${configurable.provider.refresh.fixed.delay.ms}")
     private void updateConfigurableApplicationsModel() {
         synchronized (data) {
             data.setPlatforms(loadPlatforms());

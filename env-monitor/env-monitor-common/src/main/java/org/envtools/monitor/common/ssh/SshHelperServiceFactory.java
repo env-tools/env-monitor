@@ -15,10 +15,14 @@ public class SshHelperServiceFactory {
     private final int SSH_PORT = 22;
     private final SshCredentialsService sshCredentialsService;
     private final EncryptionService encryptionService;
+    private final long sshReadIntervalMs;
 
-    public SshHelperServiceFactory(SshCredentialsService sshCredentialsService, EncryptionService encryptionService) {
+    public SshHelperServiceFactory(SshCredentialsService sshCredentialsService,
+                                   EncryptionService encryptionService,
+                                   long sshReadIntervalMs) {
         this.sshCredentialsService = sshCredentialsService;
         this.encryptionService = encryptionService;
+        this.sshReadIntervalMs = sshReadIntervalMs;
     }
 
     public SshHelperService buildSshHelperService(List<String> hosts) {
@@ -39,7 +43,7 @@ public class SshHelperServiceFactory {
     }
 
     SshHelper createSshHelper(Credentials credentials) throws JSchException {
-        SshHelper sshHelper = new SshHelper(credentials.getUser(), credentials.getHost(), SSH_PORT);
+        SshHelper sshHelper = new SshHelper(credentials.getUser(), credentials.getHost(), SSH_PORT, sshReadIntervalMs);
         sshHelper.setPassword(decryptPassword(credentials));
         return sshHelper;
     }

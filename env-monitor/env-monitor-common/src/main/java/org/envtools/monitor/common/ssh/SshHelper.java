@@ -14,14 +14,16 @@ public class SshHelper {
     private final String user;
     private final String host;
     private final int port;
+    private final long sshReadIntervalMs;
     private UserInfo userInfo;
 
     private Session session;
 
-    public SshHelper(String user, String host, int port) {
+    public SshHelper(String user, String host, int port, long sshReadIntervalMs) {
         this.user = user;
         this.host = host;
         this.port = port;
+        this.sshReadIntervalMs = sshReadIntervalMs;
     }
 
     private MyUserInfo createUserInfo(final String password) {
@@ -76,7 +78,7 @@ public class SshHelper {
                     break;
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(sshReadIntervalMs);
                 } catch (Exception ee) {
                 }
             }

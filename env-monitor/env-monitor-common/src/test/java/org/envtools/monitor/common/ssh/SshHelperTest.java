@@ -9,10 +9,11 @@ public class SshHelperTest {
     private final String host = "";
     private final String user = "";
     private final String password = "";
+    private final long sshInterval = 1000;
 
     @Before
     public void setUp() throws Exception {
-        sshHelper = new SshHelper(user, host, port);
+        sshHelper = new SshHelper(user, host, port, sshInterval);
         sshHelper.setPassword(password);
         sshHelper.login();
     }
