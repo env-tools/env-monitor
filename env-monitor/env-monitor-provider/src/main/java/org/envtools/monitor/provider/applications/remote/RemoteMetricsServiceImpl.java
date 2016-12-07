@@ -2,7 +2,7 @@ package org.envtools.monitor.provider.applications.remote;
 
 import com.jcraft.jsch.JSchException;
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.ssh.SshHelper;
+import org.envtools.monitor.common.ssh.SshBatch;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
@@ -12,6 +12,7 @@ import org.envtools.monitor.provider.applications.configurable.model.VersionedAp
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,31 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
             return Optional.of(ApplicationStatus.RUNNING);
         }
         return Optional.of(ApplicationStatus.STOPPED);
+    }
+
+    @Override
+    public void getProcessStatusUsingSshBatch(SshBatch sshBatch, Consumer<Optional<ApplicationStatus>> resultHandler,
+                                              VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
+        StringBuilder cmd = new StringBuilder();
+
+        appendProcessLookup(cmd, tagBasedProcessLookup);
+        cmd.append("| wc -l");
+
+        addCommand(application, cmd.toString(), sshBatch, s -> {
+            if (StringUtils.isEmpty(s)) {
+                resultHandler.accept(Optional.<ApplicationStatus>empty());
+                return;
+            }
+
+            Optional<Integer> nOccurrences = extractInt(s);
+
+            if (nOccurrences.isPresent() && nOccurrences.get() > 0) {
+                resultHandler.accept(Optional.of(ApplicationStatus.RUNNING));
+                return;
+            }
+            resultHandler.accept(Optional.of(ApplicationStatus.STOPPED));
+            return;
+        } );
     }
 
     @Override
@@ -138,6 +164,10 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
         }
 
         return Optional.empty();
+    }
+
+    private void addCommand(VersionedApplicationXml application, String cmd, SshBatch sshBatch, Consumer<String> handler) {
+        sshBatch.addToBatch(application.getHost(), cmd, handler);
     }
 
     private String executeCommand(VersionedApplicationXml application, String cmd) {

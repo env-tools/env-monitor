@@ -1,6 +1,8 @@
 package org.envtools.monitor.provider.applications.configurable;
 
 import org.apache.log4j.Logger;
+import org.envtools.monitor.common.ssh.SshBatch;
+import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.model.applications.ApplicationsData;
 import org.envtools.monitor.model.applications.ApplicationsModuleProvider;
@@ -8,7 +10,6 @@ import org.envtools.monitor.model.applications.Platform;
 import org.envtools.monitor.model.applications.update.UpdateNotificationHandler;
 import org.envtools.monitor.provider.applications.configurable.mapper.ConfigurableModelMapper;
 import org.envtools.monitor.provider.applications.configurable.model.*;
-import org.envtools.monitor.provider.applications.mock.MemoryDataProvider;
 import org.envtools.monitor.provider.applications.remote.RemoteMetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,9 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
 
     @Autowired
     private RemoteMetricsService remoteMetricsService;
+
+    @Autowired
+    private SshHelperService sshHelperService;
 
     @Value("${configuration.dataPath}")
     String dataPath;
@@ -69,31 +73,46 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
     }
 
     private void updateApplicationsStatus(List<PlatformXml> platforms) {
+
+        SshBatch sshBatch = new SshBatch(sshHelperService);
+
         for (PlatformXml platform : platforms) {
             for (EnvironmentXml environment : platform.getEnvironments()) {
                 for (VersionedApplicationXml application : environment.getApplications()) {
-                    updateStatus(application);
+                    updateStatus(application, sshBatch);
                 }
             }
         }
+
+        sshBatch.execute();
     }
 
-    private void updateStatus(VersionedApplicationXml application) {
+    private void updateStatus(VersionedApplicationXml application, SshBatch sshBatch) {
         String host = application.getHost();
 
         if (host != null && application.getMetadata() != null) {
 
-            Optional<ApplicationStatus> processStatus = Optional.empty();
+            //Optional<ApplicationStatus> processStatus = Optional.empty();
             Optional<Double> processMemoryInMb = Optional.empty();
             Optional<String> version = Optional.empty();
 
             if (application.getMetadata().getApplicationLookupXml() instanceof TagBasedProcessLookupXml)   {
                 TagBasedProcessLookupXml tagBased = (TagBasedProcessLookupXml) application.getMetadata().getApplicationLookupXml();
-                processStatus = remoteMetricsService.getProcessStatus(application, tagBased);
+
+                //old approach
+                //processStatus = remoteMetricsService.getProcessStatus(application, tagBased);
+
+                //ssh-based approach
+                remoteMetricsService.getProcessStatusUsingSshBatch(sshBatch,
+                        status -> application.setStatus(status.orElse(ApplicationStatus.UNKNOWN)),
+                        application,
+                        tagBased
+                        );
+
                 processMemoryInMb = remoteMetricsService.getProcessMemoryInMb(application, tagBased);
             }
 
-            application.setStatus(processStatus.orElse(ApplicationStatus.UNKNOWN));
+            //application.setStatus(processStatus.orElse(ApplicationStatus.UNKNOWN));
             application.setProcessMemory(processMemoryInMb.orElse(null));
 
             if (application.getMetadata().getVersionLookup() instanceof LinkBasedVersionLookupXml) {
@@ -107,7 +126,7 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
 
         if (application.getHostees() != null) {
             for (VersionedApplicationXml hostee : application.getHostees()) {
-                updateStatus(hostee);
+                updateStatus(hostee, sshBatch);
             }
         }
     }
