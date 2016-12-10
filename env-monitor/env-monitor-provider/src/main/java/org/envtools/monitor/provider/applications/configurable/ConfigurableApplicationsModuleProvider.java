@@ -18,7 +18,6 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Michal Skuza on 27/07/16.
@@ -79,7 +78,7 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
         for (PlatformXml platform : platforms) {
             for (EnvironmentXml environment : platform.getEnvironments()) {
                 for (VersionedApplicationXml application : environment.getApplications()) {
-                    updateStatus(application, sshBatch);
+                    addStatusUpdatesToBatch(application, sshBatch);
                 }
             }
         }
@@ -87,46 +86,35 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
         sshBatch.execute();
     }
 
-    private void updateStatus(VersionedApplicationXml application, SshBatch sshBatch) {
+    private void addStatusUpdatesToBatch(VersionedApplicationXml application, SshBatch sshBatch) {
         String host = application.getHost();
-
         if (host != null && application.getMetadata() != null) {
-
-            //Optional<ApplicationStatus> processStatus = Optional.empty();
-            Optional<Double> processMemoryInMb = Optional.empty();
-            Optional<String> version = Optional.empty();
 
             if (application.getMetadata().getApplicationLookupXml() instanceof TagBasedProcessLookupXml)   {
                 TagBasedProcessLookupXml tagBased = (TagBasedProcessLookupXml) application.getMetadata().getApplicationLookupXml();
 
-                //old approach
-                //processStatus = remoteMetricsService.getProcessStatus(application, tagBased);
-
-                //ssh-based approach
                 remoteMetricsService.getProcessStatusUsingSshBatch(sshBatch,
                         status -> application.setStatus(status.orElse(ApplicationStatus.UNKNOWN)),
                         application,
                         tagBased
                         );
 
-                processMemoryInMb = remoteMetricsService.getProcessMemoryInMb(application, tagBased);
+                remoteMetricsService.getProcessMemoryInMbUsingSshBatch(sshBatch,
+                        memory -> application.setProcessMemory(memory.orElse(null)),
+                        application, tagBased);
             }
-
-            //application.setStatus(processStatus.orElse(ApplicationStatus.UNKNOWN));
-            application.setProcessMemory(processMemoryInMb.orElse(null));
 
             if (application.getMetadata().getVersionLookup() instanceof LinkBasedVersionLookupXml) {
                 LinkBasedVersionLookupXml linkBased = (LinkBasedVersionLookupXml)application.getMetadata().getVersionLookup();
-                version = remoteMetricsService.getApplicationVersion(application, linkBased);
+                remoteMetricsService.getApplicationVersionUsingSshBatch(sshBatch,
+                        version -> application.setVersion(version.orElse(null)),
+                        application, linkBased);
             }
-
-            application.setVersion(version.orElse(null));
-
         }
 
         if (application.getHostees() != null) {
             for (VersionedApplicationXml hostee : application.getHostees()) {
-                updateStatus(hostee, sshBatch);
+                addStatusUpdatesToBatch(hostee, sshBatch);
             }
         }
     }

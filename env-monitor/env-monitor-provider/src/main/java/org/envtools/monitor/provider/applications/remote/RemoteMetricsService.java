@@ -15,15 +15,31 @@ import java.util.function.Consumer;
  */
 public interface RemoteMetricsService {
 
+    // Get Process Status
+
     Optional<ApplicationStatus> getProcessStatus(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup);
 
     void getProcessStatusUsingSshBatch(
             SshBatch sshBatch, Consumer<Optional<ApplicationStatus>> resultHandler,
             VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup);
 
+    // Get Application Version using link target
+
     Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup);
 
+    void getApplicationVersionUsingSshBatch(
+            SshBatch sshBatch, Consumer<Optional<String>> resultHandler,
+            VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup);
+
+    //Not yet used
     Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup);
 
+    // Get Process Memory
+
     Optional<Double> getProcessMemoryInMb(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup);
+
+    void getProcessMemoryInMbUsingSshBatch(SshBatch sshBatch, Consumer<Optional<Double>> resultHandler,
+                                           VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup);
+
 }
+

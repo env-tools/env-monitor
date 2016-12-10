@@ -9,23 +9,25 @@ import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVe
 import org.envtools.monitor.provider.applications.configurable.model.ScriptBasedVersionLookupXml;
 import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
 import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static org.envtools.monitor.provider.applications.remote.SshCommandGenerator.generateCommandForApplicationMemoryLookup;
+import static org.envtools.monitor.provider.applications.remote.SshCommandGenerator.generateCommandForLinkBasedVersionLookup;
+import static org.envtools.monitor.provider.applications.remote.SshCommandGenerator.generateCommandForTagBasedProcessLookup;
+import static org.envtools.monitor.provider.applications.remote.SshCommandResultProcessors.returnApplicationMemoryResultProcessor;
+import static org.envtools.monitor.provider.applications.remote.SshCommandResultProcessors.returnLinkBasedVersionLookupResultProcessor;
+import static org.envtools.monitor.provider.applications.remote.SshCommandResultProcessors.returnTagBasedProcessLookupResultProcessor;
 
 /**
  * Created by Michal Skuza on 27/06/16.
+ * Refactored later by Yury Yakovlev
+ *
  */
 public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     private static final Logger LOGGER = Logger.getLogger(RemoteMetricsServiceImpl.class);
-
-    private static final String LINK_PRINTOUT_DELIMITER = " -> ";
-    private static final String AWK_INSTRUCTION = " {print $2;} ";
-    private static final int DEFAULT_GROUP_INDEX = 1;
 
     private SshHelperService sshHelperService;
 
@@ -35,135 +37,83 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     @Override
     public Optional<ApplicationStatus> getProcessStatus(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
-        StringBuilder cmd = new StringBuilder();
 
-        appendProcessLookup(cmd, tagBasedProcessLookup);
-        cmd.append("| wc -l");
+        String result = executeCommand(application,
+                generateCommandForTagBasedProcessLookup(tagBasedProcessLookup));
 
-        String result = executeCommand(application, cmd.toString());
+        Holder<Optional<ApplicationStatus>> holder = new Holder<>();
+        returnTagBasedProcessLookupResultProcessor(holder::setValue).accept(result);
 
-        if (result.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Optional<Integer> nOccurrences = extractInt(result);
-
-        //TODO must be equal to 1, actually
-        if (nOccurrences.isPresent() && nOccurrences.get() > 0) {
-            return Optional.of(ApplicationStatus.RUNNING);
-        }
-        return Optional.of(ApplicationStatus.STOPPED);
+        return holder.getValue();
     }
 
     @Override
     public void getProcessStatusUsingSshBatch(SshBatch sshBatch, Consumer<Optional<ApplicationStatus>> resultHandler,
                                               VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
-        StringBuilder cmd = new StringBuilder();
 
-        appendProcessLookup(cmd, tagBasedProcessLookup);
-        cmd.append("| wc -l");
+        addCommand(application,
+                generateCommandForTagBasedProcessLookup(tagBasedProcessLookup),
+                sshBatch,
+                returnTagBasedProcessLookupResultProcessor(resultHandler));
 
-        addCommand(application, cmd.toString(), sshBatch, s -> {
-            if (StringUtils.isEmpty(s)) {
-                resultHandler.accept(Optional.<ApplicationStatus>empty());
-                return;
-            }
-
-            Optional<Integer> nOccurrences = extractInt(s);
-
-            if (nOccurrences.isPresent() && nOccurrences.get() > 0) {
-                resultHandler.accept(Optional.of(ApplicationStatus.RUNNING));
-                return;
-            }
-            resultHandler.accept(Optional.of(ApplicationStatus.STOPPED));
-            return;
-        } );
     }
 
     @Override
     public Optional<String> getApplicationVersion(VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup) {
 
-        String cmd = String.format("ls -la %s | awk -F \"%s\" '%s'",
-                versionLookup.getLink(),
-                LINK_PRINTOUT_DELIMITER,
-                AWK_INSTRUCTION);
+        String result = executeCommand(application,
+                generateCommandForLinkBasedVersionLookup(versionLookup));
 
-        String result = executeCommand(application, cmd);
-        result = StringUtils.trimWhitespace(result);
+        Holder<Optional<String>> holder = new Holder<>();
+        returnLinkBasedVersionLookupResultProcessor(versionLookup, holder::setValue).accept(result);
 
-        if (StringUtils.isEmpty(result)) {
-            return Optional.empty();
-        } else {
-            String regex = versionLookup.getLinkTargetPattern();
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(result);
-
-            if (!matcher.matches()) {
-                LOGGER.warn(String.format("RemoteMetricsServiceImpl.getApplicationVersion - actual link target '%s' does not match pattern '%s', " +
-                        " please check configuration!", result, regex));
-                return Optional.empty();
-            }
-
-            String version = matcher.group(DEFAULT_GROUP_INDEX);
-            if (!StringUtils.isEmpty(version)) {
-                return Optional.of(version);
-            } else {
-                return Optional.empty();
-            }
-        }
+        return holder.getValue();
     }
 
     @Override
-    public Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup) {
-        String cmd = String.format("/bin/bash -c '%s %s'",
-                versionLookup.getScriptPath(),
-                versionLookup.getScriptParameters()
-        );
-        String result = executeCommand(application, cmd);
+    public void getApplicationVersionUsingSshBatch(SshBatch sshBatch, Consumer<Optional<String>> resultHandler,
+                                                   VersionedApplicationXml application,
+                                                   LinkBasedVersionLookupXml versionLookup) {
+        addCommand(application,
+                generateCommandForLinkBasedVersionLookup(versionLookup),
+                sshBatch,
+                returnLinkBasedVersionLookupResultProcessor(versionLookup, resultHandler));
+    }
 
-        if (StringUtils.isEmpty(result)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(result);
-        }
+    //This method is not used
+    @Override
+    public Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup) {
+//        String cmd = String.format("/bin/bash -c '%s %s'",
+//                versionLookup.getScriptPath(),
+//                versionLookup.getScriptParameters()
+//        );
+//        String result = executeCommand(application, cmd);
+//
+//        if (StringUtils.isEmpty(result)) {
+//            return Optional.empty();
+//        } else {
+//            return Optional.of(result);
+//        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Double> getProcessMemoryInMb(VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
-        StringBuilder cmd = new StringBuilder();
 
-        appendProcessLookup(cmd, tagBasedProcessLookup);
+        String result = executeCommand(application, generateCommandForApplicationMemoryLookup(tagBasedProcessLookup));
 
-        //Get pid
-        cmd.append("| awk '{ print $2; }' ");
+        Holder<Optional<Double>> holder = new Holder<>();
+        returnApplicationMemoryResultProcessor(holder::setValue).accept(result);
 
-        // pmap requires sudo
-        //| xargs pmap | grep total | awk '{print $2; }'");
+        return holder.getValue();
+    }
 
-        String pidCmdResult = executeCommand(application, cmd.toString());
-
-        if (pidCmdResult.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Optional<Integer> pid = extractInt(pidCmdResult);
-        if (!pid.isPresent()) {
-            return Optional.empty();
-        }
-
-        String memCmdInKb = String.format(String.format("cat /proc/%d/status | grep VmSize | awk -F' ' '{print $2; }'", pid.get()));
-        String memCmdResult = executeCommand(application, memCmdInKb.toString());
-
-        if (memCmdResult.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Optional<Integer> intMemoryInKb = extractInt(memCmdResult);
-        if (intMemoryInKb.isPresent()) {
-            return Optional.of(intMemoryInKb.get() / 1000.0);
-        }
-
-        return Optional.empty();
+    @Override
+    public void getProcessMemoryInMbUsingSshBatch(SshBatch sshBatch, Consumer<Optional<Double>> resultHandler, VersionedApplicationXml application, TagBasedProcessLookupXml tagBasedProcessLookup) {
+        addCommand(application,
+                generateCommandForApplicationMemoryLookup(tagBasedProcessLookup),
+                sshBatch,
+                returnApplicationMemoryResultProcessor(resultHandler));
     }
 
     private void addCommand(VersionedApplicationXml application, String cmd, SshBatch sshBatch, Consumer<String> handler) {
@@ -178,26 +128,18 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
         }
     }
 
-    private void appendProcessLookup(StringBuilder cmd, TagBasedProcessLookupXml tagBasedProcessLookup) {
-        cmd.append("ps -ef ");
+    private static class Holder<T> {
+        private T value;
 
-        for (String tag : tagBasedProcessLookup.getIncludeTags())
-            cmd.append("| grep ").append(String.format("'%s'", tag));
-
-        for (String tag : tagBasedProcessLookup.getExcludeTags())
-            cmd.append("| grep -v ").append(String.format("'%s'", tag));
-
-        //TODO: the statement below is a thin ice, how to make it better?
-        cmd.append("| grep -v grep");
-    }
-
-    private Optional<Integer> extractInt(String str) {
-        Matcher matcher = Pattern.compile("\\d+").matcher(str);
-
-        if (!matcher.find()) {
-            return Optional.empty();
+        private Holder() {
         }
 
-        return Optional.of(Integer.parseInt(matcher.group()));
+        public T getValue() {
+            return value;
+        }
+
+        public void setValue(T value) {
+            this.value = value;
+        }
     }
 }

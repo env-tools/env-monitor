@@ -9,6 +9,8 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
