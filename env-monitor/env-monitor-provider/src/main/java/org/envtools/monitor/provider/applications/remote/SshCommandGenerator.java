@@ -40,7 +40,7 @@ public class SshCommandGenerator {
         cmd.append("| awk '{ print $2; }' ");
 
         //If pid is available, then grab memory value
-        cmd.append("`; if [ -n \"$PID\" ]; then cat /proc/$PID/status | grep VmSize | awk -F' ' '{print $2; }'; fi;");
+        cmd.append("`; if [ -n \"$PID\" ]; then cat /proc/$PID/status | grep VmSize | awk -F' ' '{print $2; }'; fi");
 
         return cmd.toString();
     }
