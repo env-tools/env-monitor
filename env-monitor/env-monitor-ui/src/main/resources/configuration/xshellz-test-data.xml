@@ -15,7 +15,7 @@
                             <metadata>
                                 <tagBasedProcessLookup>
                                     <includeTags>
-                                        <tag>yyakovlev@pts</tag>
+                                        <tag>systemd</tag>
                                     </includeTags>
                                 </tagBasedProcessLookup>
                                 <linkBasedVersionLookup>
