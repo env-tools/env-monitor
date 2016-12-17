@@ -41,10 +41,6 @@ Generic web-based monitoring app for distributed multi-process systems
 ```sh
 set HTTP_PROXY=http://DOMAIN%5Cusername:password@server.com:PORT
 ```
-- Install global bower
-```sh
-npm i bower -g
-```
 - Install global gulp (windows only)
 ```sh
 npm i gulp@3.9.0 -g
@@ -53,15 +49,13 @@ npm i gulp@3.9.0 -g
 ```sh
 cd env-monitor/env-monitor/env-monitor-ui/src/main/resources/static/
 ```
-- Download npm dependencies (required first time)
+- Download npm dependencies: tool dependencies and javascript library dependencies
 ```sh
 npm install
 ```
-- Download bower dependencies (required if new js libraries appeared in project)
-```sh
-bower install
-```
-- Build project (required if js sources changed)
+Please note: bower is no more used
+
+- Build project (required if js sources changed or index-template.html changed)
 ```sh
 gulp dist
 ```
@@ -70,7 +64,6 @@ gulp dist
 ```sh
 gulp watch
 ```
-
 
 *To run the prototype standalone (from command line, using java):*
 - Build with maven 3
