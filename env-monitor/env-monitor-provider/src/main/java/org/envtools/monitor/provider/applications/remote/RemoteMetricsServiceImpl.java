@@ -1,17 +1,17 @@
 package org.envtools.monitor.provider.applications.remote;
 
 import com.jcraft.jsch.JSchException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.common.ssh.SshBatch;
 import org.envtools.monitor.common.ssh.SshHelperService;
 import org.envtools.monitor.model.applications.ApplicationStatus;
-import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
-import org.envtools.monitor.provider.applications.configurable.model.ScriptBasedVersionLookupXml;
-import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
-import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
+import org.envtools.monitor.provider.applications.configurable.model.*;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.envtools.monitor.provider.applications.remote.SshCommandGenerator.generateCommandForApplicationMemoryLookup;
 import static org.envtools.monitor.provider.applications.remote.SshCommandGenerator.generateCommandForLinkBasedVersionLookup;
@@ -23,7 +23,6 @@ import static org.envtools.monitor.provider.applications.remote.SshCommandResult
 /**
  * Created by Michal Skuza on 27/06/16.
  * Refactored later by Yury Yakovlev
- *
  */
 public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
@@ -31,8 +30,13 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 
     private SshHelperService sshHelperService;
 
-    public RemoteMetricsServiceImpl(SshHelperService sshHelperService) {
+    private BasicUrlService urlService;
+
+    private static final int DEFAULT_GROUP_INDEX = 1;
+
+    public RemoteMetricsServiceImpl(SshHelperService sshHelperService, BasicUrlService urlService) {
         this.sshHelperService = sshHelperService;
+        this.urlService = urlService;
     }
 
     @Override
@@ -94,6 +98,32 @@ public class RemoteMetricsServiceImpl implements RemoteMetricsService {
 //        } else {
 //            return Optional.of(result);
 //        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getApplicationVersion(VersionedApplicationXml application, WebResourceBasedVersionLookupXml versionLookup) {
+
+        Optional<String> resource = urlService.readResource(versionLookup.getUrl(), versionLookup.getHeaders());
+        if (resource.isPresent()) {
+            Pattern pattern = Pattern.compile(versionLookup.getRegexp());
+            for (String line : resource.get().split("\\n")) {
+                line = StringUtils.trim(line);
+                Matcher matcher = pattern.matcher(line);
+
+                if (matcher.matches()) {
+                    try {
+                        return Optional.ofNullable(matcher.group(DEFAULT_GROUP_INDEX));
+                    } catch (IndexOutOfBoundsException | IllegalStateException e) {
+                        LOGGER.warn(String.format(
+                                "RemoteMetricsServiceImpl.getApplicationVersion - " +
+                                        "could not get group with index %d / regexp %s for line %s",
+                                DEFAULT_GROUP_INDEX, versionLookup.getRegexp(), line));
+                    }
+                }
+            }
+            LOGGER.warn("None of lines of resource " + versionLookup.getUrl() + " matched " + versionLookup.getRegexp());
+        }
         return Optional.empty();
     }
 

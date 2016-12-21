@@ -51,6 +51,12 @@
 
     <bean id="remoteMetricsService" class="org.envtools.monitor.provider.applications.remote.RemoteMetricsServiceImpl">
         <constructor-arg ref="sshHelperService"/>
+        <constructor-arg ref="urlService"/>
+    </bean>
+
+    <bean id="urlService" class="org.envtools.monitor.provider.applications.remote.BasicUrlServiceImpl">
+         <property name="connectTimeoutMs" value="${configurable.provider.http.connect.timeout.ms:500}"/>
+         <property name="readTimeoutMs" value="${configurable.provider.http.read.timeout.ms:500}"/>
     </bean>
 
     <bean id="encryptionService" class="org.envtools.monitor.common.encrypting.EncryptionServiceImpl">

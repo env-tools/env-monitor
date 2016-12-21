@@ -41,6 +41,21 @@
                                 </hostee>
                             </hostees>
                         </application>
+                        <application id="test.app">
+                            <name>Something</name>
+                            <type>test</type>
+                            <host>shell.xShellz.com</host>
+                            <port>some_port</port>
+                            <url>http://some.url.com</url>
+                            <componentname>some_componentname</componentname>
+                            <metadata>
+                                <webResourceBasedVersionLookup>
+                                    <url>http://yyakovlev.ru/files/TestGenProject/testgen_User_Manual/letter.txt</url>
+                                    <headers></headers>
+                                    <regexp>testgen_(.*).zip .*ksi.mdb</regexp>
+                                </webResourceBasedVersionLookup>
+                            </metadata>
+                        </application>
                     </applications>
                 </environment>
             </environments>

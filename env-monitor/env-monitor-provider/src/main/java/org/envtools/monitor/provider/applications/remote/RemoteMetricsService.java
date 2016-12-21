@@ -2,10 +2,7 @@ package org.envtools.monitor.provider.applications.remote;
 
 import org.envtools.monitor.common.ssh.SshBatch;
 import org.envtools.monitor.model.applications.ApplicationStatus;
-import org.envtools.monitor.provider.applications.configurable.model.ScriptBasedVersionLookupXml;
-import org.envtools.monitor.provider.applications.configurable.model.VersionedApplicationXml;
-import org.envtools.monitor.provider.applications.configurable.model.LinkBasedVersionLookupXml;
-import org.envtools.monitor.provider.applications.configurable.model.TagBasedProcessLookupXml;
+import org.envtools.monitor.provider.applications.configurable.model.*;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -30,6 +27,11 @@ public interface RemoteMetricsService {
     void getApplicationVersionUsingSshBatch(
             SshBatch sshBatch, Consumer<Optional<String>> resultHandler,
             VersionedApplicationXml application, LinkBasedVersionLookupXml versionLookup);
+
+    // Get Application Version using web resource parsing
+
+    Optional<String> getApplicationVersion(
+            VersionedApplicationXml application, WebResourceBasedVersionLookupXml versionLookup);
 
     //Not yet used
     Optional<String> getApplicationVersion(VersionedApplicationXml application, ScriptBasedVersionLookupXml versionLookup);

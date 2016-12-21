@@ -18,6 +18,7 @@ public class MetadataXml {
             {
                     @XmlElement(name = "linkBasedVersionLookup", type = LinkBasedVersionLookupXml.class),
                     @XmlElement(name = "scriptBasedVersionLookup", type = ScriptBasedVersionLookupXml.class),
+                    @XmlElement(name = "webResourceBasedVersionLookup", type = WebResourceBasedVersionLookupXml.class),
             })
     private VersionLookupXml versionLookup;
 

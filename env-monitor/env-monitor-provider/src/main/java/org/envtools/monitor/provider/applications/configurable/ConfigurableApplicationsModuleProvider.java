@@ -110,6 +110,16 @@ public class ConfigurableApplicationsModuleProvider implements ApplicationsModul
                         version -> application.setVersion(version.orElse(null)),
                         application, linkBased);
             }
+
+            //TODO Introduce Web Request Batch for fastest multi-threaded processing!
+
+            if (application.getMetadata().getVersionLookup() instanceof WebResourceBasedVersionLookupXml) {
+                WebResourceBasedVersionLookupXml webBased = (WebResourceBasedVersionLookupXml)application.getMetadata().getVersionLookup();
+                application.setVersion(
+                    remoteMetricsService.getApplicationVersion(application, webBased)
+                .orElse(null));
+            }
+
         }
 
         if (application.getHostees() != null) {
