@@ -98,6 +98,7 @@
                     <include>**/static/index*.html</include>
                     <include>**/static/tree.json</include>
                     <include>**/static/ui-grid*</include>
+                    <include>**/static/generated/*</include>
                     <include>**/application.properties</include>
                     <include>**/configuration/**</include>
                 </includes>
