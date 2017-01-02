@@ -28,7 +28,7 @@ public class VersionedApplicationXml {
     private String host;
 
     @XmlElement
-    private int port;
+    private String port;
 
     @XmlElement
     private String url;
@@ -55,7 +55,7 @@ public class VersionedApplicationXml {
     public VersionedApplicationXml() {
     }
 
-    public VersionedApplicationXml(String id, String name, String type, String host, int port, String url, String componentName) {
+    public VersionedApplicationXml(String id, String name, String type, String host, String port, String url, String componentName) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -98,11 +98,11 @@ public class VersionedApplicationXml {
         this.host = host;
     }
 
-    public int getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(String port) {
         this.port = port;
     }
 

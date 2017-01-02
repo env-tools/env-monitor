@@ -14,7 +14,7 @@ import java.util.List;
 public class MockApplication extends Application {
     private String applicationType;
     private String host;
-    private int port;
+    private String port;
     private String url;
     private String componentName;
     private String version;
@@ -24,7 +24,7 @@ public class MockApplication extends Application {
     }
 
     public MockApplication(String id, String name, ApplicationStatus status,
-                           String applicationType, String host, int port, String url, String componentName, String version, Double processMemory,
+                           String applicationType, String host, String port, String url, String componentName, String version, Double processMemory,
                            List<Application> hostees) {
         super(id, name, status);
         this.applicationType = applicationType;
@@ -54,11 +54,11 @@ public class MockApplication extends Application {
         this.host = host;
     }
 
-    public int getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(String port) {
         this.port = port;
     }
 
@@ -100,7 +100,7 @@ public class MockApplication extends Application {
         private ApplicationStatus status;
         private String applicationType;
         private String host;
-        private int port;
+        private String port;
         private String url;
         private String componentName;
         private String version;
@@ -135,7 +135,7 @@ public class MockApplication extends Application {
             return this;
         }
 
-        public Builder port(int port) {
+        public Builder port(String port) {
             this.port = port;
             return this;
         }

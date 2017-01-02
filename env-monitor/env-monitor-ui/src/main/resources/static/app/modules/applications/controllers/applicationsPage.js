@@ -49,26 +49,26 @@
                         }
                     },
                     {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true},
-                    {name: "Host", field: "host", width: "10%", resizable: true, enableColumnResizing: true},
+                    {name: "Host", field: "host", width: "7%", resizable: true, enableColumnResizing: true},
                     {name: "Port", field: "port", width: "5%", resizable: true, enableColumnResizing: true},
                     {
                         name: "Url",
                         field: "url",
-                        width: "30%",
+                        width: "25%",
                         enableColumnResizing: true,
                         cellTemplate: "<a title='{{COL_FIELD}}' target=_blank href='{{COL_FIELD}}'>{{COL_FIELD}}</a>",
                         autoResize: true
                     },
 
-                    {name: "Version", field: "version", width: "10%", resizable: true, enableColumnResizing: true,
+                    {name: "Version", field: "version", width: "18%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
                             return row.entity.version;
                         }
                     },
-                    {name: "Component Name", field: "componentName", width: "5%", resizable: true, enableColumnResizing: true},
+                    {name: "Component Name", field: "componentName", width: "9%", resizable: true, enableColumnResizing: true},
                     {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true},
                     {
-                        name: "Status", field: "status", width: "12%", resizable: true,
+                        name: "Status", field: "status", width: "8%", resizable: true,
                         enableColumnResizing: true,
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             return calculateStatusCellClass( grid.getCellValue(row, col) );
