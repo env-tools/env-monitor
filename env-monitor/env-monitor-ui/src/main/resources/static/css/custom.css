@@ -155,7 +155,17 @@
     color: red;
 }
 
-input.query-param {
+input.query-param--name {
+    width: 70px;
+    border: 0;
+}
+
+input.query-param--type {
+    border: 0;
+    width: 70px;
+}
+
+input.query-param--value {
     width: 100px;
     border: none;
 }

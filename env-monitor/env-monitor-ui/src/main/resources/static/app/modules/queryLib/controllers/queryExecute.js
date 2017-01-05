@@ -5,19 +5,22 @@
         .module('queryLib')
         .controller('QueryExecute', QueryExecute);
 
-    QueryExecute.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122'];
+    QueryExecute.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122', 'QueryService'];
 
-    function QueryExecute($scope, $rootScope, ngstomp, rfc4122) {
+    function QueryExecute($scope, $rootScope, ngstomp, rfc4122, QueryService) {
         var requestId = rfc4122.v4();
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/exec/' + requestId;
+        var subOperationDestination = '/subscribe/modules/M_QUERY_LIBRARY/operation/' + requestId;
 
         $scope.execute = execute;
+        $scope.addParam = addParam;
+        $scope.saveQuery = saveQuery;
 
         $scope.params = {
-            query: '',
+            text: '',
             timeout: 1000,
             rows: 50,
-            parameters: {}
+            parameters: []
         };
 
         $scope.resultExecute = {};
@@ -31,6 +34,40 @@
             ngstomp.subscribeTo(subDestination).callback(function (message) {
                 $scope.$apply(getExecuteResult(message.body.payload.jsonContent))
             }).withBodyInJson().connect();
+        }
+
+        function addParam(newParam) {
+            var param = {
+                name: newParam.name,
+                type: newParam.type,
+                value: newParam.value
+            };
+            $scope.params.parameters.push(param);
+        }
+
+        function saveQuery(params) {
+            var mesDestination = '/message/modulerequest';
+            var fields = {
+                text: params.text,
+                queryParams: prepareToUpdate(params.parameters)
+            };
+
+            var body = QueryService.getUpdateBody(requestId, subOperationDestination, params.id, fields);
+            ngstomp.send(mesDestination, body, {});
+        }
+
+        function prepareToUpdate(parameters) {
+            var result = [];
+            angular.forEach(parameters, function(values) {
+                var obj = {
+                    name: values.name,
+                    type: values.type
+                };
+
+                result.push(obj);
+            });
+
+            return result;
         }
 
         function formatQueryParameters(parameters) {
@@ -54,7 +91,7 @@
                 payload: {
                     payloadType: 'execute',
                     content: {
-                        query: params.query,
+                        query: params.text,
                         queryType: "JDBC",
                         timeOutMs: params.timeout,
                         rowCount: params.rows,
@@ -111,7 +148,8 @@
         }
 
         $rootScope.$on('setQuery', function (event, data) {
-            $scope.params.query = data.text;
+            $scope.params.id = data.id;
+            $scope.params.text = data.text;
             $scope.params.parameters = data.parameters;
         })
     }
