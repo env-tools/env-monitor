@@ -208,7 +208,7 @@
 
                         function addApplicationForGrid(applicationsForGrid, application, level) {
                             var applicationForGrid = {
-                                name: application.name,
+                                name: generateIndent(level) + application.name,
                                 applicationType: application.applicationType,
                                 host: application.host,
                                 port: application.port,
@@ -222,6 +222,10 @@
                             };
 
                             applicationsForGrid.push(applicationForGrid);
+                        }
+
+                        function generateIndent(level) {
+                            return Array(1 + (level * 6)).join('\xa0');
                         }
 
                         return dataForGrid;
