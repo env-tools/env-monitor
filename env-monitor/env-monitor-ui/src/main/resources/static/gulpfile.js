@@ -79,6 +79,16 @@ gulp.task('javascript', function () {
             paths.jsSrc
         )
         .pipe(concat('scripts.js'))
+        // Competition for the dirtiest hack ever =) see #EM-82
+        .pipe(replace({
+            patterns: [
+                {
+                    match: /return c1\.queue === c2\.queue && c1\.callback === c2\.callback && c1\.header === c2\.header && c1\.scope === c2\.scope && c1\.digest === c2\.digest;/g,
+                    replacement: ' /* hacked */ return c1.queue === c2.queue && c1.callback === c2.callback && c1.header === c2.header && c1.digest === c2.digest;'
+                }
+            ]
+
+        }))
         .pipe(gulp.dest('./'));
 });
 

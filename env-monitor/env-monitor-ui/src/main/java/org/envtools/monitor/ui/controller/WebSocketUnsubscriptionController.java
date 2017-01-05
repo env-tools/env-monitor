@@ -9,28 +9,29 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 /**
- * Created: 17.03.16 3:56
+ * Created: 06.01.17 0:20
  *
  * @author Yury Yakovlev
  */
 @Component
-public class WebSocketSubscriptionController implements ApplicationListener<SessionSubscribeEvent> {
+public class WebSocketUnsubscriptionController implements ApplicationListener<SessionUnsubscribeEvent> {
 
-    private static final Logger LOGGER = Logger.getLogger(WebSocketSubscriptionController.class);
+    private static final Logger LOGGER = Logger.getLogger(WebSocketUnsubscriptionController.class);
 
     /**
-     * This handler is a service responsible for handling all subscription commands to all modules
+     * This handler is a service responsible for handling all unsubscription commands to all modules
      */
     @Autowired
     StompSubscriptionCommandHandler stompSubscriptionCommandHandler;
 
     @Override
-    public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
+    public void onApplicationEvent(SessionUnsubscribeEvent sessionUnsubscribeEvent) {
 
-        //Any subscription request from web socket client (with destination started with "/subscribe") will go here
-        stompSubscriptionCommandHandler.handleSubscription(sessionSubscribeEvent);
+        //Any unsubscription request from web socket client (with destination started with "/subscribe") will go here
+        stompSubscriptionCommandHandler.handleSubscription(sessionUnsubscribeEvent);
 
     }
 
