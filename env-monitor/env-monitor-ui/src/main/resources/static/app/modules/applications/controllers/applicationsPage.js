@@ -46,11 +46,28 @@
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             if (row.treeLevel > 0)
                                 return 'SUBROW';
+                        },
+                        cellTooltip: function (row, col) {
+                            return row.entity.name;
                         }
                     },
-                    {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true},
-                    {name: "Host", field: "host", width: "7%", resizable: true, enableColumnResizing: true},
-                    {name: "Port", field: "port", width: "5%", resizable: true, enableColumnResizing: true},
+                    {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.applicationType;
+                        }
+
+                    },
+                    {name: "Host", field: "host", width: "7%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.host;
+                        }
+
+                    },
+                    {name: "Port", field: "port", width: "5%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.port;
+                        }
+                    },
                     {
                         name: "Url",
                         field: "url",
@@ -65,14 +82,27 @@
                             return row.entity.version;
                         }
                     },
-                    {name: "Component Name", field: "componentName", width: "9%", resizable: true, enableColumnResizing: true},
-                    {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true},
+                    {name: "Component Name", field: "componentName", width: "9%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.componentName;
+                        }
+
+                    },
+                    {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.processMemory;
+                        }
+                    },
                     {
                         name: "Status", field: "status", width: "8%", resizable: true,
                         enableColumnResizing: true,
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             return calculateStatusCellClass( grid.getCellValue(row, col) );
+                        },
+                        cellTooltip: function (row, col) {
+                            return row.entity.status;
                         }
+
                     }
                 ],
 
