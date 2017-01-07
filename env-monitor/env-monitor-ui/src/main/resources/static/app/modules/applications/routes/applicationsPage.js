@@ -10,7 +10,7 @@
     function routersConfig($stateProvider) {
         $stateProvider
             .state('applications_applicationsPage', {
-                url: "/applications",
+                url: "/",
                 templateUrl: "/app/modules/applications/templates/applications.list.html",
                 controller: 'ApplicationsPageController'
             })

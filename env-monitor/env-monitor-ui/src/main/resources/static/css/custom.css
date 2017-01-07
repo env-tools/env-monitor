@@ -22,12 +22,21 @@
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: #48cfad;
+    background: #002D72;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
     box-shadow: 15px 0px 30px rgba(0, 0, 0, 0.5);
+}
+
+#navigation-wrapper{
+    background: #002D72;
+    border-color: #3bafda;
+}
+
+#menu-toggle{
+    color: #3bafda;
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -38,6 +47,7 @@
     width: 100%;
     position: absolute;
     padding: 15px;
+    /*background-color: #002D72;*/
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -64,7 +74,7 @@
 .sidebar-nav li a {
     display: block;
     text-decoration: none;
-    color: #26816a;
+    /*color: #26816a;*/
 }
 
 .sidebar-nav li a:hover,
@@ -149,6 +159,7 @@
 
 .tree-controls .glyphicon {
     cursor: pointer;
+    background: #002D72;
 }
 
 .tree-controls .glyphicon-remove {
@@ -163,4 +174,21 @@ input.query-param {
 .applications-grid {
     width: 100%;
     height: 400px;
+}
+
+.green {
+    color: #31a148;
+}
+
+.red {
+    color: #cf6255;
+}
+/*
+The selector below is for stylingh subrows of the applications tree grid.
+
+Done according to advice from Jason Cust
+at https://github.com/angular-ui/ui-grid/issues/2448
+*/
+.ui-grid-row .ui-grid-cell.SUBROW, .ui-grid-row .ui-grid-cell.SUBROW ~ .ui-grid-cell {
+    font-size: smaller;
 }

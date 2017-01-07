@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:int="http://www.springframework.org/schema/integration"
-       xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-       http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:property-placeholder location="classpath*:application.properties" system-properties-mode="OVERRIDE"/>
 
@@ -19,7 +19,50 @@
     <bean id="serializer" class="org.envtools.monitor.common.serialization.JacksonJSONSerializer"/>
 
     <!-- TODO move to provider context -->
-    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.mock.MemoryDataProvider"/>
+    <bean id="cpuDataProvider" class="org.envtools.monitor.provider.applications.mock.MemoryDataProvider"/>
+
+    <bean id="configurableModelMapper"
+          class="org.envtools.monitor.provider.applications.configurable.mapper.ConfigurableModelMapperImpl"/>
+
+    <bean id="configurableApplicationProvider"
+          class="org.envtools.monitor.provider.applications.configurable.ConfigurationReader"/>
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"/>
+
+    <bean id="instanceFactory" class="org.envtools.monitor.common.ssh.SshHelperServiceFactory">
+        <constructor-arg index="0" ref="sshCredentialsService"/>
+        <constructor-arg index="1" ref="encryptionService"/>
+        <constructor-arg index="2" value="${configurable.provider.ssh.read.interval.ms}"/>
+    </bean>
+
+    <bean id="sshHelperService" class="org.envtools.monitor.common.ssh.SshHelperServiceImpl"
+          factory-bean="instanceFactory" factory-method="buildSshHelperService" init-method="loginAllSshHelpers"
+            destroy-method="logoutAllSshHelpers">
+        <constructor-arg>
+            <bean id="list" class="java.util.ArrayList">
+                <constructor-arg type="java.util.Collection" value="#{T(java.util.Arrays).asList('${hosts.list}')}"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="sshCredentialsService" class="org.envtools.monitor.common.ssh.SshCredentialsServiceImpl">
+        <constructor-arg value="${hosts.directory}"/>
+    </bean>
+
+    <bean id="remoteMetricsService" class="org.envtools.monitor.provider.applications.remote.RemoteMetricsServiceImpl">
+        <constructor-arg ref="sshHelperService"/>
+        <constructor-arg ref="urlService"/>
+    </bean>
+
+    <bean id="urlService" class="org.envtools.monitor.provider.applications.remote.BasicUrlServiceImpl">
+         <property name="connectTimeoutMs" value="${configurable.provider.http.connect.timeout.ms:500}"/>
+         <property name="readTimeoutMs" value="${configurable.provider.http.read.timeout.ms:500}"/>
+    </bean>
+
+    <bean id="encryptionService" class="org.envtools.monitor.common.encrypting.EncryptionServiceImpl">
+        <constructor-arg index="0" value="${jasypt.master.key}"/>
+        <constructor-arg index="1" value="${jasypt.algorithm}"/>
+    </bean>
 
     <task:annotation-driven scheduler="messageBrokerSockJsTaskScheduler"/>
 

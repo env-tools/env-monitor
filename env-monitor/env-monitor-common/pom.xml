@@ -33,5 +33,17 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${org.codehaus.jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.53</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
     </dependencies>
 </project>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<applicationsMetadata>
+    <platforms>
+        <platform id="XSHELLZ" name="xshellz">
+            <environments>
+                <environment id="tty" name="TTY">
+                    <applications>
+                        <application id="ssh.daemon">
+                            <name>SSH Daemon</name>
+                            <type>sshd</type>
+                            <host>shell.xShellz.com</host>
+                            <port>some_port</port>
+                            <url>http://some.url.com</url>
+                            <componentname>some_componentname</componentname>
+                            <metadata>
+                                <tagBasedProcessLookup>
+                                    <includeTags>
+                                        <tag>systemd</tag>
+                                    </includeTags>
+                                </tagBasedProcessLookup>
+                                <linkBasedVersionLookup>
+                                    <link>~/test/current</link>
+                                    <linkTargetPattern>v\.(.*)</linkTargetPattern>
+                                </linkBasedVersionLookup>
+                            </metadata>
+                            <hostees>
+                                <hostee id="bash">
+                                    <name>bash</name>
+                                    <type>command interpreter</type>
+                                    <host>shell.xShellz.com</host>
+                                    <port>999</port>
+                                    <url>-</url>
+                                    <componentname>-</componentname>
+                                    <metadata>
+                                        <tagBasedProcessLookup>
+                                            <includeTags>
+                                                <tag>bash</tag>
+                                            </includeTags>
+                                        </tagBasedProcessLookup>
+                                    </metadata>
+                                </hostee>
+                            </hostees>
+                        </application>
+                        <application id="test.app">
+                            <name>Something</name>
+                            <type>test</type>
+                            <host>shell.xShellz.com</host>
+                            <port>some_port</port>
+                            <url>http://some.url.com</url>
+                            <componentname>some_componentname</componentname>
+                            <metadata>
+                                <webResourceBasedVersionLookup>
+                                    <url>http://yyakovlev.ru/files/TestGenProject/testgen_User_Manual/letter.txt</url>
+                                    <headers></headers>
+                                    <regexp>testgen_(.*).zip .*ksi.mdb</regexp>
+                                </webResourceBasedVersionLookup>
+                            </metadata>
+                        </application>
+                    </applications>
+                </environment>
+            </environments>
+        </platform>
+    </platforms>
+</applicationsMetadata>

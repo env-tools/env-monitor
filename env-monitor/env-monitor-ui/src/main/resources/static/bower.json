@@ -1,3 +1,10 @@
+/**
+*   You should not use bower any more,
+*   all dependencies are managed by npm
+*
+*/
+
+/*
 {
   "name": "env-monitor-ui",
   "description": "Package for env-monitor-ui",
@@ -11,5 +18,9 @@
     "angular-uuid-service": "0.1.0",
     "AngularStompDK": "^0.9.3",
     "angular-modal-service": "^0.10.1"
+  },
+  "resolutions": {
+    "angular": "~1.5.x"
   }
 }
+*/

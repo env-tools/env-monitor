@@ -1,7 +1,10 @@
-package org.envtools.monitor.provider.mock.model;
+package org.envtools.monitor.provider.applications.mock.model;
 
+import com.google.common.collect.Lists;
 import org.envtools.monitor.model.applications.Application;
 import org.envtools.monitor.model.applications.ApplicationStatus;
+
+import java.util.List;
 
 /**
  * Created: 11/20/15 11:55 PM
@@ -11,7 +14,7 @@ import org.envtools.monitor.model.applications.ApplicationStatus;
 public class MockApplication extends Application {
     private String applicationType;
     private String host;
-    private int port;
+    private String port;
     private String url;
     private String componentName;
     private String version;
@@ -21,7 +24,8 @@ public class MockApplication extends Application {
     }
 
     public MockApplication(String id, String name, ApplicationStatus status,
-                           String applicationType, String host, int port, String url, String componentName, String version, Double processMemory) {
+                           String applicationType, String host, String port, String url, String componentName, String version, Double processMemory,
+                           List<Application> hostees) {
         super(id, name, status);
         this.applicationType = applicationType;
         this.host = host;
@@ -30,6 +34,8 @@ public class MockApplication extends Application {
         this.componentName = componentName;
         this.version = version;
         this.processMemory = processMemory;
+
+        setHostees(hostees);
     }
 
     public String getApplicationType() {
@@ -48,11 +54,11 @@ public class MockApplication extends Application {
         this.host = host;
     }
 
-    public int getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(String port) {
         this.port = port;
     }
 
@@ -94,11 +100,14 @@ public class MockApplication extends Application {
         private ApplicationStatus status;
         private String applicationType;
         private String host;
-        private int port;
+        private String port;
         private String url;
         private String componentName;
         private String version;
         private Double processMemory;
+
+        //TODO Builder-style for this?
+        private List<Application> hostees;
 
         public Builder id(String id) {
             this.id = id;
@@ -126,7 +135,7 @@ public class MockApplication extends Application {
             return this;
         }
 
-        public Builder port(int port) {
+        public Builder port(String port) {
             this.port = port;
             return this;
         }
@@ -151,8 +160,13 @@ public class MockApplication extends Application {
             return this;
         }
 
+        public Builder hostees(List<Application> hostees) {
+            this.hostees = hostees == null ? null : Lists.newArrayList(hostees);
+            return this;
+        }
+
         public MockApplication build() {
-            return new MockApplication(id, name, status, applicationType, host, port, url, componentName, version, processMemory);
+            return new MockApplication(id, name, status, applicationType, host, port, url, componentName, version, processMemory, hostees);
         }
     }
 }

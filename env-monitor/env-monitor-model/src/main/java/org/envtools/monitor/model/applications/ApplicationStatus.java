@@ -7,6 +7,6 @@ package org.envtools.monitor.model.applications;
  */
 public enum ApplicationStatus {
 
-    STOPPED, STARTING, RUNNING
+    STOPPED, STARTING, RUNNING, UNKNOWN
 
 }

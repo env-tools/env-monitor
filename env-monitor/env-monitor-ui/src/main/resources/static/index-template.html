@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" data-ng-app="envMonitor">
+
+<!-- This file is a template for index.html
+     which means that it may contain placeholders replaced at build time
+     like e.g. @@propertyname -->
+
+<!-- After processing at gulp build (when you call 'gulp dist'),
+     the processed file is copied to 'generated' folder as 'index.html'  -->
+
+<!-- Placeholders are put to settings-{profile}.properties file in resources,
+     where default {profile} is 'default'. So by default, 'settings-default.properties'
+     is used -->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,18 +19,34 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Env monitor</title>
+    <title>@@title</title>
     <base href="/">
     <link href="styles.css" rel="stylesheet">
+
+    <!-- Configure foreground and background -->
+    <style type="text/css" parse-style>
+        #sidebar-wrapper {
+            background: @@mainBgColor;
+        }
+
+        #navigation-wrapper{
+            background: @@mainBgColor;
+            border-color: @@mainColor;
+        }
+
+        #menu-toggle{
+            color: @@mainColor;
+        }
+    </style>
 </head>
 <body>
 <div id="wrapper" class="">
-    <div id="sidebar-wrapper">
+    <div id="sidebar-wrapper" onmouseleave="document.getElementById('menu-toggle').click()">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
                 <div class="profile-image">
                     <a href="#profile">
-                        <img src="/images/profile/avatar.png" alt="">
+                        <img src="@@logoImage" alt="">
                     </a>
                 </div>
             </li>
@@ -28,7 +56,7 @@
                     Applications
                 </a>
             </li>
-            <li data-ui-sref-active="active">
+            <li data-ng-if="@@showQueryLibrary" data-ui-sref-active="active">
                 <a data-ui-sref="query_dashboard">
                     <span class="glyphicon glyphicon-question-sign"></span>
                     Query Library
@@ -36,10 +64,10 @@
             </li>
         </ul>
     </div>
-    <div id="page-content-wrapper">
+    <div id="page-content-wrapper" >
         <div class="container-fluid">
             <div class="col-xs-12">
-                <nav class="navbar navbar-default" role="navigation">
+                <nav id="navigation-wrapper" class="navbar navbar-default" role="navigation">
                     <div class="container-fluid">
                         <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
                             <ul class="nav navbar-nav">

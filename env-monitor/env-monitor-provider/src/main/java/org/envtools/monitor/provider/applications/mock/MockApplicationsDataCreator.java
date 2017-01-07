@@ -1,10 +1,10 @@
-package org.envtools.monitor.provider.mock;
+package org.envtools.monitor.provider.applications.mock;
 
 import org.envtools.monitor.model.applications.Application;
 import org.envtools.monitor.model.applications.ApplicationStatus;
 import org.envtools.monitor.model.applications.Environment;
 import org.envtools.monitor.model.applications.Platform;
-import org.envtools.monitor.provider.mock.model.MockApplication;
+import org.envtools.monitor.provider.applications.mock.model.MockApplication;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ public class MockApplicationsDataCreator {
                 .status(ApplicationStatus.RUNNING)
                 .host("host1")
                 .applicationType("applicationType1")
-                .port(7000)
+                .port("7000")
                 .componentName("component-1")
                 .url("http://host1:7000/app/login")
                 .version("1.12_Q20-SNAPSHOT")
@@ -77,7 +77,7 @@ public class MockApplicationsDataCreator {
                 .status(ApplicationStatus.RUNNING)
                 .host("host2")
                 .applicationType("applicationType2")
-                .port(7001)
+                .port("7001")
                 .componentName("component-2-" + label)
                 .url("http://host1:7001/app/login")
                 .version("1.12_E20")

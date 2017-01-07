@@ -17,29 +17,110 @@
             selectedEnvironment: null
         };
 
+        $scope.refreshGrid = function () {
+            $scope.gridApi.core.refresh();
+        }
+
         init();
+
+        function calculateStatusCellClass(cellValue) {
+            if (cellValue == 'RUNNING') {
+                return 'green';
+            } else {
+                return 'red';
+            }
+        }
 
         function init() {
 
+
             $scope.gridOptions =
             {
+                enableColumnResizing: true,
+                enableAutoResizing: true,
+                autoResize: true,
+
                 columnDefs: [
-                    {name : "Name", field : "name"},
-                    {name : "Type", field : "applicationType"},
-                    {name : "Host", field : "host"},
-                    {name : "Port", field : "port"},
-                    {name : "Url", field : "url"},
-                    {name : "Version", field : "version"},
-                    {name : "Component Name", field : "componentName"},
-                    {name : "Memory (Mb)", field : "processMemory"},
-                    {name : "Status", field : "status"}
+                    {name: "Name", field: "name", width: "10%", resizable: true, enableColumnResizing: true,
+                        //The below cell class is responsible for styling the whole row (using a trick)
+                        cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
+                            if (row.treeLevel > 0)
+                                return 'SUBROW';
+                        },
+                        cellTooltip: function (row, col) {
+                            return row.entity.name;
+                        }
+                    },
+                    {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.applicationType;
+                        }
+
+                    },
+                    {name: "Host", field: "host", width: "7%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.host;
+                        }
+
+                    },
+                    {name: "Port", field: "port", width: "5%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.port;
+                        }
+                    },
+                    {
+                        name: "Url",
+                        field: "url",
+                        width: "25%",
+                        enableColumnResizing: true,
+                        cellTemplate: "<a title='{{COL_FIELD}}' target=_blank href='{{COL_FIELD}}'>{{COL_FIELD}}</a>",
+                        autoResize: true
+                    },
+
+                    {name: "Version", field: "version", width: "18%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.version;
+                        }
+                    },
+                    {name: "Component Name", field: "componentName", width: "9%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.componentName;
+                        }
+
+                    },
+                    {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true,
+                        cellTooltip: function (row, col) {
+                            return row.entity.processMemory;
+                        }
+                    },
+                    {
+                        name: "Status", field: "status", width: "8%", resizable: true,
+                        enableColumnResizing: true,
+                        cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
+                            return calculateStatusCellClass( grid.getCellValue(row, col) );
+                        },
+                        cellTooltip: function (row, col) {
+                            return row.entity.status;
+                        }
+
+                    }
                 ],
 
                 showTreeExpandNoChildren: false,
 
-                onRegisterApi: function(gridApi)
-                {
+                onRegisterApi: function (gridApi) {
                     $scope.gridApi = gridApi;
+
+                    //Have UI Grid expanded initially
+                    // http://stackoverflow.com/questions/30893210/how-to-make-angular-ui-grid-expand-all-rows-initially
+
+                    //I think this means that every time gridOptions.data changes completely,
+                    //we do the expansion
+                    gridApi.grid.registerDataChangeCallback(function () {
+                        if ($scope.gridApi.grid.treeBase.tree instanceof Array) {
+                            $scope.gridApi.treeBase.expandAllRows();
+                        }
+                    });
                 }
             };
 
@@ -53,15 +134,15 @@
                     var pattern = '/call/modules/M_APPLICATIONS/data/platforms/{platformId}/environments';
                     ngstomp.subscribeTo(pattern.replace('{platformId}', $scope.filters.selectedPlatform.id))
                         .callback(
-                            function (msg) {
-                                $scope.environments = msg.body.payload.jsonContent;
-                                $scope.filters.selectedEnvironment = $scope.environments[0];
-                                console.log('Call result for environments: ' + JSON.stringify(msg.body.payload.jsonContent));
+                        function (msg) {
+                            $scope.environments = msg.body.payload.jsonContent;
+                            $scope.filters.selectedEnvironment = $scope.environments[0];
+                            console.log('Call result for environments: ' + JSON.stringify(msg.body.payload.jsonContent));
 
-                                $scope.selectedEnvironmentChanged();
+                            $scope.selectedEnvironmentChanged();
 
-                            }).withBodyInJson().connect();
-            }).withBodyInJson().connect();
+                        }).withBodyInJson().connect();
+                }).withBodyInJson().connect();
         }
 
         $scope.selectedPlatformChanged = function () {
@@ -92,64 +173,97 @@
             }
 
             $scope.currentApplicationsSubscribeId = ngstomp.subscribeTo(
-                pattern
-                    .replace("{platformId}",
-                        $scope.filters.selectedPlatform.id)
-                    .replace("{environmentId}",
-                        $scope.filters.selectedEnvironment.id))
+                    pattern
+                        .replace("{platformId}",
+                            $scope.filters.selectedPlatform.id)
+                        .replace("{environmentId}",
+                            $scope.filters.selectedEnvironment.id))
                 .callback(function (msg) {
                     $scope.applications = msg.body.payload.jsonContent;
-                    $scope.gridOptions.data = convertToDataForGrid($scope.applications);
 
-//                                [
-//                                    {"name":"app1_1-1","applicationType":"applicationType1","host":"host1","port":7000 + 1000 * Math.random(),"url":"http://host1:7000/app/login","version":"1.12_Q20-SNAPSHOT","componentName":"component-1","processMemory":3398,"status":"RUNNING", $$treeLevel : 0},
-//                                    {"name":"app2_1-1","applicationType":"applicationType2","host":"host2","port":7001,"url":"http://host1:7001/app/login","version":"1.12_E20","componentName":"component-2-1-1","processMemory":11335,"status":"RUNNING", $$treeLevel : 1}
-//                                ],
+                    var newData = convertToDataForGrid($scope.applications);
+                    //If data arrives for the first time, set it
+                    if (!$scope.gridOptions.data || $scope.gridOptions.data.length == 0) {
+                        $scope.gridOptions.data = newData;
+                    } else {
+                        //If data is already present,
+                        // to avoid losing grid row collapse/expand state,
+                        // we merge data by individual elements
+                        var mergeResult = mergeChanges(newData, $scope.gridOptions.data);
+                        if (!mergeResult) {
+                            //Smart merge failed, we have to just copy data as a whole
+                            $scope.gridOptions.data = newData;
+                            console.log('Rewritten gridOptions.data')
+                        }
+                    }
 
-                        //$scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-                        function convertToDataForGrid(applications) {
-                            var dataForGrid = [];
-
-                            //Currently we support only one level of nesting
-                            angular.forEach(applications, function(application, index) {
-
-                                var collector = this;
-                                addApplicationForGrid(collector, application, 0);
-
-                                //Go into depth and process hostees (nested applications)
-                                if (application.hostees && application.hostees.length > 0) {
-                                    angular.forEach(application.hostees, function(hostee, index) {
-                                        addApplicationForGrid(collector, hostee, 1);
-                                    }, collector);
+                    //Tries to merge changes from newData to old data
+                    //returns False if it fails to do so
+                    function mergeChanges(newData, oldData) {
+                        if (!(newData instanceof Array) || !(oldData instanceof Array) ||
+                            oldData.length != newData.length) {
+                            return false;
+                        }
+                        for (var index in newData) {
+                            for (var field in newData[index]) {
+                                if (newData[index][field] !== oldData[index][field]) {
+                                    //console.log('[' + index + '] ' + field + ': ' + oldData[index][field] + '->' + newData[index][field]);
+                                    oldData[index][field] = newData[index][field];
                                 }
+                            }
+                        }
+                        return true;
+                    }
 
-                            }, dataForGrid);
+                    //Converts data from server to UI-Grid compliant format
+                    function convertToDataForGrid(applications) {
+                        var dataForGrid = [];
 
-                            console.log('dataForGrid=' + JSON.stringify(dataForGrid));
+                        //Currently we support only one level of nesting
+                        angular.forEach(applications, function (application, index) {
 
-                            function addApplicationForGrid(applicationsForGrid, application, level) {
-                                var applicationForGrid = {
-                                  name : application.name,
-                                  applicationType : application.applicationType,
-                                  host : application.host,
-                                  port : application.port,
-                                  url : application.url,
-                                  version : application.version,
-                                  componentName : application.componentName,
-                                  processMemory : application.processMemory,
-                                  status : application.status,
-                                    //,
+                            var collector = this;
+                            addApplicationForGrid(collector, application, 0);
 
-                                  $$treeLevel : level
-                                };
-
-                                applicationsForGrid.push(applicationForGrid);
+                            //Go into depth and process hostees (nested applications)
+                            if (application.hostees && application.hostees.length > 0) {
+                                angular.forEach(application.hostees, function (hostee, index) {
+                                    addApplicationForGrid(collector, hostee, 1);
+                                }, collector);
                             }
 
-                            return dataForGrid;
+                        }, dataForGrid);
+
+                        console.log('convertToDataForGrid : conversion result=' + JSON.stringify(dataForGrid));
+
+                        function addApplicationForGrid(applicationsForGrid, application, level) {
+                            var applicationForGrid = {
+                                name: generateIndent(level) + application.name,
+                                applicationType: application.applicationType,
+                                host: application.host,
+                                port: application.port,
+                                url: application.url,
+                                version: application.version,
+                                componentName: application.componentName,
+                                processMemory: application.processMemory,
+                                status: application.status,
+
+                                $$treeLevel: level
+                            };
+
+                            applicationsForGrid.push(applicationForGrid);
                         }
 
-                    console.log('New data for subscription! ' + JSON.stringify(/* $scope.applications */ msg.body.payload.jsonContent));
+                        function generateIndent(level) {
+                            return Array(1 + (level * 6)).join('\xa0');
+                        }
+
+                        return dataForGrid;
+                    }
+
+                    console.log('Processed new data for subscription: ' +
+                        JSON.stringify(msg.body.payload.jsonContent));
+
                 }).withBodyInJson().connect();
         }
     }
