@@ -37,10 +37,10 @@ public interface QueryExecutionService {
      * @throws QueryExecutionException
      */
     void submitForExecution(QueryExecutionRequest queryExecutionRequest,
-                            QueryExecutionListener listener) throws QueryExecutionException;
+                            QueryExecutionListener listener) ;
 
     void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
-                             QueryExecutionListener listener) throws QueryExecutionException;
+                             QueryExecutionListener listener);
 
     /**
      * Request query cancel

@@ -90,7 +90,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     TreeUpdateService treeUpdateService;
 
     @Override
-    protected <T> void processPayload(T payload, RequestMessage requestMessage) throws ExecutionException {
+    protected <T> void processPayload(T payload, RequestMessage requestMessage)  {
         if (payload instanceof QueryExecutionRequest) {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
@@ -100,8 +100,8 @@ public class QueryLibraryModule extends AbstractPluggableModule {
         }
     }
 
-    private void processExecutionRequest(QueryExecutionRequest queryExecutionRequest, RequestMessage requestMessage) throws ExecutionException {
-        try {
+    private void processExecutionRequest(QueryExecutionRequest queryExecutionRequest, RequestMessage requestMessage)  {
+       // try {
             queryExecutionService.submitForExecution(queryExecutionRequest,
                     new QueryExecutionListener() {
                         @Override
@@ -120,11 +120,11 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             sendResultMessage(mapper.cancelledResult(), requestMessage);
                         }
                     });
-        } catch (QueryExecutionException e) {
+       // } catch (QueryExecutionException e) {
             //What if duplicates here?
-            LOGGER.error("Query execution error", e);
-            sendResultMessage(mapper.errorResult(e), requestMessage);
-        }
+       //     LOGGER.error("Query execution error", e);
+          //  sendResultMessage(mapper.errorResult(e), requestMessage);
+      //  }
     }
 
     public void init() throws Exception {

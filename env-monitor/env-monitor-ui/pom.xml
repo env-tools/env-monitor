@@ -11,6 +11,14 @@
     <name>env-monitor-ui</name>
     <url>http://maven.apache.org</url>
 
+    <properties>
+
+        <org.springframework.integration.version>1.1.1.RELEASE</org.springframework.integration.version>
+        <org.apache.kafka.version>0.8.1.1</org.apache.kafka.version>
+
+    </properties>
+
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -31,12 +39,12 @@
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-kafka</artifactId>
-            <version>1.1.1.RELEASE</version>
+            <version>${org.springframework.integration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.10</artifactId>
-            <version>0.8.1.1</version>
+            <version>${org.apache.kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>env.monitor</groupId>
@@ -85,10 +93,14 @@
                     <include>**/sql/test_fill_c_q.sql</include>
                     <include>**/static/fonts/*</include>
                     <include>**/static/images/</include>
+                    <include>**/static/app/modules/**/templates/**/*.html</include>
                     <include>**/static/app/modules/**/templates/*.html</include>
                     <include>**/static/index*.html</include>
                     <include>**/static/tree.json</include>
+                    <include>**/static/ui-grid*</include>
+                    <include>**/static/generated/*</include>
                     <include>**/application.properties</include>
+                    <include>**/configuration/**</include>
                 </includes>
             </resource>
         </resources>

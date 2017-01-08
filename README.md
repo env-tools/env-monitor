@@ -1,4 +1,6 @@
 # env-monitor
+[![Build Status](https://travis-ci.org/env-tools/env-monitor.svg?branch=master)](https://travis-ci.org/env-tools/env-monitor)
+
 Generic web-based monitoring app for distributed multi-process systems
 
 #Project participants:
@@ -7,15 +9,19 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Java developer, interested in learning JS, Angular JS, and improving experience with persistence layer technologies for Java.*
 
-- Ilya Sungurov (bombinmybag)
+- Michal Skuza
 
-*Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
+*Java and AngularJS developer, Luxoft Poland*
 
-- Anastasiya Plotnikova (anastasiya14)
+- Evgeniy Semenov
+
+*Java developer, Luxoft Poland*
+
+- Sergey Moldachev (InnerFlameFact)
 
 *Student of LETI University*
 
-- Sergey Moldachyov (InnerFlameFact)
+- Anastasiya Plotnikova (anastasiya14)
 
 *Student of LETI University*
 
@@ -23,12 +29,17 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Student of LETI University*
 
+- Ilya Sungurov (bombinmybag)
+
+*Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
+
+
 #How to run:
 *Build web UI:*
 - Install npm (is part of node js)
-- Install global bower
+- If you're behind proxy, set up proxy parameters:
 ```sh
-npm i bower -g
+set HTTP_PROXY=http://DOMAIN%5Cusername:password@server.com:PORT
 ```
 - Install global gulp (windows only)
 ```sh
@@ -38,17 +49,20 @@ npm i gulp@3.9.0 -g
 ```sh
 cd env-monitor/env-monitor/env-monitor-ui/src/main/resources/static/
 ```
-- Download npm dependencies (required first time)
+- Download npm dependencies: tool dependencies and javascript library dependencies
 ```sh
 npm install
 ```
-- Download bower dependencies (required if new js libraries appeared in project)
-```sh
-bower install
-```
-- Build project (required if js sources changed)
+Please note: bower is no more used
+
+- Build project (required if js sources changed or index-template.html changed)
 ```sh
 gulp dist
+```
+- If you're doing UI development, start tracking changes in js/css files 
+(so that scripts.js and styles.css are re-generated automatically)
+```sh
+gulp watch
 ```
 
 *To run the prototype standalone (from command line, using java):*
@@ -66,6 +80,8 @@ gulp dist
 - Import root maven pom.xml into your project
 - Find class "Application" and method "main", run it from IDE 
 - In your run configuration (Java startup settings) use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
+- If you're doing UI development, make sure your current directory is where 'env-monitor-ui' folder is located.
+This will allow for instant web content re-loading when you refresh Browser page (don't forget 'gulp watch' also).
 
 *Final step:*
 - Access http://localhost:8080
@@ -79,6 +95,13 @@ gulp dist
 *To debug from your IDE*
  - Run Application::main in debug mode
 
+
+*Caveats*
+
+*If SSH is blocked at your PC or there are other SSH connection issues, modify configuration:
+ - set applications.provider=org.envtools.monitor.provider.applications.mock.MockApplicationsModuleProvider in application.properties
+ - set load-at-startup to false in shell.xShellz.com.xml
+ 
 #Developers guide
 
 Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.

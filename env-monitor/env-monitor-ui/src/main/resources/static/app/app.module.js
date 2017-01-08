@@ -5,8 +5,9 @@
         .module('envMonitor', [
             'AngularStompDK',
             'ui.router',
-            'queryLib'
-            /* 'core',
-             'applications',*/
+            'ui.grid',
+            'ui.grid.treeView',
+            'queryLib',
+            'applications'
         ]);
 })();

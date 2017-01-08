@@ -11,6 +11,15 @@
     <name>env-monitor-module</name>
     <url>http://maven.apache.org</url>
 
+    <properties>
+
+        <com.github.springtestdbunit.version>1.2.1</com.github.springtestdbunit.version>
+        <org.dbunit.version>2.5.0</org.dbunit.version>
+        <com.jayway.jsonpath.ersion>0.9.1</com.jayway.jsonpath.ersion>
+        <commons-dbcp.version>1.2.1</commons-dbcp.version>
+        <org.apache.tomcat.embed.version>8.0.23</org.apache.tomcat.embed.version>
+
+    </properties>
 
     <dependencies>
         <!-- For embedded DB -->
@@ -36,31 +45,31 @@
         <dependency>
             <groupId>com.github.springtestdbunit</groupId>
             <artifactId>spring-test-dbunit</artifactId>
-            <version>1.2.1</version>
+            <version>${com.github.springtestdbunit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.5.0</version>
+            <version>${org.dbunit.version}</version>
         </dependency>
 
         <!-- Common widely used dependencies -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
+            <version>${commons-lang.version}</version>
         </dependency>
         <!-- If you upgrade the below version, spring 4 will break -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>0.9.1</version>
+            <version>${com.jayway.jsonpath.ersion}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20150729</version>
+            <version>${org.json.version}</version>
         </dependency>
         <dependency>
             <groupId>env.monitor</groupId>
@@ -77,45 +86,46 @@
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
-            <version>2.2.3</version>
+            <version>${net.sf.json-lib.version}</version>
+            <classifier>jdk15</classifier>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
-            <version>1.2.1</version>
+            <version>${commons-dbcp.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.6.2</version>
+            <version>${com.fasterxml.jackson.core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.6.2</version>
+            <version>${com.fasterxml.jackson.core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.6.2</version>
+            <version>${com.fasterxml.jackson.core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.2</version>
+            <version>${org.codehaus.jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.2</version>
+            <version>${org.codehaus.jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>8.0.23</version>
+            <version>${org.apache.tomcat.embed.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

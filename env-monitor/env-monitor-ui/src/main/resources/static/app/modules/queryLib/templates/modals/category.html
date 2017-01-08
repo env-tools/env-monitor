@@ -1,0 +1,41 @@
+<div id="category" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-ng-click="cancel()">×</button>
+                <h4 class="modal-title">{{ title }}</h4>
+            </div>
+            <div class="modal-body">
+                <form action="">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input id="title" type="text" class="form-control" data-ng-model="category.title">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input id="description" type="text" class="form-control" data-ng-model="category.description">
+                    </div>
+                    <div class="form-group">
+                        <label for="category_parentCategory">Parent category</label>
+                        <select name="" id="category_parentCategory" class="form-control" data-ng-model="category.parentCategory_id">
+                            <option value="null">Select any category</option>
+                            <optgroup data-ng-repeat="(parentCategory, childCategories) in categories" label="{{ parentCategory }}">
+                                <option data-ng-repeat="_category in childCategories" value="{{ _category.id }}">{{ depth(_category.depthLevel) +  _category.title }}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-ng-click="cancel()">Cancel</button>
+                <button data-ng-if="!entity_id" type="button" class="btn btn-success"
+                        data-ng-click="create(category)">Create
+                </button>
+                <button data-ng-if="entity_id" type="button" class="btn btn-success" data-ng-click="update(category)">
+                    Update
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

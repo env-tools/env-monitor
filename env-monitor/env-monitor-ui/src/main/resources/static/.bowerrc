@@ -1,3 +1,4 @@
 {
-  "directory": "vendor"
+  "directory": "vendor",
+  "endpoint": "http://bower.herokuapp.com"
 }

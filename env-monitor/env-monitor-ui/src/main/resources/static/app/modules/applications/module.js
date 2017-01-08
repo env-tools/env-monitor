@@ -2,5 +2,5 @@
     'use strict';
 
     angular
-        .module('applications', ['ngStomp']);
+        .module('applications', ['ui.grid', 'ui.grid.treeView', 'ui.grid.resizeColumns', 'ui.grid.moveColumns', 'ui.grid.autoResize']);
 })();

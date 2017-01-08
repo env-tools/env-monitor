@@ -1,5 +1,6 @@
 package org.envtools.monitor.ui.controller.util;
 
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.common.serialization.aggregator.Aggregator;
@@ -11,11 +12,15 @@ import org.envtools.monitor.module.core.selection.DestinationUtil;
 import org.envtools.monitor.module.core.selection.QueryLibraryDestinationData;
 import org.envtools.monitor.module.core.subscription.SubscriptionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import javax.annotation.PreDestroy;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +55,8 @@ public class StompSubscriptionCommandHandler {
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
 
+    private Map<String, String> destinationsBySubId = Maps.newConcurrentMap();
+
     public static boolean isSubscriptionCommand(StompCommand stompCommand) {
         return isSubscribe(stompCommand) || isUnSubscribe(stompCommand);
     }
@@ -62,6 +69,23 @@ public class StompSubscriptionCommandHandler {
         return stompCommand.equals(StompCommand.UNSUBSCRIBE);
     }
 
+    /**
+     * This method handles continuous subscriptions/unsubscriptions from clients, for all modules
+     * Subscriptions must be registered so that data updated could be sent to them
+     *
+     * @param sessionEvent event containing STOMP subscription information
+     */
+    public void handleSubscription(AbstractSubProtocolEvent sessionEvent) {
+        Message<byte[]> message = sessionEvent.getMessage();
+        StompHeaderAccessor stompAccessor = StompHeaderAccessor.wrap(message);
+        StompCommand stompCommand = stompAccessor.getCommand();
+
+        if (StompSubscriptionCommandHandler.isSubscriptionCommand(stompCommand)) {
+            processSubscriptionCommand(stompCommand, stompAccessor);
+        }
+
+    }
+
     public void processSubscriptionCommand(StompCommand stompCommand, StompHeaderAccessor stompHeaderAccessor) {
 
         //This is unique identifier of browser websocket session
@@ -71,7 +95,7 @@ public class StompSubscriptionCommandHandler {
         String stompSubscriptionId = stompHeaderAccessor.getSubscriptionId();
 
         //Destination
-        String destination = stompHeaderAccessor.getDestination();
+        String destination = resolveDestination(stompHeaderAccessor, stompSubscriptionId);
 
         LOGGER.info(String.format(
                 "StompSubscriptionCommandHandler.processSubscriptionCommand - %s - session %s with stomp subscription id %s for destination %s",
@@ -79,6 +103,11 @@ public class StompSubscriptionCommandHandler {
                 sessionId,
                 stompSubscriptionId,
                 destination));
+
+        if (destination == null) {
+            LOGGER.error("StompSubscriptionCommandHandler.processSubscriptionCommand - could not resolve destination, skipping processing for " + stompCommand);
+            return;
+        }
 
         if (DestinationUtil.isDestinationForModule(destination, ModuleConstants.APPLICATIONS_MODULE_ID)) {
 
@@ -93,6 +122,19 @@ public class StompSubscriptionCommandHandler {
             LOGGER.warn("StompSubscriptionCommandHandler.processSubscriptionCommand - destination module not specified or not supported in destination " + destination);
 
         }
+    }
+
+    private String resolveDestination(StompHeaderAccessor stompHeaderAccessor, String stompSubscriptionId) {
+
+        String destination = stompHeaderAccessor.getDestination();
+        //Destination is present for subscription commands
+        if (destination == null) {
+            destination = destinationsBySubId.get(stompSubscriptionId);
+        } else {
+            destinationsBySubId.put(stompSubscriptionId, destination);
+        }
+
+        return destination;
     }
 
     private void processApplicationsModuleSubscription(String destination, StompCommand stompCommand, String sessionId) {

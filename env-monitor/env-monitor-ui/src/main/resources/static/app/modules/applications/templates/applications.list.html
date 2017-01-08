@@ -1,5 +1,6 @@
 <div style="padding: 20px">
-        <span class="row" id="platforms">
+
+    <span class="row" id="platforms">
             <div class="col-sm-6">
                 <h4>Select platform</h4>
                 <select ng-options="platform as platform.name for platform in platforms track by platform.id"
@@ -35,34 +36,8 @@
         </span>
     <!--/row-->
 
-    <!--div style="padding-top: 20px">{{selectedEnvironment.id}}</div-->
-
 </div>
 
+<div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-resize-columns ui-grid-tree-view class="applications-grid"></div>
 
-<table border="1" class="table table-striped">
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Host</th>
-        <th>Port</th>
-        <th>Url</th>
-        <th>Version</th>
-        <th>Component name</th>
-        <th>Memory (Mb)</th>
-        <th>Status</th>
-    </tr>
-    <tbody>
-    <tr ng-repeat="application in applications">
-        <td>{{application.name}}</td>
-        <td>{{application.applicationType}}</td>
-        <td>{{application.host}}</td>
-        <td>{{application.port}}</td>
-        <td><a ng-href="{{application.url}}">{{application.url}}</a></td>
-        <td>{{application.version}}</td>
-        <td>{{application.componentName}}</td>
-        <td>{{application.processMemory}}</td>
-        <td>{{application.status}}</td>
-    </tr>
-    </tbody>
-</table>
+

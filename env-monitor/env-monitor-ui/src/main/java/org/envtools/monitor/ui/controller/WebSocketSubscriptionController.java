@@ -30,24 +30,8 @@ public class WebSocketSubscriptionController implements ApplicationListener<Sess
     public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
 
         //Any subscription request from web socket client (with destination started with "/subscribe") will go here
-        handleSubscription(sessionSubscribeEvent);
+        stompSubscriptionCommandHandler.handleSubscription(sessionSubscribeEvent);
 
-    }
-
-    /**
-     * This method handles continuous subscriptions from clients, for all modules
-     * Subscriptions must be registered so that data updated could be sent to them
-     *
-     * @param sessionSubscribeEvent event containing STOMP subscription information
-     */
-    private void handleSubscription(SessionSubscribeEvent sessionSubscribeEvent) {
-        Message<byte[]> message = sessionSubscribeEvent.getMessage();
-        StompHeaderAccessor stompAccessor = StompHeaderAccessor.wrap(message);
-        StompCommand stompCommand = stompAccessor.getCommand();
-
-        if (StompSubscriptionCommandHandler.isSubscriptionCommand(stompCommand)) {
-            stompSubscriptionCommandHandler.processSubscriptionCommand(stompCommand, stompAccessor);
-        }
     }
 
 }

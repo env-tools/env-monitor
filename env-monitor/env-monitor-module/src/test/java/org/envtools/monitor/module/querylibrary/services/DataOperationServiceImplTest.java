@@ -10,15 +10,14 @@ import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.dao.DataSourceDao;
 import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryExecutionDao;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.testng.Assert;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -61,18 +60,19 @@ public class DataOperationServiceImplTest {
     private static final String QUERY_SEARCH_ABSENT = "WHAT";
 
     @Test
-    public void testDataOperationServiceCreate() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
+    public void testDataOperationServiceCreate() throws Exception {
 
-        createWithText(QUERY_SEARCH_PRESENT);
+        Category parentCategory = createWithText(QUERY_SEARCH_PRESENT);
+
         Map<String, String> fields = new HashMap<>();
         fields.put("title", "t1");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "4");
+        fields.put("parentCategory_id", String.valueOf(parentCategory.getId()));
 
         Assert.assertEquals(0, categoryDao.getCategoryByTitle("t1").size());
 
-        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 4).size());
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId(4L).size());
 
 
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
@@ -80,13 +80,12 @@ public class DataOperationServiceImplTest {
 
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t1").size());
 
-
-        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long)4).size());
+        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId(parentCategory.getId()).size());
 
     }
 
     @Test
-    public void testDataOperationServiceCreateError() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
+    public void testDataOperationServiceCreateError() throws Exception {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
@@ -101,24 +100,26 @@ public class DataOperationServiceImplTest {
     }
 
     @Test
-    public void testDataOperationServiceUpdate() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceUpdate() throws Exception {
 
-        createWithText(QUERY_SEARCH_PRESENT);
+        Category childCategory = createWithText(QUERY_SEARCH_PRESENT);
+        Category parentCategory = createWithText(QUERY_SEARCH_PRESENT);
+
         Map<String, String> fields = new HashMap<String, String>();
         fields.put("title", "t6");
         fields.put("description", "test");
         fields.put("owner", "sergey");
-        fields.put("parentCategory_id", "7");
-        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long)7).size());
+        fields.put("parentCategory_id", String.valueOf(parentCategory.getId()));
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId(parentCategory.getId()).size());
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
-                dataOperationService.update("Category", (long) 7, fields).getStatus());
+                dataOperationService.update("Category", childCategory.getId(), fields).getStatus());
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t6").size());
-        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId((long)7).size());
+        Assert.assertEquals(1, categoryDao.getChildCategoriesByParentId(parentCategory.getId()).size());
 
     }
 
     @Test
-    public void testDataOperationServiceUpdateError() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceUpdateError() throws Exception {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
@@ -134,22 +135,22 @@ public class DataOperationServiceImplTest {
     }
 
     @Test
-    public void testDataOperationServiceDelete() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceDelete() throws Exception {
 
-        createWithText(QUERY_SEARCH_PRESENT);
+        Category parentCategory = createWithText(QUERY_SEARCH_PRESENT);
 
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("t5").size());
-        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 6).size());
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId(parentCategory.getId()).size());
         Assert.assertEquals(DataOperationResult.DataOperationStatusE.COMPLETED,
-                dataOperationService.delete("Category", (long) 6).getStatus());
+                dataOperationService.delete("Category", parentCategory.getId()).getStatus());
         Assert.assertEquals(0, categoryDao.getCategoryByTitle("t5").size());
-        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId((long) 6).size());
+        Assert.assertEquals(0, categoryDao.getChildCategoriesByParentId(parentCategory.getId()).size());
 
     }
 
 
     @Test
-    public void testDataOperationServiceDeleteError() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException {
+    public void testDataOperationServiceDeleteError() throws Exception {
 
         createWithText(QUERY_SEARCH_PRESENT);
         Map<String, String> fields = new HashMap<String, String>();
@@ -165,7 +166,7 @@ public class DataOperationServiceImplTest {
     }
 
     @Test
-    public void testDataOperationServiceCreateDataSourse() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
+    public void testDataOperationServiceCreateDataSourse() throws Exception {
 
         createDataSource("sdf");
         Map<String, String> fields = new HashMap<String, String>();
@@ -180,7 +181,7 @@ public class DataOperationServiceImplTest {
     }
 
     @Test
-    public void testDataOperationServiceCreateQueryExecution() throws IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException, InstantiationException, NoSuchFieldException, IntrospectionException, DataOperationException {
+    public void testDataOperationServiceCreateQueryExecution() throws Exception {
 
         createQueryExecution("sdf");
         Map<String, String> fields = new HashMap<String, String>();
