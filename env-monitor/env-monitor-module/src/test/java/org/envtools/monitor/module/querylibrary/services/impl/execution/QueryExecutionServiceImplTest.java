@@ -8,6 +8,7 @@ import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -151,6 +152,7 @@ public class QueryExecutionServiceImplTest {
     }
 
     @Test
+    @Ignore
     public void testExecuteFailSQL() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
@@ -199,6 +201,8 @@ public class QueryExecutionServiceImplTest {
         Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR, future.get().getStatus().ERROR);
     }
 
+
+    @Ignore
     @Test
     public void testSubmitForNextResult() throws Exception {
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();

@@ -111,7 +111,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     }
 
     @Override
-    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) throws QueryExecutionException {
+    public void submitForExecution(QueryExecutionRequest queryExecutionRequest, QueryExecutionListener listener) {
 
         LOGGER.info("QueryExecutionServiceImpl.submitForExecution - Creating task with queryExecutionRequest: " + queryExecutionRequest);
 
@@ -133,7 +133,7 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     }
 
     @Override
-    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) throws QueryExecutionException {
+    public void submitForNextResult(QueryExecutionNextResultRequest queryExecutionNextResultRequest, QueryExecutionListener listener) {
         LOGGER.info("QueryExecutionServiceImpl.submitForNextResult - Creating task with queryExecutionNextResultRequest: "
                 + queryExecutionNextResultRequest);
         String operationId = queryExecutionNextResultRequest.getOperationId();
