@@ -33,18 +33,19 @@
                     <option value="">JDBC 3</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12">
+            <!-- Will support it later -->
+            <!--div class="form-group col-xs-12">
                 <label for="timeout">Execution time (ms)</label>
                 <input type="text" class="form-control" id="timeout" name="timeout" data-ng-model="params.timeout">
-            </div>
-            <div class="form-group col-xs-12">
+            </div-->
+            <!--div class="form-group col-xs-12">
                 <label for="limit">Row limit</label>
                 <input type="text" class="form-control" id="limit" name="rows" data-ng-model="params.rows">
-            </div>
+            </div-->
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-12">
             <div class="form-group col-xs-12">
-                <label>Controls</label>
+                <!--label>Controls</label-->
                 <button data-ng-click="execute(params)" class="btn btn-primary">Execute Query</button>
             </div>
         </div>
@@ -52,6 +53,22 @@
 
 
     <div class="form-group col-xs-12" data-ng-if="settings && !error">
-        <jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid>
+        <!-- jqx-grid somehow collapsed to a single line with 0px height.
+        I did not know how to fix it ans switched to simple Bootstrap -->
+
+        <!--jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid-->
+
+        <table border="1" class="table table-striped">
+            <thead>
+            <tr class="table-head">
+                <th>#</th>
+                <th data-ng-repeat="h in settings.columns">{{h.text}}</th>
+            </tr>
+            </thead>
+            <tr data-ng-repeat="row in settings.source">
+                <td>{{ $index }}</td>
+                <td data-ng-repeat="col in row">{{col}}</td>
+            </tr>
+        </table>
     </div>
 </div>

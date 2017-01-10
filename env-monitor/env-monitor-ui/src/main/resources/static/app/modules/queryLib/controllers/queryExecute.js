@@ -54,10 +54,11 @@
                 payload: {
                     payloadType: 'execute',
                     content: {
+                        operationId: requestId,
                         query: params.query,
                         queryType: "JDBC",
-                        timeOutMs: params.timeout,
-                        rowCount: params.rows,
+                        timeOutMs: 10000, /* params.timeout */  //will support it later
+                        rowCount: 5000, /* params.rows */  //will support later
                         queryParameters: parameters,
                         dataSourceProperties: {
                             user: "sa",
@@ -69,6 +70,11 @@
                 }
             };
             ngstomp.send(mesDestination, body, {});
+        }
+
+        function clearResult() {
+            $scope.settings.columns = [];
+            $scope.settings.source = [];
         }
 
         function getExecuteResult(result) {
