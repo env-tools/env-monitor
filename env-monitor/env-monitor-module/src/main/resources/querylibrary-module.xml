@@ -16,5 +16,6 @@
 
     <bean id="querylibrary.provider" class="${querylibrary.provider}"/>
 
+    <bean id="querylibrary.bootstrapper" class="${querylibrary.bootstrapper}"/>
 
 </beans>
