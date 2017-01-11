@@ -123,6 +123,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Autowired
     TreeUpdateService treeUpdateService;
 
+    @Override
     public void init() throws Exception {
         super.init();
         Connection connection = dataSource.getConnection();
