@@ -95,7 +95,9 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
             processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
-        } else if (payload instanceof DataOperation) {
+        } else if (payload instanceof QueryExecutionCancelRequest) {
+            processExecutionCancelRequest((QueryExecutionCancelRequest) payload, requestMessage);
+        }else if (payload instanceof DataOperation) {
             processDataOperationRequest((DataOperation) payload, requestMessage);
         }
     }
@@ -118,6 +120,11 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                         @Override
                         public void onQueryCancelled() {
                             sendResultMessage(mapper.cancelledResult(), requestMessage);
+                        }
+
+                        @Override
+                        public void onQueryTimeout() {
+                            sendResultMessage(mapper.timeoutResult(), requestMessage);
                         }
                     });
        // } catch (QueryExecutionException e) {
@@ -205,9 +212,39 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     private void processExecutionNextResultRequest(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
                                                    RequestMessage requestMessage) {
+        queryExecutionService.submitForNextResult(queryExecutionNextResultRequest,
+                new QueryExecutionListener() {
+                    @Override
+                    public void onQueryCompleted(QueryExecutionResult queryResult) {
+                        sendResultMessage(queryResult, requestMessage);
+                    }
 
+                    @Override
+                    public void onQueryError(Throwable t) {
+                        //What if duplicates here?
+                        sendResultMessage(mapper.errorResult(t), requestMessage);
+                    }
+
+                    @Override
+                    public void onQueryCancelled() {
+                        sendResultMessage(mapper.cancelledResult(), requestMessage);
+                    }
+
+                    @Override
+                    public void onQueryTimeout() {
+                        sendResultMessage(mapper.timeoutResult(), requestMessage);
+                    }
+                });
     }
 
+    private void processExecutionCancelRequest(QueryExecutionCancelRequest queryExecutionCancelRequest,
+                                                   RequestMessage requestMessage) {
+        try {
+            queryExecutionService.cancel(queryExecutionCancelRequest);
+        } catch (QueryExecutionException e) {
+            sendResultMessage(mapper.errorResult(e), requestMessage);
+        }
+    }
 
     @Override
     protected SubscribableChannel getModuleChannel() {

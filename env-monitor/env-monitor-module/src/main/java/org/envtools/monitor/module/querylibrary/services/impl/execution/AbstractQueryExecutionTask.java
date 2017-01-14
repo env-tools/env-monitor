@@ -55,7 +55,7 @@ public abstract class AbstractQueryExecutionTask implements QueryExecutionTask {
             doRun();
         } catch (Throwable t) {
             postResult(QueryExecutionResult.ofError(
-                    queryExecutionRequest.getOperationId(), t));
+                    getOperationId(), t));
         } finally {
             taskRegistry.remove(queryExecutionRequest.getOperationId(), this);
         }
@@ -74,6 +74,10 @@ public abstract class AbstractQueryExecutionTask implements QueryExecutionTask {
                     break;
                 case CANCELLED:
                     currentListener.onQueryCancelled();
+                    break;
+                case TIMED_OUT:
+                    currentListener.onQueryTimeout();
+                    break;
                 default:
                     currentListener.onQueryError(result.getError().orElseGet(null));
             }
@@ -113,5 +117,9 @@ public abstract class AbstractQueryExecutionTask implements QueryExecutionTask {
 
     protected boolean isCancelled() {
         return isCancelled;
+    }
+
+    protected String getOperationId() {
+        return queryExecutionRequest.getOperationId();
     }
 }

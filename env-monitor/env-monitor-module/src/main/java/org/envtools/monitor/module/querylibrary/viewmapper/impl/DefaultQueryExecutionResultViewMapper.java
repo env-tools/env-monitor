@@ -76,21 +76,29 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
         return view;
     }
 
+    @Override
+    public QueryExecutionResultView timeoutResult() {
+        QueryExecutionResultView view = new QueryExecutionResultView();
+        view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.TIMED_OUT));
+        view.setMessage("Query timed out");
+        view.setDetails("Query timed out");
+
+        return view;
+    }
+
     private void mapRows(QueryExecutionResultView view, QueryExecutionResult queryExecutionResult) {
         List<ColumnView> columnsView = Lists.newArrayList();
         List<Map<String, String>> resultRowsView = Lists.newArrayList();
 
         List<Map<String, Object>> resultRows = queryExecutionResult.getResultRows();
 
-        boolean firstRow = true;
-        for (Map<String, Object> row : resultRows) {
-
-            if (firstRow) {
-                for (Map.Entry<String, Object> col : row.entrySet()) {
-                    columnsView.add(new ColumnView(col.getKey(), col.getKey()));
-                }
-                firstRow = false;
+        if (queryExecutionResult.getResultColumns() != null) {
+            for (String column : queryExecutionResult.getResultColumns()) {
+                columnsView.add(new ColumnView(column, column));
             }
+        }
+
+        for (Map<String, Object> row : resultRows) {
 
             Map<String, String> resultRowView = Maps.newLinkedHashMap();
 
@@ -102,7 +110,7 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
         }
 
         view.setResult(resultRowsView);
-
+        view.setColumns(columnsView);
     }
 
 

@@ -108,7 +108,7 @@ public abstract class AbstractPluggableModule implements Module {
             return mapper.readValue(payload, clazz);
         } catch (IOException e) {
             throw new MessageFormatException(
-                    String.format("Invalid payload %s for type %s", payload, clazz));
+                    String.format("Invalid payload %s for type %s", payload, clazz), e);
         }
     }
 }

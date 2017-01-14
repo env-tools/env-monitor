@@ -84,6 +84,7 @@ public class QueryExecutionTaskRegistryImpl implements QueryExecutionTaskRegistr
                 taskFuture.cancel(true);
             } catch (Throwable t) {
                 LOGGER.error("Exception cancelling task with id " + operationId, t);
+                throw new RuntimeException("Exception cancelling task with id " + operationId, t);
             }
         }
     }

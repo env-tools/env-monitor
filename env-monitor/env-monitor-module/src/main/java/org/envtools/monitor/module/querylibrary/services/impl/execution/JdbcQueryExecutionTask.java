@@ -13,13 +13,10 @@ import org.envtools.monitor.module.querylibrary.services.DataSourceService;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionTaskRegistry;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult.ExecutionStatusE.*;
 
@@ -67,15 +64,15 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     queryExecutionRequest.getQueryParameters(),
                     (ResultSet rs) -> extractRows(rs));
         } catch (Throwable t) {
-
             LOGGER.info("JdbcQueryExecutionTask.doRun - " +
-                    String.format("query execution failed for: %s with params %s",
+                    String.format("query execution failed for: %s with params %s after %s",
                             queryExecutionRequest.getQuery(),
-                            queryExecutionRequest.getQueryParameters())
+                            queryExecutionRequest.getQueryParameters(),
+                            timer)
                             , t);
 
             postResult(QueryExecutionResult.ofError(
-                    queryExecutionRequest.getOperationId(),
+                    getOperationId(),
                     t));
         }
     }
@@ -95,6 +92,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
             try {
 
                 ResultSetMetaData md = rs.getMetaData();
+                List<String> columns = getColumns(md);
 
                 //Check for cancellation
                 if (isCancelled()) {
@@ -106,8 +104,8 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
                 //Loop while we don't enter a final state
                 //when we don't need this ResultSet any more
-                while ( !allResultSetRowsProcessed(currentRowNum, maxRowCount,
-                        rs, currentResultRows)) {
+                while ( getNextRow(currentRowNum, maxRowCount,
+                        rs, currentResultRows, columns)) {
 
                     //If we get here, it means that rs.next() has been called
                     //and we are ready to read row data
@@ -126,6 +124,10 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
                 }
 
+                if (isCancelled) {
+                    postResult(QueryExecutionResult.ofCancel(operationId));
+                }
+
             } catch (Throwable t) {
 
                 LOGGER.info("JdbcQueryExecutionTask.extract - " +
@@ -135,11 +137,21 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                         , t);
 
                 postResult(QueryExecutionResult.ofError(
-                        queryExecutionRequest.getOperationId(), t));
+                        getOperationId(), t));
             }
 
             return NOT_USED;
         }
+    }
+
+    private List<String> getColumns(ResultSetMetaData md) throws SQLException{
+        int columnCount = md.getColumnCount();
+        List<String> columns = Lists.newArrayList();
+
+        for (int iColumn = 1; iColumn <= columnCount; iColumn++) {
+            columns.add(md.getColumnName(iColumn));
+        }
+        return columns;
     }
 
     private void addRowData(
@@ -156,10 +168,11 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         rows.add(row);
     }
 
-    private boolean allResultSetRowsProcessed(MutableInt rowNum,
-                                              MutableInt maxRowCount,
-                                              ResultSet rs,
-                                              List<Map<String, Object>> resultRows) throws SQLException {
+    private boolean getNextRow(MutableInt rowNum,
+                               MutableInt maxRowCount,
+                               ResultSet rs,
+                               List<Map<String, Object>> resultRows,
+                               List<String> columns) throws SQLException {
 
         boolean hasMoreRows = rs.next();
 
@@ -173,29 +186,31 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         if (rowNum.intValue() < maxRowCount.intValue()) {
             if (!hasMoreRows) {
                 //No more rows
-                putFinalResult(resultRows);
-                return true;
+                putFinalResult(resultRows, columns);
+                return false;
             } else {
                 //We have more rows to read  within current limitation (maxRows)
-                return false;
+                return true;
             }
         }
 
         if (rowNum.intValue() == maxRowCount.intValue()) {
 
             //Take even 1 more row to see if we should continue
-            if (!rs.next()) {
+            if (!hasMoreRows) {
                 //No more rows
                 //Result set is complete
-                putFinalResult(resultRows);
-                return true;
+                putFinalResult(resultRows, columns);
+                return false;
             } else {
                 //Post rows that we already have
-                putIncompleteResult(resultRows);
+                putIncompleteResult(resultRows, columns);
 
                 //We have read 1 more row for the next request
                 //Wait for next rows to be requested
                 try {
+
+                    //This statement might be interrupted on Cancel
                     QueryExecutionNextResultRequest nextResultRequest =
                             nextResultRequests.poll(NEXT_REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
 
@@ -203,7 +218,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                         //Timeout elapsed
                         //We will terminate this task
                         //No results are posted
-                        return true;
+                        return false;
                     }
 
                     //Ready to process next portion of result as requested
@@ -215,20 +230,20 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                     timer.start();
 
                     //We have to continue processing
-                    return false;
+                    return true;
 
                 } catch (InterruptedException ie) {
-                    LOGGER.info("JdbcQueryExecutionTask.allResultSetRowsProcessed - interrupted while waiting for next result request",
-                            ie);
+                    LOGGER.info("JdbcQueryExecutionTask.getNextRow - interrupted while waiting for next result request");
                     isCancelled = true;
-                    return true;
+                    return false;
                 }
             }
         }
-        return true;
+        return false;
     }
 
-    private void putFinalResult(List<Map<String, Object>> rows) {
+    private void putFinalResult(List<Map<String, Object>> rows,
+                                List<String> columns) {
         LOGGER.info("JdbcQueryExecutionTask.putFinalResult : " + rows);
 
         timer.stop();
@@ -236,10 +251,12 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         postResult(
                 QueryExecutionResult
                         .builder()
+                        .operationId(getOperationId())
                         .status(COMPLETED)
                         .elapsedTimeMs(timer.getTime())
                         .returnedRowCount(rows.size())
                         .resultRows(rows)
+                        .resultColumns(columns)
                         .build()
         );
 
@@ -247,7 +264,8 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         timer.reset();
     }
 
-    private void putIncompleteResult(List<Map<String, Object>> rows) {
+    private void putIncompleteResult(List<Map<String, Object>> rows,
+                                     List<String> columns) {
         LOGGER.info("JdbcQueryExecutionTask.putIncompleteResult : " + rows);
 
         //Timer will be restarted
@@ -257,10 +275,12 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         postResult(
                 QueryExecutionResult
                         .builder()
+                        .operationId(getOperationId())
                         .status(HAS_MORE_DATA)
                         .elapsedTimeMs(timer.getTime())
                         .returnedRowCount(rows.size())
                         .resultRows(rows)
+                        .resultColumns(columns)
                         .build()
         );
 
