@@ -55,6 +55,11 @@
         }
 
         function execute(currentQueryContext) {
+            if (!currentQueryContext.dataSource) {
+                $window.alert('Data Source not selected');
+                return;
+            }
+
             var body = {};
             $scope.infoMessage = '';
 
@@ -263,9 +268,10 @@
         }
 
         $rootScope.$on('setQuery', function (event, data) {
+            $scope.clearResult();
+
             if ($scope.currentQueryContext.pendingQuery) {
                 $scope.cancel($scope.currentQueryContext);
-                $scope.clearResult();
             }
 
             $scope.error = false;
@@ -274,6 +280,7 @@
             $scope.currentQueryContext.queryId = data.id;
             $scope.currentQueryContext.query = data.text;
             $scope.currentQueryContext.parameters = data.parameters;
+            $scope.currentQueryContext.dataSources = data.dataSources;
 
             $scope.applyState('SELECTED');
 

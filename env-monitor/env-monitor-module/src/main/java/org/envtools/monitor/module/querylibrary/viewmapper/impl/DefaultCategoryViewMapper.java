@@ -3,13 +3,8 @@ package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.envtools.monitor.model.querylibrary.db.Category;
-import org.envtools.monitor.model.querylibrary.db.LibQuery;
-import org.envtools.monitor.model.querylibrary.db.QueryParam;
-import org.envtools.monitor.model.querylibrary.tree.view.CategoryView;
-import org.envtools.monitor.model.querylibrary.tree.view.ParameterValueSetView;
-import org.envtools.monitor.model.querylibrary.tree.view.ParameterView;
-import org.envtools.monitor.model.querylibrary.tree.view.QueryView;
+import org.envtools.monitor.model.querylibrary.db.*;
+import org.envtools.monitor.model.querylibrary.tree.view.*;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created: 01.04.16 22:05
@@ -27,16 +23,37 @@ import java.util.Map;
 public class DefaultCategoryViewMapper implements CategoryViewMapper {
 
     @Override
-    public Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner) {
-        //TODO implement
+    public Map<String, List<CategoryView>> mapCategoriesByOwner(Map<String, List<Category>> categoriesByOwner,
+                                                                List<DataSource> dataSources) {
         Map<String, List<CategoryView>> view = Maps.newLinkedHashMap();
+
+        List<DataSourceView> dataSourceViews = mapDataSources(dataSources);
+
         for (Map.Entry<String, List<Category>> entry : categoriesByOwner.entrySet()) {
-            view.put(entry.getKey(), mapList(entry.getValue()));
+            view.put(entry.getKey(), mapList(entry.getValue(), dataSourceViews));
         }
+
         return view;
     }
 
-    private List<CategoryView> mapList(List<Category> categoriesByOwner) {
+    private List<DataSourceView> mapDataSources(List<DataSource> dataSources) {
+        return dataSources.stream().map(dataSource ->
+                new DataSourceView(
+                    String.valueOf(dataSource.getType()),
+                    dataSource.getName(),
+                    dataSource.getDescription(),
+                    dataSource
+                            .getDataSourceProperties()
+                            .stream()
+                            .collect(Collectors.toMap(
+                                    DataSourceProperty::getProperty,
+                                    DataSourceProperty::getValue))
+                    )
+            ).collect(Collectors.<DataSourceView>toList());
+    }
+
+    private List<CategoryView> mapList(List<Category> categoriesByOwner,
+                                       List<DataSourceView> dataSourceViews) {
         List<CategoryView> categoryViews = Lists.newArrayList();
 
         for (Category entry : categoriesByOwner) {
@@ -57,12 +74,13 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
                             libQuery.getDescription(),
                             libQuery.getId(),
                             parameters,
-                            parameterValues));
+                            parameterValues,
+                            dataSourceViews));
                 }
                 categoryView.setQueries(queryViewList);
             }
             if (entry.getChildCategories() != null) {
-                categoryView.setChildCategories(mapList(entry.getChildCategories()));
+                categoryView.setChildCategories(mapList(entry.getChildCategories(), dataSourceViews));
             }
 
             categoryViews.add(categoryView);
@@ -89,7 +107,6 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         }
         return result;
     }
-
 
     @Override
     public Map<String, String> mapCategoriesByOwnerToString(Map<String, List<CategoryView>> categoriesByOwner) throws IOException {

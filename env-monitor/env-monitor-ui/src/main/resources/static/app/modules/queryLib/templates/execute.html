@@ -10,7 +10,8 @@
         </div>
     </div>
 
-    <div class="col-xs-12">{{state}}</div>
+    <!--div class="col-xs-12">{{state}}</div-->
+
     <div class="form-group col-xs-12">
         <textarea name="query" data-ng-model="currentQueryContext.query" id="paramsQuery" cols="30" rows="10"
                   class="form-control"></textarea>
@@ -43,11 +44,12 @@
         <div class="col-xs-12">
             <div class="form-group col-xs-12" > <!-- style="display: none" -->
                 <label for="datasource">Select Datasource</label>
-                <select name="datasource" id="datasource" class="form-control" data-ng-model="currentQueryContext.datasource">
-                    <option value="" selected>Select</option>
-                    <option value="">JDBC 1</option>
-                    <option value="">JDBC 2</option>
-                    <option value="">JDBC 3</option>
+                <select
+                        name="datasource"
+                        id="datasource"
+                        class="form-control"
+                        data-ng-model="currentQueryContext.dataSource"
+                        data-ng-options="ds.name for ds in currentQueryContext.dataSources">
                 </select>
             </div>
             <!-- Will support it later -->

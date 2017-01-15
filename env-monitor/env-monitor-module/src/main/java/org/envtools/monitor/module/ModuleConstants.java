@@ -12,5 +12,6 @@ public interface ModuleConstants {
 
     String CORE_MODULE_ID = "M_CORE";
     String OWNER_NULL = "_PUBLIC_";
+    String DATA_SOURCES = "_DATA_SOURCES_";
 
 }
