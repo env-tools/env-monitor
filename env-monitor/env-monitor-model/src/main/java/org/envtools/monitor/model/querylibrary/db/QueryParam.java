@@ -19,6 +19,11 @@ public class QueryParam extends AbstractDbIdentifiable {
     public QueryParam() {
     }
 
+    public QueryParam(String name, QueryParamType type) {
+        this.name = name;
+        this.type = type;
+    }
+
     private String name;
 
     @ManyToOne

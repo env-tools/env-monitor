@@ -27,7 +27,7 @@ public class LibQuery extends AbstractDbIdentifiable {
         this.category = category;
     }
 
-
+    @Column(length = 65536)
     private String text;
     private String title;
     private String description;

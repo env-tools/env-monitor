@@ -1,7 +1,6 @@
 package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -16,7 +15,6 @@ import org.envtools.monitor.module.querylibrary.services.*;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
-
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -102,9 +100,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
-    DataSource dataSource;
-
-    @Autowired
     DataOperationService<Long> dataOperationService;
 
     @Autowired
@@ -114,13 +109,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     TreeUpdateService treeUpdateService;
 
     @Resource(name = "querylibrary.bootstrapper")
-    TreeBootstrapService treeBootstrapService;
+    BootstrapService treeBootstrapService;
 
     @Override
     public void init() throws Exception {
         super.init();
 
-        treeBootstrapService.bootstrap(dataSource);
+        treeBootstrapService.bootstrap();
 
         TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
         executorService.execute(treeUpdateTask);
