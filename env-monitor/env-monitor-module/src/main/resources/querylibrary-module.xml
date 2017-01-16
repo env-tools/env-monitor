@@ -24,5 +24,6 @@
     </bean>
 
 
+    <bean id="querylibrary.bootstrapper" class="${querylibrary.bootstrapper}"/>
 
 </beans>

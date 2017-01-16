@@ -11,4 +11,5 @@
 **/new_app/
 **/env-monitor-ui/src/main/resources/static/scripts.js
 **/env-monitor-ui/src/main/resources/static/styles.css
+**/generated/
 *.db

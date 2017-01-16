@@ -1,8 +1,6 @@
 package org.envtools.monitor.module.querylibrary;
 
 import org.apache.log4j.Logger;
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.common.serialization.Serializer;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.ResponseMessage;
@@ -13,25 +11,14 @@ import org.envtools.monitor.model.querylibrary.provider.QueryLibraryAuthProvider
 import org.envtools.monitor.model.querylibrary.updates.DataOperation;
 import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
-import org.envtools.monitor.module.exception.DataOperationException;
 import org.envtools.monitor.module.querylibrary.services.*;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
-import org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper;
-import org.h2.tools.RunScript;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
-
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -134,11 +121,25 @@ public class QueryLibraryModule extends AbstractPluggableModule {
       //  }
     }
 
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
+    @Autowired
+    DataOperationService<Long> dataOperationService;
+
+    @Autowired
+    TreeUpdateTriggerService treeUpdateTriggerService;
+
+    @Autowired
+    TreeUpdateService treeUpdateService;
+
+    @Resource(name = "querylibrary.bootstrapper")
+    BootstrapService treeBootstrapService;
+
+    @Override
     public void init() throws Exception {
         super.init();
-        Connection connection = dataSource.getConnection();
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("sql/test_fill_c_q.sql");
-        RunScript.execute(connection, new InputStreamReader(stream));
+
+        treeBootstrapService.bootstrap();
 
         TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
         executorService.execute(treeUpdateTask);
