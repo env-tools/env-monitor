@@ -41,15 +41,13 @@
                 autoResize: true,
 
                 columnDefs: [
-                    {name: "Name", field: "name", width: "10%", resizable: true, enableColumnResizing: true,
+                    {name: "Name", field: "name", width: "20%", resizable: true, enableColumnResizing: true,
                         //The below cell class is responsible for styling the whole row (using a trick)
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             if (row.treeLevel > 0)
                                 return 'SUBROW';
                         },
-                        cellTooltip: function (row, col) {
-                            return row.entity.name;
-                        }
+                        cellTemplate: "<a data-ng-if='row.entity.url' title='{{row.entity.url}}' target=_blank href='{{row.entity.url}}'>{{COL_FIELD}}</a> <div title='{{COL_FIELD}}' data-ng-if='!row.entity.url'>{{COL_FIELD}}</div>",
                     },
                     {name: "Type", field: "applicationType", width: "10%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
@@ -68,33 +66,25 @@
                             return row.entity.port;
                         }
                     },
-                    {
-                        name: "Url",
-                        field: "url",
-                        width: "25%",
-                        enableColumnResizing: true,
-                        cellTemplate: "<a title='{{COL_FIELD}}' target=_blank href='{{COL_FIELD}}'>{{COL_FIELD}}</a>",
-                        autoResize: true
-                    },
 
-                    {name: "Version", field: "version", width: "18%", resizable: true, enableColumnResizing: true,
+                    {name: "Version", field: "version", width: "23%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
                             return row.entity.version;
                         }
                     },
-                    {name: "Component Name", field: "componentName", width: "9%", resizable: true, enableColumnResizing: true,
+                    {name: "Component Name", field: "componentName", width: "13%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
                             return row.entity.componentName;
                         }
 
                     },
-                    {name: "Memory (Mb)", field: "processMemory", width: "8%", resizable: true, enableColumnResizing: true,
+                    {name: "Memory (Mb)", field: "processMemory", width: "11%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
                             return row.entity.processMemory;
                         }
                     },
                     {
-                        name: "Status", field: "status", width: "8%", resizable: true,
+                        name: "Status", field: "status", width: "11%", resizable: true,
                         enableColumnResizing: true,
                         cellClass: function (grid, row, col, rowRenderIndex, colRenderIndex) {
                             return calculateStatusCellClass( grid.getCellValue(row, col) );
