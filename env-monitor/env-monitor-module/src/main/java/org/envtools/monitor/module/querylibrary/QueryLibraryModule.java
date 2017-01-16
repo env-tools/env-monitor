@@ -13,6 +13,7 @@ import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.services.*;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
+import org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
 import javax.annotation.PreDestroy;
@@ -65,9 +66,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
-    DataSource dataSource;
-
-    @Autowired
     DataOperationService<Long> dataOperationService;
 
     @Autowired
@@ -75,6 +73,9 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     @Autowired
     TreeUpdateService treeUpdateService;
+
+    @Resource(name = "querylibrary.bootstrapper")
+    BootstrapService treeBootstrapService;
 
     @Override
     protected <T> void processPayload(T payload, RequestMessage requestMessage)  {
@@ -120,20 +121,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
           //  sendResultMessage(mapper.errorResult(e), requestMessage);
       //  }
     }
-
-    private ExecutorService executorService = Executors.newCachedThreadPool();
-
-    @Autowired
-    DataOperationService<Long> dataOperationService;
-
-    @Autowired
-    TreeUpdateTriggerService treeUpdateTriggerService;
-
-    @Autowired
-    TreeUpdateService treeUpdateService;
-
-    @Resource(name = "querylibrary.bootstrapper")
-    BootstrapService treeBootstrapService;
 
     @Override
     public void init() throws Exception {
