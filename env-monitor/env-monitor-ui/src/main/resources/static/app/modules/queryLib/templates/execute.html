@@ -33,7 +33,7 @@
                 <tr data-ng-repeat="param in currentQueryContext.parameters">
                     <td>{{ param.name }}</td>
                     <td>{{ param.type }}</td>
-                    <td><input placeholder="Type the value" class="query-param" type="text" data-ng-model="param.value"></td>
+                    <td><input placeholder="Type the value" class="query-param" type="text" data-ng-model="param.value" required></td>
                 </tr>
             </table>
         </div>
@@ -68,10 +68,20 @@
     <div class="form-group col-xs-12" data-ng-if="settings.columns && settings.columns.length && !error">
         <!-- jqx-grid somehow collapsed to a single line with 0px height.
         I did not know how to fix it ans switched to simple Bootstrap -->
+        <form name="selectResultsView" data-ng-init=" resultsViewMode = 'table' ">
+            View result as
+            <label>
+                <input type="radio" ng-model="resultsViewMode" value="table">
+                Table
+            </label>
+            <label>
+                <input type="radio" ng-model="resultsViewMode" value="grid">
+                Grid
+            </label>
+        </form>
+        <jqx-grid ng-show="resultsViewMode == 'grid' " jqx-settings="settings" id="jqxgrid"></jqx-grid>
 
-        <!--jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid-->
-
-        <table border="1" class="table table-striped">
+        <table ng-show="resultsViewMode == 'table' " border="1" class="table table-striped">
             <thead>
             <tr class="table-head">
                 <th>#</th>

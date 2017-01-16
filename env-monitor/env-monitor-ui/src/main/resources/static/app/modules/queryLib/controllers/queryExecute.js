@@ -54,6 +54,15 @@
             return result;
         }
 
+        function formatQueryParameterTypes(parameters) {
+            var result = {};
+            angular.forEach(parameters, function(values) {
+                result[values.name]  = values.type;
+            });
+
+            return result;
+        }
+
         function execute(currentQueryContext) {
             if (!currentQueryContext.dataSource) {
                 $window.alert('Data Source not selected');
@@ -82,6 +91,8 @@
 
         function createNewQueryRequest(currentQueryContext) {
             var parameters = formatQueryParameters(currentQueryContext.parameters);
+            var parameterTypes = formatQueryParameterTypes(currentQueryContext.parameters);
+
             var body = {
                 requestId: requestId,
                 destination: subDestination,
@@ -97,6 +108,7 @@
                         timeOutMs: 10000, /* currentQueryContext.timeout */  //will support it later
                         rowCount: currentQueryContext.rows,
                         queryParameters: parameters,
+                        queryParameterTypes: parameterTypes,
                         dataSourceProperties: {
                             user: "sa",
                             password: "sa",

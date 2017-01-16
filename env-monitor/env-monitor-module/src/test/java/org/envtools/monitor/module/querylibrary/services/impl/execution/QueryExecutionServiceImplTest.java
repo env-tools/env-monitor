@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.services.impl.execution;
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
 import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
@@ -71,6 +72,7 @@ public class QueryExecutionServiceImplTest {
                 "(SELECT min(TYPE_NAME) m2 FROM INFORMATION_SCHEMA.TYPE_INFO GROUP BY PRECISION ) t2\n" +
                 "ON t1.m1 = t2.m2";
         Map<String, Object> queryParameters = new HashMap<>();
+        Map<String, QueryParamType> queryParameterTypes  = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
         long timeOut = 1;
         int rowCount = 100;
@@ -88,6 +90,7 @@ public class QueryExecutionServiceImplTest {
                 .queryType(DataProviderType.JDBC)
                 .query(query)
                 .queryParameters(queryParameters)
+                .queryParameterTypes(queryParameterTypes)
                 .dataSourceProperties(dataSourceProperties)
                 .timeOutMs(timeOut)
                 .rowCount(rowCount)

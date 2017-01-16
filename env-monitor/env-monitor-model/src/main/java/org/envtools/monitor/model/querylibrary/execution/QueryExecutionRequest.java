@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
 
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class QueryExecutionRequest {
     private DataProviderType queryType;
     private String query;
     private Map<String, Object> queryParameters;
+    private Map<String, QueryParamType> queryParameterTypes;
     private Map<String, String> dataSourceProperties;
     private Long timeOutMs;
     private Integer rowCount;
@@ -51,6 +53,7 @@ public class QueryExecutionRequest {
             DataProviderType queryType,
             String query,
             Map<String, Object> queryParameters,
+            Map<String, QueryParamType> queryParameterTypes,
             Map<String, String> dataSourceProperties,
             Long timeOutMs,
             Integer rowCount) {
@@ -58,6 +61,7 @@ public class QueryExecutionRequest {
         this.queryType = queryType;
         this.query = query;
         this.queryParameters = queryParameters;
+        this.queryParameterTypes = queryParameterTypes;
         this.dataSourceProperties = ImmutableMap.copyOf(dataSourceProperties);
         this.timeOutMs = timeOutMs;
         this.rowCount = rowCount;
@@ -77,6 +81,10 @@ public class QueryExecutionRequest {
 
     public Map<String, Object> getQueryParameters() {
         return queryParameters;
+    }
+
+    public Map<String, QueryParamType> getQueryParameterTypes() {
+        return queryParameterTypes;
     }
 
     public Map<String, String> getDataSourceProperties() {
@@ -107,6 +115,10 @@ public class QueryExecutionRequest {
         this.queryParameters = queryParameters;
     }
 
+    public void setQueryParameterTypes(Map<String, QueryParamType> queryParameterTypes) {
+        this.queryParameterTypes = queryParameterTypes;
+    }
+
     public void setDataSourceProperties(Map<String, String> dataSourceProperties) {
         this.dataSourceProperties = dataSourceProperties;
     }
@@ -128,6 +140,7 @@ public class QueryExecutionRequest {
         private DataProviderType queryType;
         private String query;
         private Map<String, Object> queryParameters;
+        private Map<String, QueryParamType> queryParametersTypes;
         private Map<String, String> dataSourceProperties;
         private Long timeOutMs;
         private Integer rowCount;
@@ -155,6 +168,11 @@ public class QueryExecutionRequest {
             return this;
         }
 
+        public Builder queryParameterTypes(Map<String, QueryParamType> queryParameterTypes) {
+            this.queryParametersTypes = queryParameterTypes;
+            return this;
+        }
+
         public Builder dataSourceProperties(Map<String, String> dataSourceProperties) {
             this.dataSourceProperties = dataSourceProperties;
             return this;
@@ -176,6 +194,7 @@ public class QueryExecutionRequest {
                     queryType,
                     query,
                     queryParameters,
+                    queryParametersTypes,
                     dataSourceProperties,
                     timeOutMs,
                     rowCount
@@ -190,6 +209,7 @@ public class QueryExecutionRequest {
                 .append("queryType", queryType)
                 .append("query", query)
                 .append("queryParameters", queryParameters)
+                .append("queryParameterTypes", queryParameterTypes)
                 .append("dataSourceProperties", dataSourceProperties)
                 .append("timeOutMs", timeOutMs)
                 .append("rowCount", rowCount)

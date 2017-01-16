@@ -2,10 +2,12 @@ package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
 import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
@@ -61,7 +63,9 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
             jdbcTemplate.query(
                     queryExecutionRequest.getQuery(),
-                    queryExecutionRequest.getQueryParameters(),
+                    enrichWithTypes(
+                            queryExecutionRequest.getQueryParameters(),
+                            queryExecutionRequest.getQueryParameterTypes()),
                     (ResultSet rs) -> extractRows(rs));
         } catch (Throwable t) {
             LOGGER.info("JdbcQueryExecutionTask.doRun - " +
@@ -69,7 +73,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
                             queryExecutionRequest.getQuery(),
                             queryExecutionRequest.getQueryParameters(),
                             timer)
-                            , t);
+                    , t);
 
             postResult(QueryExecutionResult.ofError(
                     getOperationId(),
@@ -77,11 +81,56 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         }
     }
 
+    private Map<String, Object> enrichWithTypes(Map<String, Object> parameters,
+                                                Map<String, QueryParamType> parameterTypes) {
+
+        if (parameters == null) {
+            return Maps.newHashMap();
+        }
+
+        if (parameterTypes == null) {
+            return parameters;
+        }
+
+        Map<String, Object> resultParameters = Maps.newLinkedHashMap();
+        for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
+            QueryParamType paramType = parameterTypes.get(parameter.getKey());
+
+            String strValue = parameter.getValue().toString();
+            Object value = strValue;
+
+            //TODO refactor logic below, add methods
+            switch (paramType) {
+                case DATE:
+                case TIMESTAMP:
+                    //TODO support these types
+                    throw new IllegalArgumentException(
+                           String.format("Parameters with type %s not supported yet", parameter.getKey()));
+                case NUMBER:
+
+                    try {
+                       if (strValue.contains(".")) {
+                           value = Double.parseDouble(strValue);
+                       } else {
+                           value = Integer.parseInt(strValue);
+                       }
+                    } catch (NumberFormatException nfe) {
+                        throw new RuntimeException("Invalid numeric value " + strValue, nfe);
+                    }
+            }
+
+            resultParameters.put(parameter.getKey(), value);
+        }
+
+        return resultParameters;
+    }
+
     /**
-     *    Callback implementation for Spring template
+     * Callback implementation for Spring template
+     *
      * @param rs Resultset that is opened and closed by Spring automatically for us
-     * @return  Result is actually don't needed as we process results ourselves
-     *   by posting them to a separate queue
+     * @return Result is actually don't needed as we process results ourselves
+     *         by posting them to a separate queue
      */
     private List<Map<String, Object>> extractRows(ResultSet rs) {
         {
@@ -104,7 +153,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
                 //Loop while we don't enter a final state
                 //when we don't need this ResultSet any more
-                while ( getNextRow(currentRowNum, maxRowCount,
+                while (getNextRow(currentRowNum, maxRowCount,
                         rs, currentResultRows, columns)) {
 
                     //If we get here, it means that rs.next() has been called
@@ -144,7 +193,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
         }
     }
 
-    private List<String> getColumns(ResultSetMetaData md) throws SQLException{
+    private List<String> getColumns(ResultSetMetaData md) throws SQLException {
         int columnCount = md.getColumnCount();
         List<String> columns = Lists.newArrayList();
 
@@ -157,7 +206,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
     private void addRowData(
             ResultSetMetaData md,
             List<Map<String, Object>> rows,
-            ResultSet rs)  throws SQLException {
+            ResultSet rs) throws SQLException {
         int columnCount = md.getColumnCount();
         Map<String, Object> row = new LinkedHashMap<>(columnCount);
 
