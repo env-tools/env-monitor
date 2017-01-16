@@ -1,12 +1,12 @@
 package org.envtools.monitor.model.querylibrary.execution;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import com.google.common.collect.ImmutableSet;
 import org.envtools.monitor.common.util.ExceptionReportingUtil;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created: 27.02.16 3:31
@@ -16,10 +16,16 @@ import java.util.Optional;
 public class QueryExecutionResult {
 
     public enum ExecutionStatusE {
-        COMPLETED, HAS_MORE_DATA, ERROR, TIMED_OUT
+        COMPLETED, HAS_MORE_DATA, ERROR, TIMED_OUT, CANCELLED
     }
 
-    private final String executionId;
+    private static final Set<ExecutionStatusE> FINAL_STATES =
+            ImmutableSet.of(
+                    ExecutionStatusE.COMPLETED,
+                    ExecutionStatusE.ERROR,
+                    ExecutionStatusE.TIMED_OUT);
+
+    private final String operationId;
 
     /**
      * What was the outcome of query execution
@@ -49,6 +55,11 @@ public class QueryExecutionResult {
     private final List<Map<String, Object>> resultRows;
 
     /**
+     * Column names as provided by the ResultSet object
+     */
+    private final List<String> resultColumns;
+
+    /**
      * Detailed error message or Optional.absent() if there was no error
      */
     private final Optional<String> errorMessage;
@@ -58,18 +69,26 @@ public class QueryExecutionResult {
      */
     private final Optional<Throwable> error;
 
-    public QueryExecutionResult(String executionId, ExecutionStatusE status, long elapsedTimeMs, long returnedRowCount, List<Map<String, Object>> resultRows, Optional<String> errorMessage, Optional<Throwable> error) {
-        this.executionId = executionId;
+    public QueryExecutionResult(String operationId,
+                                ExecutionStatusE status,
+                                long elapsedTimeMs,
+                                long returnedRowCount,
+                                List<Map<String, Object>> resultRows,
+                                List<String> resultColumns,
+                                Optional<String> errorMessage,
+                                Optional<Throwable> error) {
+        this.operationId = operationId;
         this.status = status;
         this.elapsedTimeMs = elapsedTimeMs;
         this.returnedRowCount = returnedRowCount;
         this.resultRows = resultRows;
+        this.resultColumns = resultColumns;
         this.errorMessage = errorMessage;
         this.error = error;
     }
 
-    public String getExecutionId() {
-        return executionId;
+    public String getOperationId() {
+        return operationId;
     }
 
     public ExecutionStatusE getStatus() {
@@ -88,6 +107,10 @@ public class QueryExecutionResult {
         return resultRows;
     }
 
+    public List<String> getResultColumns() {
+        return resultColumns;
+    }
+
     public Optional<String> getErrorMessage() {
         return errorMessage;
     }
@@ -96,21 +119,26 @@ public class QueryExecutionResult {
         return error;
     }
 
+    public boolean isFinal() {
+        return FINAL_STATES.contains(getStatus());
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
-        private String executionId;
+        private String operationId;
         private ExecutionStatusE status;
         private long elapsedTimeMs;
         private long returnedRowCount;
         private List<Map<String, Object>> resultRows;
+        private List<String> resultColumns;
         private String errorMessage;
         private Throwable error;
 
-        public Builder executionId(String executionId) {
-            this.executionId = executionId;
+        public Builder operationId(String operationId) {
+            this.operationId = operationId;
             return this;
         }
 
@@ -134,6 +162,11 @@ public class QueryExecutionResult {
             return this;
         }
 
+        public Builder resultColumns(List<String> resultColumns) {
+            this.resultColumns = resultColumns;
+            return this;
+        }
+
         public Builder errorMessage(String errorMessage) {
             this.errorMessage = errorMessage;
             return this;
@@ -146,11 +179,12 @@ public class QueryExecutionResult {
 
         public QueryExecutionResult build() {
             return new QueryExecutionResult(
-                    executionId,
+                    operationId,
                     status,
                     elapsedTimeMs,
                     returnedRowCount,
                     resultRows,
+                    resultColumns,
                     errorMessage == null ? Optional.<String>empty() : Optional.of(errorMessage),
                     error == null ? Optional.<Throwable>empty() : Optional.of(error));
         }
@@ -158,13 +192,39 @@ public class QueryExecutionResult {
 
     }
 
-    public static QueryExecutionResult ofError(String executionId, Throwable t) {
+    public static QueryExecutionResult ofError(String operationId, Throwable t) {
         return QueryExecutionResult
                 .builder()
-                .executionId(executionId)
+                .operationId(operationId)
                 .status(ExecutionStatusE.ERROR)
                 .errorMessage(ExceptionReportingUtil.getExceptionMessage(t))
                 .error(t)
                 .build();
     }
+
+    public static QueryExecutionResult ofError(String operationId, String message) {
+        return QueryExecutionResult
+                .builder()
+                .operationId(operationId)
+                .status(ExecutionStatusE.ERROR)
+                .errorMessage(message)
+                .build();
+    }
+
+    public static QueryExecutionResult ofCancel(String operationId) {
+        return QueryExecutionResult
+                .builder()
+                .operationId(operationId)
+                .status(ExecutionStatusE.CANCELLED)
+                .build();
+    }
+
+    public static QueryExecutionResult ofTimeout(String operationId) {
+        return QueryExecutionResult
+                .builder()
+                .operationId(operationId)
+                .status(ExecutionStatusE.TIMED_OUT)
+                .build();
+    }
+
 }

@@ -46,7 +46,7 @@
             angular.forEach(message.body.payload.jsonContent[1], function (category) {
                 privateTree.push(createTree(category, 1, privateCategories));
             });
-            categoriesFormat["Private categories (sergey)"] = privateCategories;
+            categoriesFormat["Private categories (user01)"] = privateCategories;
 
             $scope.source = [
                 {

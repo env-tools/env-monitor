@@ -1,14 +1,11 @@
 package org.envtools.monitor.common.ssh;
 
 import org.apache.log4j.Logger;
-import org.envtools.monitor.common.encrypting.EncryptionService;
-import org.envtools.monitor.common.encrypting.EncryptionServiceImpl;
 import org.envtools.monitor.common.jaxb.JaxbHelper;
 import org.springframework.util.ResourceUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
-import java.util.Properties;
 
 /**
  * Created by Michal Skuza on 2016-06-17.

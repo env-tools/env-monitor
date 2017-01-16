@@ -14,4 +14,7 @@ public interface QueryExecutionResultViewMapper {
 
     QueryExecutionResultView errorResult(Throwable t);
 
+    QueryExecutionResultView cancelledResult();
+
+    QueryExecutionResultView timeoutResult();
 }

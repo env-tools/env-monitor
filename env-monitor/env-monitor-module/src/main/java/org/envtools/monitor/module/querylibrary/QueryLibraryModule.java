@@ -13,6 +13,7 @@ import org.envtools.monitor.module.AbstractPluggableModule;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.services.*;
 import org.envtools.monitor.module.querylibrary.services.impl.updates.TreeUpdateTask;
+import org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.SubscribableChannel;
 import javax.annotation.PreDestroy;
@@ -30,7 +31,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class QueryLibraryModule extends AbstractPluggableModule {
 
-
     private static final Logger LOGGER = Logger.getLogger(QueryLibraryModule.class);
 
     public static final Map<String, Class<?>> PAYLOAD_TYPES = new HashMap<String, Class<?>>() {
@@ -43,13 +43,13 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     };
 
     @Autowired
-    QueryExecutionService queryExecutionService;
+    private QueryExecutionService queryExecutionService;
 
     @Autowired
-    org.envtools.monitor.module.querylibrary.viewmapper.QueryExecutionResultViewMapper mapper;
+    private QueryExecutionResultViewMapper mapper;
 
     @Autowired
-    Serializer serializer;
+    private Serializer serializer;
 
     private AtomicLong responseIdentifier = new AtomicLong(0);
 
@@ -57,12 +57,25 @@ public class QueryLibraryModule extends AbstractPluggableModule {
      * This is incoming channel for QUERY_LIBRARY module
      */
     @Resource(name = "querylibrary.channel")
-    SubscribableChannel queryLibraryModuleChannel;
+    private SubscribableChannel queryLibraryModuleChannel;
 
     //TODO Auth is cross-module functionality
     @Resource(name = "querylibrary.provider")
-    QueryLibraryAuthProvider queryLibraryAuthProvider;
+    private QueryLibraryAuthProvider queryLibraryAuthProvider;
 
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
+    @Autowired
+    DataOperationService<Long> dataOperationService;
+
+    @Autowired
+    TreeUpdateTriggerService treeUpdateTriggerService;
+
+    @Autowired
+    TreeUpdateService treeUpdateService;
+
+    @Resource(name = "querylibrary.bootstrapper")
+    BootstrapService treeBootstrapService;
 
     @Override
     protected <T> void processPayload(T payload, RequestMessage requestMessage)  {
@@ -70,7 +83,9 @@ public class QueryLibraryModule extends AbstractPluggableModule {
             processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
         } else if (payload instanceof QueryExecutionNextResultRequest) {
             processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
-        } else if (payload instanceof DataOperation) {
+        } else if (payload instanceof QueryExecutionCancelRequest) {
+            processExecutionCancelRequest((QueryExecutionCancelRequest) payload, requestMessage);
+        }else if (payload instanceof DataOperation) {
             processDataOperationRequest((DataOperation) payload, requestMessage);
         }
     }
@@ -89,6 +104,16 @@ public class QueryLibraryModule extends AbstractPluggableModule {
                             //What if duplicates here?
                             sendResultMessage(mapper.errorResult(t), requestMessage);
                         }
+
+                        @Override
+                        public void onQueryCancelled() {
+                            sendResultMessage(mapper.cancelledResult(), requestMessage);
+                        }
+
+                        @Override
+                        public void onQueryTimeout() {
+                            sendResultMessage(mapper.timeoutResult(), requestMessage);
+                        }
                     });
        // } catch (QueryExecutionException e) {
             //What if duplicates here?
@@ -96,20 +121,6 @@ public class QueryLibraryModule extends AbstractPluggableModule {
           //  sendResultMessage(mapper.errorResult(e), requestMessage);
       //  }
     }
-
-    private ExecutorService executorService = Executors.newCachedThreadPool();
-
-    @Autowired
-    DataOperationService<Long> dataOperationService;
-
-    @Autowired
-    TreeUpdateTriggerService treeUpdateTriggerService;
-
-    @Autowired
-    TreeUpdateService treeUpdateService;
-
-    @Resource(name = "querylibrary.bootstrapper")
-    BootstrapService treeBootstrapService;
 
     @Override
     public void init() throws Exception {
@@ -189,9 +200,39 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     private void processExecutionNextResultRequest(QueryExecutionNextResultRequest queryExecutionNextResultRequest,
                                                    RequestMessage requestMessage) {
+        queryExecutionService.submitForNextResult(queryExecutionNextResultRequest,
+                new QueryExecutionListener() {
+                    @Override
+                    public void onQueryCompleted(QueryExecutionResult queryResult) {
+                        sendResultMessage(queryResult, requestMessage);
+                    }
 
+                    @Override
+                    public void onQueryError(Throwable t) {
+                        //What if duplicates here?
+                        sendResultMessage(mapper.errorResult(t), requestMessage);
+                    }
+
+                    @Override
+                    public void onQueryCancelled() {
+                        sendResultMessage(mapper.cancelledResult(), requestMessage);
+                    }
+
+                    @Override
+                    public void onQueryTimeout() {
+                        sendResultMessage(mapper.timeoutResult(), requestMessage);
+                    }
+                });
     }
 
+    private void processExecutionCancelRequest(QueryExecutionCancelRequest queryExecutionCancelRequest,
+                                                   RequestMessage requestMessage) {
+        try {
+            queryExecutionService.cancel(queryExecutionCancelRequest);
+        } catch (QueryExecutionException e) {
+            sendResultMessage(mapper.errorResult(e), requestMessage);
+        }
+    }
 
     @Override
     protected SubscribableChannel getModuleChannel() {

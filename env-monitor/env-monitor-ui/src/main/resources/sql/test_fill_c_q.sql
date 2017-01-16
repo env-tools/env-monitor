@@ -1,3 +1,19 @@
+INSERT INTO DATA_SOURCE(ID, TYPE, NAME, DESCRIPTION)
+  VALUES
+    (1, 'JDBC', 'H2 Embedded DB - test data source #1', '#1 This data source is for the same database which holds category data'),
+    (2, 'JDBC', 'H2 Embedded DB - test data source #2', '#2 This data source is for the same database which holds category data');
+
+INSERT INTO DATA_SOURCE_PROPERTIES(ID, PROPERTY, VALUE, DATASOURCE_ID)
+  VALUES
+     (1, 'user', 'sa', 1),
+     (2, 'password', 'encrypted:xHox3vNFBD/rljWMPkVFzw==', 1),
+     (3, 'url', 'jdbc:h2:file:./h2_data', 1),
+     (4, 'driverClassName', 'org.h2.Driver', 1);
+
+INSERT INTO DATA_SOURCE_PROPERTIES(ID, PROPERTY, VALUE, DATASOURCE_ID)
+  SELECT ID + 4, PROPERTY, VALUE, 2 FROM DATA_SOURCE_PROPERTIES
+    WHERE DATASOURCE_ID = 1;
+
 INSERT INTO CATEGORY (ID, DESCRIPTION, OWNER, TITLE, PARENT_CATEGORY_ID)
   VALUES
     (1, 'Get order list', NULL, 'Orders', NULL ),
@@ -12,7 +28,7 @@ INSERT INTO CATEGORY (ID, DESCRIPTION, OWNER, TITLE, PARENT_CATEGORY_ID)
 INSERT INTO LIB_QUERY (ID, DESCRIPTION, TEXT, TITLE, CATEGORY_ID)
     VALUES
       (1, 'Get all orders', 'SELECT * FROM ORDERS', 'All orders', 1),
-      (2, 'Get orders which on hold', 'SELECT * FROM ORDERS SELECT * FROM ORDERS WHERE STATUS = ''On Hold''', 'On hold orders', 1),
+      (2, 'Get orders which on hold', 'SELECT * FROM ORDERS WHERE STATUS = ''On Hold''', 'On hold orders', 1),
       (3, 'Get orders which canceled', 'SELECT * FROM ORDERS WHERE STATUS = ''Cancelled''', 'Canceled orders', 1),
       (4, 'Get orders which disputed', 'SELECT * FROM ORDERS WHERE STATUS = ''Disputed''', 'Disputed orders', 1),
       (5, 'Get orders which in process', 'SELECT * FROM ORDERS WHERE STATUS = ''In Process''', 'In process orders', 1),
@@ -54,7 +70,7 @@ INSERT INTO CATEGORY (ID, DESCRIPTION, OWNER, TITLE, PARENT_CATEGORY_ID)
 INSERT INTO LIB_QUERY (ID, DESCRIPTION, TEXT, TITLE, CATEGORY_ID)
 VALUES
   (21, 'Get all orders', 'SELECT * FROM ORDERS', 'All orders', 9),
-  (22, 'Get orders which on hold', 'SELECT * FROM ORDERS SELECT * FROM ORDERS WHERE STATUS = ''On Hold''', 'On hold orders', 9),
+  (22, 'Get orders which on hold', 'SELECT * FROM ORDERS WHERE STATUS = ''On Hold''', 'On hold orders', 9),
   (23, 'Get orders which canceled', 'SELECT * FROM ORDERS WHERE STATUS = ''Cancelled''', 'Canceled orders', 9),
   (24, 'Get orders which disputed', 'SELECT * FROM ORDERS WHERE STATUS = ''Disputed''', 'Disputed orders', 9),
   (25, 'Get orders which in process', 'SELECT * FROM ORDERS WHERE STATUS = ''In Process''', 'In process orders', 9),

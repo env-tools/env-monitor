@@ -12,6 +12,9 @@ public class QueryExecutionCancelRequest {
 
     private String operationId;
 
+    public QueryExecutionCancelRequest() {
+    }
+
     public QueryExecutionCancelRequest(String operationId) {
         this.operationId = operationId;
     }

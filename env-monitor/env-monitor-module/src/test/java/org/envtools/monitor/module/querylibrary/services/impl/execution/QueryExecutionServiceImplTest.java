@@ -1,18 +1,15 @@
 package org.envtools.monitor.module.querylibrary.services.impl.execution;
 
+import com.google.common.collect.Lists;
+import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionListener;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionNextResultRequest;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionRequest;
-import org.envtools.monitor.model.querylibrary.execution.QueryExecutionResult;
+import org.envtools.monitor.model.querylibrary.QueryParamType;
+import org.envtools.monitor.model.querylibrary.execution.*;
 import org.envtools.monitor.module.querylibrary.QueryExecuteTestApplication;
-import org.envtools.monitor.module.querylibrary.QueryLibraryModule;
 import org.envtools.monitor.module.querylibrary.services.QueryExecutionService;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -20,15 +17,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-import reactor.event.dispatch.SynchronousDispatcher;
-
-import static org.mockito.Mockito.doAnswer;
+import org.unitils.reflectionassert.ReflectionAssert;
 
 /**
  * Created by sergey on 23.03.2016.
@@ -38,71 +35,46 @@ import static org.mockito.Mockito.doAnswer;
 @TestPropertySource(locations = "classpath:/services/application-query-execute-test.properties")
 public class QueryExecutionServiceImplTest {
 
+    private static final Logger LOGGER = Logger.getLogger(QueryExecutionServiceImplTest.class);
+
     @Autowired
     private QueryExecutionService executionService;
 
     @Test
-    public void testExecute() throws Exception {
-        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
+    public void testExecuteWithParameters() throws Exception {
 
-        String query = "SELECT * FROM INFORMATION_SCHEMA.COLLATIONS WHERE NAME=:name";
-        Map<String, Object> queryParameters = new HashMap<>();
-        Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 5000;
-        int rowCount = 50;
-
-        queryParameters.put("name", "ARABIC_JORDAN");
-
-        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
-        dataSourceProperties.put("user", "sa");
-        dataSourceProperties.put("password", "sa");
-        dataSourceProperties.put("driverClassName", "org.h2.Driver");
-
-        QueryExecutionRequest request = requestBuilder
-                .operationId(UUID.randomUUID().toString())
-                .queryType(DataProviderType.JDBC)
-                .query(query)
-                .queryParameters(queryParameters)
-                .dataSourceProperties(dataSourceProperties)
-                .timeOutMs(timeOut)
-                .rowCount(rowCount)
-                .build();
-        QueryExecutionListener listener = null;
-        CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
-        executionService.submitForExecution(request,
-                new QueryExecutionListener() {
-                    @Override
-                    public void onQueryCompleted(QueryExecutionResult queryResult) {
-                        //  listener.onQueryCompleted(queryResult);
-                        future.complete(queryResult);
+        Future<QueryExecutionResult> resultFuture = submitCorrectQuery(
+                "SELECT * FROM INFORMATION_SCHEMA.COLLATIONS WHERE NAME=:name",
+                new HashMap<String, Object>(){
+                    {
+                        put("name", "ARABIC_JORDAN");
                     }
+                },
+                5000,
+                50);
 
-                    @Override
-                    public void onQueryError(Throwable t) {
-                        //  listener.onQueryError(t);
-                    }
-                });
+        QueryExecutionResult result = resultFuture.get();
 
-        Assert.assertEquals(1, future.get().getResultRows().size());
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, result.getStatus());
+        Assert.assertEquals(1, result.getResultRows().size());
 
     }
 
-    // Class under test
-    private QueryExecutionServiceImpl queryExequtiomServiceImpl;
-
-    @Mock
-    private QueryExecutionServiceImpl qs;
-
-
+    @Ignore //All queries are too fast in H2 for a timeout =)
     @Test
     public void testExecuteTimedOut() throws Exception {
 
         QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
 
-        String query = "SELECT * FROM INFORMATION_SCHEMA.CATALOGS WHERE CATALOG_NAME =:name ";
+        String query = "SELECT m1 || m2 || '---------------------' FROM\n" +
+                "(SELECT max(TYPE_NAME) m1 FROM INFORMATION_SCHEMA.TYPE_INFO GROUP BY PRECISION ) t1\n" +
+                "LEFT JOIN\n" +
+                "(SELECT min(TYPE_NAME) m2 FROM INFORMATION_SCHEMA.TYPE_INFO GROUP BY PRECISION ) t2\n" +
+                "ON t1.m1 = t2.m2";
         Map<String, Object> queryParameters = new HashMap<>();
+        Map<String, QueryParamType> queryParameterTypes  = new HashMap<>();
         Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 10;
+        long timeOut = 1;
         int rowCount = 100;
 
         queryParameters.put("name", "UNNAMED");
@@ -112,127 +84,232 @@ public class QueryExecutionServiceImplTest {
         dataSourceProperties.put("password", "sa");
         dataSourceProperties.put("driverClassName", "org.h2.Driver");
 
-
+        String operationId = UUID.randomUUID().toString();
         QueryExecutionRequest request = requestBuilder
+                .operationId(operationId)
+                .queryType(DataProviderType.JDBC)
+                .query(query)
+                .queryParameters(queryParameters)
+                .queryParameterTypes(queryParameterTypes)
+                .dataSourceProperties(dataSourceProperties)
+                .timeOutMs(timeOut)
+                .rowCount(rowCount)
+                .build();
+
+        CompletableFuture<QueryExecutionResult> resultFuture = new CompletableFuture<>();
+        executionService.submitForExecution(request,
+                new QueryExecutionListener() {
+                    @Override
+                    public void onQueryCompleted(QueryExecutionResult queryResult) {
+                        resultFuture.complete(queryResult);
+                    }
+
+                    @Override
+                    public void onQueryTimeout() {
+                        resultFuture.complete(QueryExecutionResult.ofTimeout(operationId));
+                    }
+                });
+
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT,
+                resultFuture.get().getStatus());
+    }
+
+    @Test
+    public void testExecuteInvalidSQL() throws Exception {
+        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
+
+        String query = "SELECT FROMd SQL";
+        long timeOut = 5000;
+        int rowCount = 50;
+
+        String operationId = UUID.randomUUID().toString();
+        QueryExecutionRequest request = requestBuilder
+                .operationId(operationId)
+                .queryType(DataProviderType.JDBC)
+                .query(query)
+                .dataSourceProperties(getDataSourceProperties())
+                .timeOutMs(timeOut)
+                .rowCount(rowCount)
+                .build();
+
+        CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
+        executionService.submitForExecution(request,
+                new QueryExecutionListener() {
+                    @Override
+                    public void onQueryError(Throwable t) {
+                        future.complete(QueryExecutionResult.ofError(operationId, t));
+                    }
+                });
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.ERROR,
+                future.get().getStatus());
+    }
+
+    @Test
+    public void testSubmitForNextResult() throws Exception {
+
+        //The table is elected to have more rows than ROW_COUNT value
+        String query = "SELECT * FROM INFORMATION_SCHEMA.HELP ORDER BY ID";
+        int ROW_COUNT = 30;
+        long TIMEOUT = 5000;
+
+        // ---------------------------------------------
+        //Get first rows by a single query
+        // ---------------------------------------------
+
+        Future<QueryExecutionResult> resultFuture = submitCorrectQuery(
+                query,
+                new HashMap<>(),
+                TIMEOUT,
+                ROW_COUNT);
+
+        QueryExecutionResult queryExecutionResult = resultFuture.get();
+
+        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.HAS_MORE_DATA,
+                queryExecutionResult.getStatus());
+        Assert.assertEquals(ROW_COUNT, queryExecutionResult.getResultRows().size());
+
+        List<Map<String, Object>> expectedRows = queryExecutionResult.getResultRows();
+
+        executionService.cancel(new QueryExecutionCancelRequest(
+                queryExecutionResult.getOperationId()));
+
+        sleep(100); //let it cancel =) so that JDBC connection would be released
+
+        // ---------------------------------------------
+        //Get first rows by sequential requests for next rows
+        // ---------------------------------------------
+
+        int MAX_REQUESTS = 20;
+        int currentRequestedRowCount = 1;
+        String operationId = null;
+        List<Map<String, Object>> partiallyCollectedRows = Lists.newArrayList();
+        boolean lastRequest = false;
+
+        for (int iRequest = 0; iRequest < MAX_REQUESTS; iRequest++) {
+
+            LOGGER.info(String.format("#%d * Requesting for %d rows", iRequest, currentRequestedRowCount));
+
+            if (iRequest == 0) {
+                //process first request
+                resultFuture = submitCorrectQuery(
+                        query,
+                        new HashMap<>(),
+                        TIMEOUT,
+                        currentRequestedRowCount);
+
+                queryExecutionResult = resultFuture.get();
+                operationId = queryExecutionResult.getOperationId();
+                partiallyCollectedRows.addAll(queryExecutionResult.getResultRows());
+
+                Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.HAS_MORE_DATA,
+                        queryExecutionResult.getStatus());
+                Assert.assertEquals(currentRequestedRowCount, queryExecutionResult.getResultRows().size());
+
+            } else {
+
+                //process following requests - for next rows
+                resultFuture = submitForNextResults(
+                        operationId,
+                        TIMEOUT,
+                        currentRequestedRowCount);
+                queryExecutionResult = resultFuture.get();
+                partiallyCollectedRows.addAll(queryExecutionResult.getResultRows());
+
+                Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.HAS_MORE_DATA,
+                        queryExecutionResult.getStatus());
+                Assert.assertEquals(currentRequestedRowCount, queryExecutionResult.getResultRows().size());
+
+            }
+
+            LOGGER.info(String.format("#%d * Got %d rows", iRequest, queryExecutionResult.getResultRows().size()));
+
+            if (lastRequest) {
+                break;
+            }
+
+            currentRequestedRowCount++;
+
+            if (partiallyCollectedRows.size() + currentRequestedRowCount > ROW_COUNT) {
+                currentRequestedRowCount = ROW_COUNT - partiallyCollectedRows.size();
+                if (currentRequestedRowCount == 0) {
+                    break;
+                } else {
+                    lastRequest = true;
+                }
+            }
+        }
+
+        ReflectionAssert.assertReflectionEquals(expectedRows, partiallyCollectedRows);
+
+    }
+
+    private Map<String, String> getDataSourceProperties() {
+        Map<String, String> dataSourceProperties = new HashMap<>();
+        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
+        dataSourceProperties.put("user", "sa");
+        dataSourceProperties.put("password", "sa");
+        dataSourceProperties.put("driverClassName", "org.h2.Driver");
+        return dataSourceProperties;
+    }
+
+    private CompletableFuture<QueryExecutionResult> submitCorrectQuery(
+            String query,
+            Map<String, Object> queryParameters,
+            long timeOut,
+            int rowCount) {
+
+        QueryExecutionRequest request = QueryExecutionRequest
+                .builder()
                 .operationId(UUID.randomUUID().toString())
                 .queryType(DataProviderType.JDBC)
                 .query(query)
                 .queryParameters(queryParameters)
-                .dataSourceProperties(dataSourceProperties)
+                .dataSourceProperties(getDataSourceProperties())
                 .timeOutMs(timeOut)
                 .rowCount(rowCount)
                 .build();
-        QueryExecutionListener listener = null;
+
         CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
         executionService.submitForExecution(request,
                 new QueryExecutionListener() {
                     @Override
                     public void onQueryCompleted(QueryExecutionResult queryResult) {
-                        //  listener.onQueryCompleted(queryResult);
                         future.complete(queryResult);
-                    }
-
-                    @Override
-                    public void onQueryError(Throwable t) {
-                        //  listener.onQueryError(t);
                     }
                 });
 
-        Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.TIMED_OUT, future.get().getStatus().TIMED_OUT);
+        return future;
     }
 
-    @Test
-    public void testExecuteFailSQL() {
-        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
-        Map<String, Object> queryParameters = new HashMap<>();
-        String query = "SELlECT * FROM INF";
-        Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 1000;
-        int rowCount = 1;
+    private CompletableFuture<QueryExecutionResult> submitForNextResults(
+            String operationId,
+            long timeOut,
+            int rowCount) {
 
-
-        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
-        dataSourceProperties.put("user", "sa");
-        dataSourceProperties.put("password", "sa");
-        dataSourceProperties.put("driverClassName", "org.h2.Driver");
-
-
-        QueryExecutionRequest request = requestBuilder
-                .operationId(UUID.randomUUID().toString())
-                .queryType(DataProviderType.JDBC)
-                .query(query)
-                .dataSourceProperties(dataSourceProperties)
-               // .queryParameters(queryParameters)
+        QueryExecutionNextResultRequest request = QueryExecutionNextResultRequest
+                .builder()
+                .operationId(operationId)
                 .timeOutMs(timeOut)
                 .rowCount(rowCount)
                 .build();
-        QueryExecutionListener listener = null;
+
         CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
-        executionService.submitForExecution(request,
+        executionService.submitForNextResult(request,
                 new QueryExecutionListener() {
                     @Override
                     public void onQueryCompleted(QueryExecutionResult queryResult) {
-                        //  listener.onQueryCompleted(queryResult);
                         future.complete(queryResult);
-                    }
-
-                    @Override
-                    public void onQueryError(Throwable t) {
-                      //  listener.onQueryError(t);
-                        // future.complete(t);
                     }
                 });
 
-       // Assert.assertEquals(future, future);
+        return future;
     }
 
-  /*  @Test
-    public void testSubmitForNextResult() throws Exception {
-        QueryExecutionRequest.Builder requestBuilder = QueryExecutionRequest.builder();
-
-        String query = "SELECT * FROM INFORMATION_SCHEMA.CONSTRAINTS ";
-        Map<String, String> dataSourceProperties = new HashMap<>();
-        long timeOut = 5000;
-        int rowCount;
-        int maxRows;
-
-        dataSourceProperties.put("url", "jdbc:h2:mem:;DB_CLOSE_ON_EXIT=FALSE");
-        dataSourceProperties.put("user", "sa");
-        dataSourceProperties.put("password", "sa");
-        dataSourceProperties.put("driverClassName", "org.h2.Driver");
-
-        for(int i=0;i<10;i++){
-            rowCount=(int)Math.random()*(100-10)+10;
-            maxRows=(int)Math.random()*(100-10)+10;
-            QueryExecutionNextResultRequest queryExecutionNextResultRequest =
-                    new QueryExecutionNextResultRequest(UUID.randomUUID().toString(),timeOut,rowCount);
-            QueryExecutionListener listener = null;
-            CompletableFuture<QueryExecutionResult> future = new CompletableFuture<>();
-            executionService.submitForNextResult(queryExecutionNextResultRequest,
-                    new QueryExecutionListener() {
-                        @Override
-                        public void onQueryCompleted(QueryExecutionResult queryResult) {
-                            //  listener.onQueryCompleted(queryResult);
-                            future.complete(queryResult);
-                        }
-
-                        @Override
-                        public void onQueryError(Throwable t) {
-                            //  listener.onQueryError(t);
-                            // future.complete(t);
-                        }
-                    });
-
-            if(maxRows<=rowCount){
-                Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, future.get().getStatus().COMPLETED);
-                Assert.assertEquals(maxRows, future.get().getResultRows().size());
-            }else {
-                Assert.assertEquals(QueryExecutionResult.ExecutionStatusE.COMPLETED, future.get().getStatus().COMPLETED);
-                Assert.assertEquals(rowCount, future.get().getResultRows().size());
-            }
-
+    private static void sleep(long ms) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(ms);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error on sleep", e);
         }
-
-
-    }*/
+    }
 }

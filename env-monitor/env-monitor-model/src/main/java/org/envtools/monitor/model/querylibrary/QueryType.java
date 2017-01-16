@@ -6,5 +6,7 @@ package org.envtools.monitor.model.querylibrary;
  * @author Yury Yakovlev
  */
 public enum QueryType {
-    JDBC, CASSANDRA, GEMFIRE
+    JDBC,
+    CASSANDRA /* not supported yet */,
+    GEMFIRE /* not supported yet */
 }

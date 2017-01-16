@@ -6,8 +6,11 @@ import org.envtools.monitor.model.messaging.ResponseMessage;
 import org.envtools.monitor.model.messaging.ResponseType;
 import org.envtools.monitor.model.messaging.content.MapContent;
 import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.querylibrary.db.DataSource;
 import org.envtools.monitor.module.ModuleConstants;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
+import org.envtools.monitor.module.querylibrary.dao.DataSourceDao;
+import org.envtools.monitor.module.querylibrary.dao.DataSourcePropertiesDao;
 import org.envtools.monitor.module.querylibrary.services.CoreModuleService;
 import org.envtools.monitor.module.querylibrary.services.TreeUpdateService;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
@@ -34,6 +37,12 @@ public class TreeUpdateServiceImpl implements TreeUpdateService {
 
     @Autowired
     CategoryDao categoryDao;
+
+    @Autowired
+    DataSourceDao dataSourceDao;
+
+    @Autowired
+    DataSourcePropertiesDao dataSourcePropertiesDao;
 
     @Autowired
     CategoryViewMapper categoryViewMapper;
@@ -78,20 +87,23 @@ public class TreeUpdateServiceImpl implements TreeUpdateService {
 
                 }
 
-                Map<String, String> jsonMap = null;
+                List<DataSource> dataSources = dataSourceDao.findAll();
+
+                Map<String, String> jsonMap;
                 try {
                     jsonMap = categoryViewMapper
-                            .mapCategoriesByOwnerToString(categoryViewMapper.mapCategoriesByOwner(treeMap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                            .mapCategoriesByOwnerToString(
+                                    categoryViewMapper.mapCategoriesByOwner(treeMap, dataSources));
+                    coreModuleService.sendToCore(ResponseMessage
+                            .builder()
+                            .payload(MapContent.of(jsonMap))
+                            .type(ResponseType.CATEGORY_TREE_DATA)
+                            .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
+                            .build());
 
-                coreModuleService.sendToCore(ResponseMessage
-                        .builder()
-                        .payload(MapContent.of(jsonMap))
-                        .type(ResponseType.CATEGORY_TREE_DATA)
-                        .targetModuleId(ModuleConstants.QUERY_LIBRARY_MODULE_ID)
-                        .build());
+                } catch (IOException e) {
+                    LOGGER.error("Error mapping categories", e);
+                }
 
             }
         });

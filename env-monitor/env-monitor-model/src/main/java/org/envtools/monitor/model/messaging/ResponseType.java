@@ -7,7 +7,7 @@ package org.envtools.monitor.model.messaging;
  */
 public enum ResponseType {
 
-    //Applications modul types
+    //Applications module types
 
     APPLICATIONS_DATA,
 

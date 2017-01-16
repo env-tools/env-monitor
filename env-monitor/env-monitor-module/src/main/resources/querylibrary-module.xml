@@ -16,6 +16,14 @@
 
     <bean id="querylibrary.provider" class="${querylibrary.provider}"/>
 
+    <!-- We have this as separate definition from app module as
+     somewhen app and QL modules might be separated -->
+    <bean id="encryptionService" class="org.envtools.monitor.common.encrypting.EncryptionServiceImpl">
+        <constructor-arg index="0" value="${jasypt.master.key}"/>
+        <constructor-arg index="1" value="${jasypt.algorithm}"/>
+    </bean>
+
+
     <bean id="querylibrary.bootstrapper" class="${querylibrary.bootstrapper}"/>
 
 </beans>

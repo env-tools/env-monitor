@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
+import org.envtools.monitor.common.encrypting.EncryptionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -32,6 +34,9 @@ public class JdbcDataSourceService extends AbstractDataSourceService<BasicDataSo
             PASSWORD_PROPERTY_NAME
     );
 
+    @Autowired (required = false)    //required = false - for test contexts
+    EncryptionService encryptionService;
+
     @Override
     protected Map<String, String> getKeyParams(Map<String, String> allParams) {
         //No params are excluded
@@ -47,10 +52,17 @@ public class JdbcDataSourceService extends AbstractDataSourceService<BasicDataSo
     protected BasicDataSource createDataSource(Map<String, String> params) {
         BasicDataSource ds = new BasicDataSource();
 
-        ds.setDriverClassName(getRequiredValue(params, DRIVER_CLASS_NAME_PROPERTY_NAME));
-        ds.setUrl(getRequiredValue(params, URL_PROPERTY_NAME));
-        ds.setUsername(getRequiredValue(params, USER_PROPERTY_NAME));
-        ds.setPassword(getRequiredValue(params, PASSWORD_PROPERTY_NAME));
+        //Usually only passwords are encrypted,
+        // but let's support decryption for all properties
+
+        ds.setDriverClassName(
+                getRequiredValue(params, DRIVER_CLASS_NAME_PROPERTY_NAME, encryptionService));
+        ds.setUrl(
+                getRequiredValue(params, URL_PROPERTY_NAME, encryptionService));
+        ds.setUsername(
+                getRequiredValue(params, USER_PROPERTY_NAME, encryptionService));
+        ds.setPassword(
+                getRequiredValue(params, PASSWORD_PROPERTY_NAME, encryptionService));
 
         return ds;
     }

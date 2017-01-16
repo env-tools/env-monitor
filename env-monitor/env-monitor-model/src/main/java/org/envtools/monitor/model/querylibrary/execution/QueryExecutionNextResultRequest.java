@@ -2,13 +2,16 @@ package org.envtools.monitor.model.querylibrary.execution;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.envtools.monitor.model.querylibrary.DataProviderType;
+
+import java.util.Map;
 
 /**
  * Created: 12.03.16 23:18
  *
  * @author Yury Yakovlev
  */
-public class QueryExecutionNextResultRequest extends QueryExecutionRequest {
+public class QueryExecutionNextResultRequest {
 
     private String operationId;
     private Long timeOutMs;
@@ -54,5 +57,42 @@ public class QueryExecutionNextResultRequest extends QueryExecutionRequest {
                 append("timeOutMs", timeOutMs).
                 append("rowCount", rowCount).
                 toString();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String operationId;
+        private Long timeOutMs;
+        private Integer rowCount;
+
+        private Builder() {
+        }
+
+        public Builder operationId(String operationId) {
+            this.operationId = operationId;
+            return this;
+        }
+
+        public Builder timeOutMs(Long timeOutMs) {
+            this.timeOutMs = timeOutMs;
+            return this;
+        }
+
+        public Builder rowCount(Integer rowCount) {
+            this.rowCount = rowCount;
+            return this;
+        }
+
+        public QueryExecutionNextResultRequest build() {
+            return new QueryExecutionNextResultRequest(
+                    operationId,
+                    timeOutMs,
+                    rowCount
+            );
+        }
+
     }
 }

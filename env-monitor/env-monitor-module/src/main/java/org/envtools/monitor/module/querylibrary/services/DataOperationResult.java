@@ -144,7 +144,7 @@ public class DataOperationResult implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("executionId", executionId)
+                .append("operationId", executionId)
                 .append("status", status)
                 .append("resultRows", resultRows)
                 .append("errorMessage", errorMessage)

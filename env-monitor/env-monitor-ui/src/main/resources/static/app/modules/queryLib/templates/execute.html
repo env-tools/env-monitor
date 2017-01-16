@@ -4,54 +4,94 @@
             {{ errorMessage }}
         </div>
     </div>
+    <div class="form-group col-xs-12" data-ng-if="infoMessage">
+        <div class="alert alert-info">
+            {{ infoMessage }}
+        </div>
+    </div>
+
+    <!--div class="col-xs-12">{{state}}</div-->
+
     <div class="form-group col-xs-12">
-        <textarea name="query" data-ng-model="params.query" id="paramsQuery" cols="30" rows="10"
+        <textarea name="query" data-ng-model="currentQueryContext.query" id="paramsQuery" cols="30" rows="10"
                   class="form-control"></textarea>
     </div>
-    <div class="col-xs-5">
-        <table class="table">
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Value</th>
-            </tr>
-            <tr data-ng-repeat="param in params.parameters">
-                <td>{{ param.name }}</td>
-                <td>{{ param.type }}</td>
-                <td><input placeholder="Type the value" class="query-param" type="text" data-ng-model="param.value"></td>
-            </tr>
-        </table>
+    <div class="col-xs-6">
+        <div class="form-group col-xs-12">
+            <!--label>Controls</label-->
+            <button data-ng-disabled="!currentQueryContext.executeButtonEnabled" data-ng-click="execute(currentQueryContext)" class="btn btn-primary"> {{ currentQueryContext.executeButtonTitle }}</button>
+            <button data-ng-if="currentQueryContext.cancelButtonVisible" data-ng-click="cancel(currentQueryContext)" class="btn btn-primary">Cancel</button>
+        </div>
+        <div class="row">
+        <div data-ng-if="currentQueryContext.parameters.length" class="col-xs-12" style="padding-right: 30px;">
+            <table class="table" >
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                </tr>
+                <tr data-ng-repeat="param in currentQueryContext.parameters">
+                    <td>{{ param.name }}</td>
+                    <td>{{ param.type }}</td>
+                    <td><input placeholder="Type the value" class="query-param" type="text" data-ng-model="param.value" required></td>
+                </tr>
+            </table>
+        </div>
+        </div>
+
     </div>
-    <div class="col-xs-7">
-        <div class="col-xs-6">
-            <div class="form-group col-xs-12" style="display: none">
+    <div class="col-xs-6">
+        <div class="col-xs-12">
+            <div class="form-group col-xs-12" > <!-- style="display: none" -->
                 <label for="datasource">Select Datasource</label>
-                <select name="datasource" id="datasource" class="form-control" data-ng-model="params.datasourse">
-                    <option value="">Select</option>
-                    <option value="">JDBC 1</option>
-                    <option value="">JDBC 2</option>
-                    <option value="">JDBC 3</option>
+                <select
+                        name="datasource"
+                        id="datasource"
+                        class="form-control"
+                        data-ng-model="currentQueryContext.dataSource"
+                        data-ng-options="ds.name for ds in currentQueryContext.dataSources">
                 </select>
             </div>
-            <div class="form-group col-xs-12">
+            <!-- Will support it later -->
+            <!--div class="form-group col-xs-12">
                 <label for="timeout">Execution time (ms)</label>
-                <input type="text" class="form-control" id="timeout" name="timeout" data-ng-model="params.timeout">
-            </div>
+                <input type="text" class="form-control" id="timeout" name="timeout" data-ng-model="currentQueryContext.timeout">
+            </div-->
             <div class="form-group col-xs-12">
                 <label for="limit">Row limit</label>
-                <input type="text" class="form-control" id="limit" name="rows" data-ng-model="params.rows">
-            </div>
-        </div>
-        <div class="col-xs-6">
-            <div class="form-group col-xs-12">
-                <label>Controls</label>
-                <button data-ng-click="execute(params)" class="btn btn-primary">Execute Query</button>
+                <input type="text" class="form-control" id="limit" name="rows" data-ng-model="currentQueryContext.rows">
             </div>
         </div>
     </div>
 
 
-    <div class="form-group col-xs-12" data-ng-if="settings && !error">
-        <jqx-grid jqx-settings="settings" id="jqxgrid"></jqx-grid>
+    <div class="form-group col-xs-12" data-ng-if="settings.columns && settings.columns.length && !error">
+        <!-- jqx-grid somehow collapsed to a single line with 0px height.
+        I did not know how to fix it ans switched to simple Bootstrap -->
+        <form name="selectResultsView" data-ng-init=" resultsViewMode = 'table' ">
+            View result as
+            <label>
+                <input type="radio" ng-model="resultsViewMode" value="table">
+                Table
+            </label>
+            <label>
+                <input type="radio" ng-model="resultsViewMode" value="grid">
+                Grid
+            </label>
+        </form>
+        <jqx-grid ng-show="resultsViewMode == 'grid' " jqx-settings="settings" id="jqxgrid"></jqx-grid>
+
+        <table ng-show="resultsViewMode == 'table' " border="1" class="table table-striped">
+            <thead>
+            <tr class="table-head">
+                <th>#</th>
+                <th data-ng-repeat="h in settings.columns">{{h.text}}</th>
+            </tr>
+            </thead>
+            <tr data-ng-repeat="row in settings.source">
+                <td>{{ $index + 1}}</td>
+                <td data-ng-repeat="col in row">{{col}}</td>
+            </tr>
+        </table>
     </div>
 </div>

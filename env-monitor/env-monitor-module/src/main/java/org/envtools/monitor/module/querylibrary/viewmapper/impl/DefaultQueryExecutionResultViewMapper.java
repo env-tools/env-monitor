@@ -55,8 +55,33 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
 
         QueryExecutionResultView view = new QueryExecutionResultView();
         view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.ERROR));
-        view.setMessage("Error occurred : " + ExceptionReportingUtil.getExceptionMessage(t));
-        view.setDetails(ExceptionUtils.getFullStackTrace(t));
+        if (t != null) {
+            view.setMessage("Error occurred : " + ExceptionReportingUtil.getExceptionMessage(t));
+            view.setDetails(ExceptionUtils.getFullStackTrace(t));
+        } else {
+            view.setMessage("Error occurred ");
+            view.setDetails("No details provided");
+        }
+
+        return view;
+    }
+
+    @Override
+    public QueryExecutionResultView cancelledResult() {
+        QueryExecutionResultView view = new QueryExecutionResultView();
+        view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.CANCELLED));
+        view.setMessage("Query cancelled");
+        view.setDetails("Query cancelled");
+
+        return view;
+    }
+
+    @Override
+    public QueryExecutionResultView timeoutResult() {
+        QueryExecutionResultView view = new QueryExecutionResultView();
+        view.setStatus(String.valueOf(QueryExecutionResult.ExecutionStatusE.TIMED_OUT));
+        view.setMessage("Query timed out");
+        view.setDetails("Query timed out");
 
         return view;
     }
@@ -67,15 +92,13 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
 
         List<Map<String, Object>> resultRows = queryExecutionResult.getResultRows();
 
-        boolean firstRow = true;
-        for (Map<String, Object> row : resultRows) {
-
-            if (firstRow) {
-                for (Map.Entry<String, Object> col : row.entrySet()) {
-                    columnsView.add(new ColumnView(col.getKey(), col.getKey()));
-                }
-                firstRow = false;
+        if (queryExecutionResult.getResultColumns() != null) {
+            for (String column : queryExecutionResult.getResultColumns()) {
+                columnsView.add(new ColumnView(column, column));
             }
+        }
+
+        for (Map<String, Object> row : resultRows) {
 
             Map<String, String> resultRowView = Maps.newLinkedHashMap();
 
@@ -87,7 +110,7 @@ public class DefaultQueryExecutionResultViewMapper implements QueryExecutionResu
         }
 
         view.setResult(resultRowsView);
-
+        view.setColumns(columnsView);
     }
 
 

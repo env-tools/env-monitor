@@ -7,5 +7,7 @@ package org.envtools.monitor.model.querylibrary;
  */
 
 public enum DataProviderType {
-    JDBC
+    JDBC,
+    CASSANDRA /* not supported yet */,
+    GEMFIRE /* not supported yet */
 }
