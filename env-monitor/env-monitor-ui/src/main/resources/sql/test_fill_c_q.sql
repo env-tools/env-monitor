@@ -58,14 +58,14 @@ INSERT INTO QUERY_PARAM  (ID, NAME, TYPE, QUERY_ID)
 
 INSERT INTO CATEGORY (ID, DESCRIPTION, OWNER, TITLE, PARENT_CATEGORY_ID)
   VALUES
-    (9, 'Get order list', 'sergey', 'Orders', NULL ),
-    (10, 'Get customers', 'sergey', 'Customers', NULL ),
-    (11, 'Get employees', 'sergey', 'Employees', NULL ),
-    (12, 'Get offices', 'sergey', 'Offices', 11 ),
-    (13, 'Get products', 'sergey', 'Products', NULL ),
-    (14, 'Get orders details', 'sergey', 'Order details', 9 ),
-    (15, 'Get product lines', 'sergey', 'Product lines', 13 ),
-    (16, 'Get payments', 'sergey', 'Payments', NULL );
+    (9, 'Get order list', 'user01', 'Orders', NULL ),
+    (10, 'Get customers', 'user01', 'Customers', NULL ),
+    (11, 'Get employees', 'user01', 'Employees', NULL ),
+    (12, 'Get offices', 'user01', 'Offices', 11 ),
+    (13, 'Get products', 'user01', 'Products', NULL ),
+    (14, 'Get orders details', 'user01', 'Order details', 9 ),
+    (15, 'Get product lines', 'user01', 'Product lines', 13 ),
+    (16, 'Get payments', 'user01', 'Payments', NULL );
 
 INSERT INTO LIB_QUERY (ID, DESCRIPTION, TEXT, TITLE, CATEGORY_ID)
 VALUES

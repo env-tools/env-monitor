@@ -1,5 +1,5 @@
-default:
-  name: default
+-
+  name: Default
   description: Default H2 in-memory database
   type:            JDBC
   driverClassName: org.h2.Driver

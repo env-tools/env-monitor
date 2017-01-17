@@ -28,7 +28,7 @@
         init();
 
         function init() {
-            var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/sergey';
+            var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/tree/user01';
             ngstomp.subscribeTo(subDestination).callback(getMessage).withBodyInJson().connect();
         }
 
@@ -56,7 +56,7 @@
                     expanded: true
                 },
                 {
-                    html: '<div class="tree-item" title="Private categories (sergey)" style="padding-right: 20px;">Private categories (sergey)</div>',
+                    html: '<div class="tree-item" title="Private categories (user01)" style="padding-right: 20px;">Private categories (user01)</div>',
                     icon: "/images/treeWidget/folder.png",
                     items: privateTree
                 }
