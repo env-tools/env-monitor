@@ -32,6 +32,14 @@ public class DataSourceDaoImpl extends AbstractDbDao<DataSource, Long> implement
                 .getResultList();
     }
 
+    @Override
+    public DataSource getByName(String name) {
+        List<DataSource> list = em.createQuery("FROM DataSource WHERE name = :name")
+                .setParameter("name", name)
+                .getResultList();
+        return list.size() == 1 ? list.get(0) : null;
+    }
+
     private String createPatternString(String text) {
         return "%" + text + "%";
     }

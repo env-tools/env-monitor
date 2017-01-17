@@ -44,12 +44,13 @@
         <org.testng.version>6.9.8</org.testng.version>
         <com.google.guava.version>18.0</com.google.guava.version>
         <commons-beanutils.version>1.9.2</commons-beanutils.version>
-        <com.fasterxml.jackson.core.version>2.6.2</com.fasterxml.jackson.core.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <org.codehaus.jackson.version>1.9.2</org.codehaus.jackson.version>
         <org.json.version>20150729</org.json.version>
         <net.sf.json-lib.version>2.2.3</net.sf.json-lib.version>
-
+        <javax.el.version>2.2.4</javax.el.version>
+        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
+        <validation-api.version>1.1.0.Final</validation-api.version>
+        <jackson.version>2.6.2</jackson.version>
     </properties>
 
     <dependencies>
@@ -124,6 +125,23 @@
                 <artifactId>unitils-core</artifactId>
                 <version>3.4.2</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
 
         </dependencies>
 

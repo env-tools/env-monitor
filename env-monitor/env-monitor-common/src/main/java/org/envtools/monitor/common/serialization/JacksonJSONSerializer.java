@@ -1,9 +1,8 @@
 package org.envtools.monitor.common.serialization;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-
 import java.io.IOException;
 import java.io.Serializable;
 

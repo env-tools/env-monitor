@@ -11,4 +11,12 @@ public interface DataSourceDao extends Dao<DataSource, Long> {
 
     List<DataSource> getNameByText(String text);
 
+    /**
+     * Get DataSource by exact name
+     *
+     * @param name
+     * @return
+     */
+    DataSource getByName(String name);
+
 }

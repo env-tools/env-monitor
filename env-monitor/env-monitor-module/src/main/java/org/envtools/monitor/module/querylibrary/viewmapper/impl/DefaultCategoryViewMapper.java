@@ -1,8 +1,8 @@
 package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.envtools.monitor.model.querylibrary.db.*;
 import org.envtools.monitor.model.querylibrary.tree.view.*;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;

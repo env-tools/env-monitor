@@ -1,6 +1,6 @@
 package org.envtools.monitor.module.core.json;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.envtools.monitor.model.messaging.RequestMessage;
 
 import java.io.IOException;
