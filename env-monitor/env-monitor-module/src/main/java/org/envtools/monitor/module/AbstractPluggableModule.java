@@ -1,7 +1,7 @@
 package org.envtools.monitor.module;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.envtools.monitor.model.messaging.RequestMessage;
 import org.envtools.monitor.model.messaging.RequestPayload;
 import org.envtools.monitor.model.messaging.ResponseMessage;

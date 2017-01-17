@@ -4,12 +4,17 @@ import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.module.querylibrary.dao.Dao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created: 2/23/16 12:48 AM
@@ -22,6 +27,9 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
 
     @PersistenceContext
     protected EntityManager em;
+
+    @Autowired
+    protected Validator validator;
 
     protected Class<T> clazz;
 
@@ -53,10 +61,18 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
         List<S> result = Lists.newArrayList();
 
         for (S entity : entities) {
+            validate(entity);
             em.persist(entity);
             result.add(entity);
         }
         return result;
+    }
+
+    private <S extends T> void validate(S entity) {
+        Set<ConstraintViolation<S>> constraintViolations = validator.validate(entity);
+        if (!constraintViolations.isEmpty()) {
+            throw new ConstraintViolationException(constraintViolations);
+        }
     }
 
     @Override
@@ -66,6 +82,7 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
 
     @Override
     public <S extends T> S saveAndFlush(S entity) {
+        validate(entity);
         em.persist(entity);
         em.flush();
         return entity;
@@ -73,6 +90,7 @@ public abstract class AbstractDbDao<T, ID extends Serializable> implements Dao<T
 
     @Override
     public <S extends T> S save(S entity) {
+        validate(entity);
         em.persist(entity);
         return entity;
     }

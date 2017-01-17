@@ -1,0 +1,10 @@
+-
+  name: H2
+  description: H2 data source
+  username: user
+  password: secret
+  type: JDBC
+-
+  name: H3
+  type: JDBC
+

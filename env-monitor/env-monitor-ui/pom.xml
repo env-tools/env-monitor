@@ -89,9 +89,7 @@
                 <includes>
                     <include>**/static/scripts.js</include>
                     <include>**/static/styles.css</include>
-                    <include>**/sql/sampledb.sql</include>
-                    <include>**/sql/test_fill_c_q.sql</include>
-                    <include>**/sql/queries.zip</include>
+                    <include>**/sql/*</include>
                     <include>**/static/fonts/*</include>
                     <include>**/static/images/</include>
                     <include>**/static/app/modules/**/templates/**/*.html</include>

@@ -1,11 +1,18 @@
 package org.envtools.monitor.model.querylibrary.db;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.envtools.monitor.model.querylibrary.DataProviderType;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "DATA_SOURCE")
@@ -15,14 +22,17 @@ public class DataSource extends AbstractDbIdentifiable {
     }
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private DataProviderType type;
 
+    @NotEmpty
     private String name;
     private String description;
 
     /*dataSource 1 ко многим с сущностью DataSourceProperty*/
     @OneToMany(mappedBy = "dataSource", cascade = CascadeType.ALL)
     @OrderBy(value = "property")
+    @JsonProperty("properties")
     private List<DataSourceProperty> dataSourceProperties;
 
     @OneToMany(mappedBy = "dataSource", cascade = CascadeType.ALL)
@@ -79,4 +89,16 @@ public class DataSource extends AbstractDbIdentifiable {
                 .append("queryExecutions", queryExecutions)
                 .toString();
     }
+
+    @JsonAnySetter
+    public void set(String name, Object value) {
+        DataSourceProperty dataSourceProperty = new DataSourceProperty();
+        dataSourceProperty.setProperty(name);
+        dataSourceProperty.setValue(value.toString());
+        if (dataSourceProperties == null) {
+            dataSourceProperties = new ArrayList<>();
+        }
+        dataSourceProperties.add(dataSourceProperty);
+    }
+
 }
