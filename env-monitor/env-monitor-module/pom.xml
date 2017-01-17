@@ -122,5 +122,12 @@
             <version>${org.apache.tomcat.embed.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Dependency from in-project repository -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.3</version>
+        </dependency>
     </dependencies>
 </project>
