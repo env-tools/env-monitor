@@ -157,20 +157,28 @@ public class ZipArchiveBootstrapService implements BootstrapService {
                             libQuery.setDescription(value);
                             break;
                         case "PARAM":
-                            String[] nameAndType = value.split(":");
-                            if (nameAndType.length != 2) {
+                            String[] nameTypeAndDefaultValue = value.split(":");
+                            if (nameTypeAndDefaultValue.length < 2 || nameTypeAndDefaultValue.length > 3) {
                                 throw new BootstrapZipParseException(String.format("Unexpected param format '%s' at line %d in '%s'", line, lineNumber, path.getFileName().toString()));
                             }
+
+                            String paramName = nameTypeAndDefaultValue[0];
+                            String paramType = nameTypeAndDefaultValue[1];
+                            String defaultValue = nameTypeAndDefaultValue.length > 2 ? nameTypeAndDefaultValue[2] : null;
 
                             Collection<String> availableParamsTypes = Arrays.stream(QueryParamType.values())
                                     .map(Enum::name)
                                     .collect(Collectors.toList());
 
-                            if (!availableParamsTypes.contains(nameAndType[1])) {
-                                throw new BootstrapZipParseException(String.format("Unexpected param type '%s' at line %d in '%s'", line, lineNumber, path.getFileName().toString()));
+                            if (!availableParamsTypes.contains(paramType)) {
+                                throw new BootstrapZipParseException(String.format("Unexpected param type '%s' at line %d in '%s'",
+                                        line, lineNumber, path.getFileName().toString()));
                             }
 
-                            QueryParam queryParam = new QueryParam(nameAndType[0], QueryParamType.valueOf(nameAndType[1]));
+                            QueryParam queryParam = new QueryParam(
+                                    paramName,
+                                    QueryParamType.valueOf(paramType),
+                                    defaultValue);
                             queryParam.setLibQuery(libQuery);
                             queryParamDao.save(queryParam);
 
@@ -186,6 +194,10 @@ public class ZipArchiveBootstrapService implements BootstrapService {
             }
 
             libQuery.setText(rawSqlString.toString().trim());
+
+            if (libQuery.getDescription() == null) {
+                libQuery.setDescription(libQuery.getTitle());
+            }
         }
         libQueryDao.save(libQuery);
 

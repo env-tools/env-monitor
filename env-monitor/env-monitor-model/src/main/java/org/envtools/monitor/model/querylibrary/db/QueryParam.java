@@ -19,9 +19,10 @@ public class QueryParam extends AbstractDbIdentifiable {
     public QueryParam() {
     }
 
-    public QueryParam(String name, QueryParamType type) {
+    public QueryParam(String name, QueryParamType type, String defaultValue) {
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     private String name;
@@ -32,6 +33,8 @@ public class QueryParam extends AbstractDbIdentifiable {
 
     @Enumerated(EnumType.STRING)
     private QueryParamType type;
+
+    private String defaultValue;
 
     public LibQuery getLibQuery() {
         return libQuery;
@@ -57,6 +60,13 @@ public class QueryParam extends AbstractDbIdentifiable {
         this.name = name;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
     @Override
     public String toString() {
@@ -64,6 +74,7 @@ public class QueryParam extends AbstractDbIdentifiable {
                 .append("id", id)
                 .append("name", name)
                 .append("type", type)
+                .append("defaultValue", defaultValue)
                 .toString();
     }
 }

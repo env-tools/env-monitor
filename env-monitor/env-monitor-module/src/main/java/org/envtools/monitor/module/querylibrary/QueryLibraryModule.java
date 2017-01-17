@@ -84,14 +84,19 @@ public class QueryLibraryModule extends AbstractPluggableModule {
 
     @Override
     protected <T> void processPayload(T payload, RequestMessage requestMessage)  {
-        if (payload instanceof QueryExecutionRequest) {
-            processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
-        } else if (payload instanceof QueryExecutionNextResultRequest) {
-            processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
-        } else if (payload instanceof QueryExecutionCancelRequest) {
-            processExecutionCancelRequest((QueryExecutionCancelRequest) payload, requestMessage);
-        }else if (payload instanceof DataOperation) {
-            processDataOperationRequest((DataOperation) payload, requestMessage);
+        try {
+            if (payload instanceof QueryExecutionRequest) {
+                processExecutionRequest((QueryExecutionRequest) payload, requestMessage);
+            } else if (payload instanceof QueryExecutionNextResultRequest) {
+                processExecutionNextResultRequest((QueryExecutionNextResultRequest) payload, requestMessage);
+            } else if (payload instanceof QueryExecutionCancelRequest) {
+                processExecutionCancelRequest((QueryExecutionCancelRequest) payload, requestMessage);
+            } else if (payload instanceof DataOperation) {
+                processDataOperationRequest((DataOperation) payload, requestMessage);
+            }
+        } catch (Throwable t) {
+            LOGGER.error("Error while processing request " + requestMessage, t);
+            sendResultMessage(mapper.errorResult(t), requestMessage);
         }
     }
 

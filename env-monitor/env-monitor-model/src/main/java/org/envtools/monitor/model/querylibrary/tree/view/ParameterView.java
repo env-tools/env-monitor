@@ -9,13 +9,15 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class ParameterView {
     private String name;
     private String type;
+    private String defaultValue;
 
     public ParameterView() {
     }
 
-    public ParameterView(String name, String type) {
+    public ParameterView(String name, String type, String defaultValue) {
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -34,11 +36,20 @@ public class ParameterView {
         this.type = type;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("name", name)
                 .append("type", type)
+                .append("defaultValue", defaultValue)
                 .toString();
     }
 }

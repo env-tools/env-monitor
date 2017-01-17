@@ -110,10 +110,10 @@
                         queryParameters: parameters,
                         queryParameterTypes: parameterTypes,
                         dataSourceProperties: {
-                            user: "sa",
-                            password: "sa",
-                            url: "jdbc:h2:file:./h2_data",
-                            driverClassName: "org.h2.Driver"
+                            user: currentQueryContext.dataSource.properties.user,
+                            password: currentQueryContext.dataSource.properties.password,
+                            url: currentQueryContext.dataSource.properties.url,
+                            driverClassName: currentQueryContext.dataSource.properties.driverClassName
                         }
                     }
                 }
@@ -291,11 +291,24 @@
 
             $scope.currentQueryContext.queryId = data.id;
             $scope.currentQueryContext.query = data.text;
-            $scope.currentQueryContext.parameters = data.parameters;
+            $scope.currentQueryContext.parameters = applyDefaultValues(data.parameters);
             $scope.currentQueryContext.dataSources = data.dataSources;
 
             $scope.applyState('SELECTED');
 
-        })
+        });
+
+        function applyDefaultValues(parameters) {
+            var enrichedParameters = [];
+            angular.forEach(parameters, function(parameter) {
+                enrichedParameters.push({
+                    name: parameter.name,
+                    type: parameter.type,
+                    value: parameter.defaultValue
+                })
+            });
+
+            return enrichedParameters;
+        }
     }
 })(window.jQuery);

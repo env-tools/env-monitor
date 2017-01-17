@@ -30,7 +30,8 @@ public class DataSource extends AbstractDbIdentifiable {
     private String description;
 
     /*dataSource 1 ко многим с сущностью DataSourceProperty*/
-    @OneToMany(mappedBy = "dataSource", cascade = CascadeType.ALL)
+    @OneToMany(/*mappedBy = "dataSource", */cascade = CascadeType.ALL)
+    @JoinColumn(name = "DATASOURCE_ID")
     @OrderBy(value = "property")
     @JsonProperty("properties")
     private List<DataSourceProperty> dataSourceProperties;

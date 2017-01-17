@@ -20,9 +20,9 @@ public class DataSourceProperty extends AbstractDbIdentifiable {
     private String property;
     private String value;
 
-    @ManyToOne
-    @JoinColumn(name = "DATASOURCE_ID")
-    private DataSource dataSource;
+//    @ManyToOne
+//    @JoinColumn(name = "DATASOURCE_ID")
+//    private DataSource dataSource;
 
     public String getProperty() {
         return property;
