@@ -211,10 +211,10 @@
             }
 
             var newGridResult = [];
-            for (i=0; i< previousGridResult.length; i++) {
+            for (var i=0; i< previousGridResult.length; i++) {
                newGridResult.push(previousGridResult[i]);
             }
-            for (i=0; i<result.length; i++) {
+            for (var i=0; i<result.length; i++) {
                 newGridResult.push(result[i]);
             }
 

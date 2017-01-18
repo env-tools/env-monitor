@@ -18,7 +18,7 @@ public class QueryExportController {
     @Autowired
     ZipArchiveExportService exportService;
 
-    @RequestMapping(value = "/" + ModuleConstants.QUERY_LIBRARY_MODULE_ID + "/exportQueries", produces = "application/zip")
+    @RequestMapping(value = "/M_QUERY_LIBRARY/exportQueries", produces = "application/zip")
     public void getSettings(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.addHeader("Content-Disposition", "attachment; filename=\"Queries.zip\"");
