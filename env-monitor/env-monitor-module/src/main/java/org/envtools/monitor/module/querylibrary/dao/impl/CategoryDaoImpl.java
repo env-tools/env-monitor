@@ -33,7 +33,8 @@ public class CategoryDaoImpl extends AbstractDbDao<Category, Long> implements Ca
 
     @Override
     public List<Category> getRootCategories() {
-        return em.createQuery("FROM Category WHERE parentCategory=null").getResultList();
+        List<Category> resultList = em.createQuery("FROM Category WHERE parentCategory=null").getResultList();
+        return resultList;
     }
 
     @Override

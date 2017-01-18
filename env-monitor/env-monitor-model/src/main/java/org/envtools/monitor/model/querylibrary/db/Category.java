@@ -43,12 +43,12 @@ public class Category extends AbstractDbIdentifiable {
     /*Один ко многим к таблице LibQuery*/
     @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")  //правило сортировки коллекции
-    private List<LibQuery> queries;
+    private List<LibQuery> queries = new ArrayList<>();
 
     /*Один ко многим к одной таблице*/
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.PERSIST)
     @OrderBy(value = "title")
-    private List<Category> childCategories;
+    private List<Category> childCategories = new ArrayList<>();
 
 
     public Category getParentCategory() {
@@ -57,13 +57,16 @@ public class Category extends AbstractDbIdentifiable {
 
     public void setParentCategory(Category parentCategory) {
         this.parentCategory = parentCategory;
+        if (parentCategory != null) {
+            parentCategory.childCategories.add(this);
+        }
     }
 
     public List<Category> getChildCategories() {
         return childCategories;
     }
 
-    public void setChildCategories(List<Category> childCategories) {
+    private void setChildCategories(List<Category> childCategories) {
         this.childCategories = childCategories;
     }
 

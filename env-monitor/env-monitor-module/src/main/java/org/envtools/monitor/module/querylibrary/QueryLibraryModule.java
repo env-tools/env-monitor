@@ -76,7 +76,7 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     @Autowired
     TreeUpdateService treeUpdateService;
 
-    @Resource(name = "querylibrary.bootstrapper")
+    @Autowired
     BootstrapService treeBootstrapService;
 
     @Autowired

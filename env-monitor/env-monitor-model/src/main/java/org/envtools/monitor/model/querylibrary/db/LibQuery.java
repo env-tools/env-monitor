@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class LibQuery extends AbstractDbIdentifiable {
 
     @OneToMany(mappedBy = "libQuery", cascade = CascadeType.ALL)
     @OrderBy(value = "name")
-    private List<QueryParam> queryParams;
+    private List<QueryParam> queryParams = new ArrayList<>();
 
     @OneToMany(mappedBy = "libQuery", cascade = CascadeType.ALL)
     private List<QueryExecution> queryExecutions;
@@ -47,8 +48,12 @@ public class LibQuery extends AbstractDbIdentifiable {
         return queryParams;
     }
 
-    public void setQueryParams(List<QueryParam> queryParams) {
-        this.queryParams = queryParams;
+    public void addQueryParam(QueryParam queryParam) {
+        if (queryParam == null) {
+            throw new IllegalArgumentException("QueryParam shouldn't be null");
+        }
+        this.queryParams.add(queryParam);
+        queryParam.setLibQuery(this);
     }
 
     public Category getCategory() {

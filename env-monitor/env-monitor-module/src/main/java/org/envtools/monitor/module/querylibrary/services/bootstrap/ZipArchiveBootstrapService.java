@@ -13,7 +13,11 @@ import org.envtools.monitor.module.querylibrary.dao.QueryParamDao;
 import org.envtools.monitor.module.querylibrary.services.BootstrapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -54,11 +58,13 @@ import java.util.stream.Collectors;
  * |   </file-contents>
  * </code>
  */
+@Service
 @Transactional
+@ConditionalOnExpression("'${querylibrary.query_bootstrap_location:}' matches '^.+?\\.zip$'")
 public class ZipArchiveBootstrapService implements BootstrapService {
     private static final Logger LOGGER = Logger.getLogger(ZipArchiveBootstrapService.class);
 
-    @Value("${querylibrary.zip_bootstrapper.location}")
+    @Value("${querylibrary.query_bootstrap_location:}")
     Resource zipFileResource;
 
     @PersistenceContext
@@ -76,6 +82,7 @@ public class ZipArchiveBootstrapService implements BootstrapService {
     /**
      * Opens an zip file at location `fileLocation` and populates the database by reading all sql files,
      * using directory hierarchies as categories.
+     *
      * @throws Exception
      */
     @Override
@@ -129,8 +136,6 @@ public class ZipArchiveBootstrapService implements BootstrapService {
         libQuery.setCategory(category);
         // by default use filename as title for queries
         libQuery.setTitle(FilenameUtils.getBaseName(path.toString()));
-        // save to get an id for saving libQueryParam
-        libQueryDao.saveAndFlush(libQuery);
 
         boolean rawSqlPart = false;
 
