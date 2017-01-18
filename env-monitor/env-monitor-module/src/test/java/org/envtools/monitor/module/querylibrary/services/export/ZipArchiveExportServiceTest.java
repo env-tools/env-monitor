@@ -45,7 +45,7 @@ public class ZipArchiveExportServiceTest {
         bootstrapTestQueries();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        exportService.createArchive(stream);
+        exportService.writeArchive(stream);
 
         Path tempFile = null;
         try {

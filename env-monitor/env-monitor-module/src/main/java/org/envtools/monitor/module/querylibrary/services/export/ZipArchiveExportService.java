@@ -7,9 +7,8 @@ import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -25,7 +24,7 @@ public class ZipArchiveExportService {
     @Autowired
     CategoryDao categoryDao;
 
-    public void createArchive(ByteArrayOutputStream outputStream) throws IOException
+    public void writeArchive(OutputStream outputStream) throws IOException
     {
         List<Category> categories = categoryDao.getRootCategories();
 
