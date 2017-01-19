@@ -162,8 +162,8 @@ public class ZipArchiveBootstrapService implements BootstrapService {
                             libQuery.setDescription(value);
                             break;
                         case "PARAM":
-                            String[] nameTypeAndDefaultValue = value.split(":");
-                            if (nameTypeAndDefaultValue.length < 2 || nameTypeAndDefaultValue.length > 3) {
+                            String[] nameTypeAndDefaultValue = value.split(":", 3);
+                            if (nameTypeAndDefaultValue.length < 2) {
                                 throw new BootstrapZipParseException(String.format("Unexpected param format '%s' at line %d in '%s'", line, lineNumber, path.getFileName().toString()));
                             }
 
@@ -184,8 +184,8 @@ public class ZipArchiveBootstrapService implements BootstrapService {
                                     paramName,
                                     QueryParamType.valueOf(paramType),
                                     defaultValue);
-                            queryParam.setLibQuery(libQuery);
-                            queryParamDao.save(queryParam);
+
+                            libQuery.addQueryParam(queryParam);
 
                             break;
                         default:

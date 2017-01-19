@@ -3,6 +3,7 @@ package org.envtools.monitor.module.querylibrary.services.bootstrap;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.QueryParamType;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
+import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
@@ -65,7 +66,7 @@ public class ZipArchiveBootstrapServiceIT {
         LibQuery allProductLinesQuery = libQueryByTextFragment.get(0);
 
         Assert.assertEquals("All Product Lines", allProductLinesQuery.getTitle());
-        Assert.assertNull(allProductLinesQuery.getDescription());
+        Assert.assertEquals("All Product Lines", allProductLinesQuery.getDescription());
     }
 
     @Test
@@ -82,8 +83,14 @@ public class ZipArchiveBootstrapServiceIT {
 
 
         Assert.assertEquals(2, complexQuery.getQueryParams().size());
-        Assert.assertEquals("price", complexQuery.getQueryParams().get(0).getName());
-        Assert.assertEquals(QueryParamType.STRING, complexQuery.getQueryParams().get(0).getType());
+
+        QueryParam firstParam = complexQuery.getQueryParams().get(0);
+        Assert.assertEquals("price", firstParam.getName());
+        Assert.assertEquals("1.12", firstParam.getDefaultValue());
+        Assert.assertEquals(QueryParamType.STRING, firstParam.getType());
+
+        QueryParam secondParam = complexQuery.getQueryParams().get(1);
+        Assert.assertEquals(null, secondParam.getDefaultValue());
         Assert.assertEquals("SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > :quantity AND BUY_PRICE > :price", complexQuery.getText());
 
     }
