@@ -192,3 +192,5 @@ at https://github.com/angular-ui/ui-grid/issues/2448
 .ui-grid-row .ui-grid-cell.SUBROW, .ui-grid-row .ui-grid-cell.SUBROW ~ .ui-grid-cell {
     font-size: smaller;
 }
+
+.top20 { margin-top:20px; }

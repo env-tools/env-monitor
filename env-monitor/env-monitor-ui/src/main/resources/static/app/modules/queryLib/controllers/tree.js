@@ -166,8 +166,7 @@
 
             ModalService.showModal({
                 templateUrl: "/app/modules/queryLib/templates/modals/category.html",
-                controller: "" +
-                "",
+                controller: "CategoryModal",
                 inputs: {
                     categories: categoriesFormat,
                     category: {
@@ -237,9 +236,9 @@
             });
         }
 
-        function exportQueries() {
-            window.location.href = '/M_QUERY_LIBRARY/exportQueries';
-        }
+//        function exportQueries() {
+//            window.location.href = '/M_QUERY_LIBRARY/exportQueries';
+//        }
 
         function remove(){
             var  fields, entity;

@@ -172,19 +172,24 @@ public class QueryExecutionServiceImpl implements QueryExecutionService {
     @Nullable
     private Long saveExecution(QueryExecutionRequest request) {
        try {
-            QueryExecution queryExecution = new QueryExecution();
-            queryExecution.setStartTimestamp(LocalDateTime.now());
-            queryExecution.setText(request.getQuery());
-            queryExecution.setOperationId(request.getOperationId());
+           //TODO implement and check query execution saving
 
-           //TODO pass query id and datasource id from request
+//            QueryExecution queryExecution = new QueryExecution();
+//            queryExecution.setStartTimestamp(LocalDateTime.now());
+//            queryExecution.setText(request.getQuery());
+//            queryExecution.setOperationId(request.getOperationId());
+
+
             //queryExecution.setLibQuery(libQueryDao.getOne(queryExecutionRequest.getLibQuery_id()));
             //queryExecution.setDataSource(dataSourceDao.getOne(queryExecutionRequest.getDataSource_id()));
-            return queryExecutionDao.saveAndFlush(queryExecution).getId();
+
+            //return queryExecutionDao.saveAndFlush(queryExecution).getId();
+
+           return null;
 
         } catch (Exception e) {
            LOGGER.error("Could not save execution information for request : " + request, e);
-           return null;
+           throw new RuntimeException(e);
         }
     }
 
