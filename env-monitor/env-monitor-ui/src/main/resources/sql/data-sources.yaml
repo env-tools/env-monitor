@@ -4,6 +4,6 @@
   type:            JDBC
   driverClassName: org.h2.Driver
   url: "jdbc:h2:file:./h2_data;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO"
-  username: sa
+  user: sa
   password: sa
 

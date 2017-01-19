@@ -1,7 +1,7 @@
 -
   name: H2
   description: H2 data source
-  username: user
+  user: user
   password: secret
   type: JDBC
 -
