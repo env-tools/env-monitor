@@ -23,7 +23,4 @@
         <constructor-arg index="1" value="${jasypt.algorithm}"/>
     </bean>
 
-
-    <bean id="querylibrary.bootstrapper" class="${querylibrary.bootstrapper}"/>
-
 </beans>
