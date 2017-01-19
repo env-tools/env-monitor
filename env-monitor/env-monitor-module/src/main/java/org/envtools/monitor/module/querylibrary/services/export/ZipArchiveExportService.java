@@ -66,7 +66,11 @@ public class ZipArchiveExportService {
         }
 
         for (QueryParam param : query.getQueryParams()) {
-            result += String.format("--PARAM: %s:%s%n", param.getName(), param.getType());
+            if (param.getDefaultValue() != null) {
+                result += String.format("--PARAM: %s:%s:%s%n", param.getName(), param.getType(), param.getDefaultValue());
+            } else {
+                result += String.format("--PARAM: %s:%s%n", param.getName(), param.getType());
+            }
         }
 
         result += String.format("%n%s", query.getText());
