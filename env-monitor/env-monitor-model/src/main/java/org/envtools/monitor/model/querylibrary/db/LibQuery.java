@@ -61,7 +61,11 @@ public class LibQuery extends AbstractDbIdentifiable {
     }
 
     public void setCategory(Category category) {
+        if (category == null) {
+            throw new IllegalArgumentException("Category shouldn't be null");
+        }
         this.category = category;
+        category.getQueries().add(this);
     }
 
 

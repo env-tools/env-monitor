@@ -15,6 +15,7 @@
 
         $scope.createCategory = createCategory;
         $scope.createQuery = createQuery;
+        $scope.exportQueries = exportQueries;
         $scope.edit = edit;
         $scope.remove = remove;
 
@@ -165,7 +166,8 @@
 
             ModalService.showModal({
                 templateUrl: "/app/modules/queryLib/templates/modals/category.html",
-                controller: "CategoryModal",
+                controller: "" +
+                "",
                 inputs: {
                     categories: categoriesFormat,
                     category: {
@@ -233,6 +235,10 @@
                 modal.element.modal();
                 modal.close.then(closeModal);
             });
+        }
+
+        function exportQueries() {
+            window.location.href = '/M_QUERY_LIBRARY/exportQueries';
         }
 
         function remove(){

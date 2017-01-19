@@ -101,6 +101,7 @@ public class ZipArchiveBootstrapService implements BootstrapService {
                 public FileVisitResult visitFile(Path file,
                                                  BasicFileAttributes attrs) throws IOException {
                     if (FilenameUtils.isExtension(file.toString(), "sql")) {
+                        LOGGER.info(String.format("Load query from %s", file.toString()));
                         createQuery(file, currentCategory);
                     }
                     return FileVisitResult.CONTINUE;
