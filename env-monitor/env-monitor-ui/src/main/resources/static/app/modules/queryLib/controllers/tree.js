@@ -15,7 +15,7 @@
 
         $scope.createCategory = createCategory;
         $scope.createQuery = createQuery;
-        $scope.exportQueries = exportQueries;
+        //$scope.exportQueries = exportQueries;
         $scope.edit = edit;
         $scope.remove = remove;
 
