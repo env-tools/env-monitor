@@ -62,7 +62,7 @@ public class ZipArchiveExportService {
 
         result += String.format("--TITLE: %s%n", query.getTitle());
         if (query.getDescription() != null) {
-            result += String.format("--DESCRIPTION: %s", query.getDescription());
+            result += String.format("--DESCRIPTION: %s%n", query.getDescription());
         }
 
         for (QueryParam param : query.getQueryParams()) {
