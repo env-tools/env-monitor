@@ -194,3 +194,7 @@ at https://github.com/angular-ui/ui-grid/issues/2448
 }
 
 .top20 { margin-top:20px; }
+
+textarea[readonly] {
+    cursor: inherit  !important;
+}

@@ -5,9 +5,9 @@
         .module('queryLib')
         .controller('QueryExecute', QueryExecute);
 
-    QueryExecute.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122', '$window', '$timeout'];
+    QueryExecute.$injector = ['$scope', '$rootScope', 'ngstomp', 'rfc4122', '$window', '$timeout', '$http'];
 
-    function QueryExecute($scope, $rootScope, ngstomp, rfc4122, $window, $timeout) {
+    function QueryExecute($scope, $rootScope, ngstomp, rfc4122, $window, $timeout, $http) {
         var requestId = rfc4122.v4();
         //subscription for results
         var subDestination = '/subscribe/modules/M_QUERY_LIBRARY/exec/' + requestId;
@@ -36,6 +36,14 @@
         $scope.columns = [];
         $scope.error = false;
         $scope.errorMessage = '';
+
+        $scope.queryLibraryTextReadOnly = false;
+
+        loadSettings(function(settings) {
+            if (settings != null) {
+                $scope.queryLibraryTextReadOnly = isTrue(settings.queryLibraryTextReadOnly);
+            }
+        });
 
         init();
 
@@ -166,6 +174,24 @@
                 $scope.settings.columns = [];
                 $scope.settings.source = [];
             }
+        }
+
+        function isTrue (value){
+            return "true" === value;
+        }
+
+        function loadSettings(fn) {
+            var self = this;
+            $http
+                .get('/settings')
+                .then(
+                function (response) {
+                    fn.call(self, response.data);
+                    console.log('settings:' + JSON.stringify(response));
+                },
+                function (response, status) {
+                    console.log('Could not load settings, response: ' + response + ' status:' + status);
+                });
         }
 
         function getExecuteResult(result) {
