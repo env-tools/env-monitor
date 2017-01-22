@@ -65,6 +65,7 @@ public class ZipArchiveExportServiceTest {
 
                 try (BufferedReader bufferedReader = Files.newBufferedReader(zipFs.getPath("/Root category 1/Child category 2/Query 1.sql"))) {
                     Assert.assertEquals("--TITLE: Query 1", bufferedReader.readLine());
+                    Assert.assertEquals("--DESCRIPTION: Description", bufferedReader.readLine());
                     Assert.assertEquals("--PARAM: a:NUMBER:1", bufferedReader.readLine());
                     Assert.assertEquals("--PARAM: b:NUMBER", bufferedReader.readLine());
                     Assert.assertEquals("", bufferedReader.readLine());
@@ -95,6 +96,7 @@ public class ZipArchiveExportServiceTest {
         LibQuery query1 = new LibQuery();
         query1.setTitle("Query 1");
         query1.setText("SELECT :a + :b");
+        query1.setDescription("Description");
         query1.addQueryParam(new QueryParam("a", QueryParamType.NUMBER, "1"));
         query1.addQueryParam(new QueryParam("b", QueryParamType.NUMBER, null));
         query1.setCategory(childCat);
