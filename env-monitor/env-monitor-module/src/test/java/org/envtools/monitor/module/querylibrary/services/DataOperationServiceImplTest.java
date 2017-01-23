@@ -171,6 +171,7 @@ public class DataOperationServiceImplTest {
         createDataSource("sdf");
         Map<String, String> fields = new HashMap<String, String>();
         fields.put("name", "df");
+        fields.put("mnemonic", "df");
         fields.put("description", "test");
         fields.put("type", "JDBC");
 
@@ -226,6 +227,7 @@ public class DataOperationServiceImplTest {
         DataSource dataSource = new DataSource();
 
         dataSource.setDescription("JDBC");
+        dataSource.setMnemonic("df");
         dataSource.setName("name");
         dataSource.setType(DataProviderType.JDBC);
         LOGGER.info("id dataSource  " + dataSource.getId());
