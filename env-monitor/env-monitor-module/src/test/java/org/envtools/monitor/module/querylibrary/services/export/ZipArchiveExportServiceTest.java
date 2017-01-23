@@ -64,10 +64,10 @@ public class ZipArchiveExportServiceTest {
                 Files.exists(zipFs.getPath("/Root category 1/Child category 2/Query 1.sql"));
 
                 try (BufferedReader bufferedReader = Files.newBufferedReader(zipFs.getPath("/Root category 1/Child category 2/Query 1.sql"))) {
-                    Assert.assertEquals("--TITLE: Query 1", bufferedReader.readLine());
-                    Assert.assertEquals("--DESCRIPTION: Description", bufferedReader.readLine());
-                    Assert.assertEquals("--PARAM: a:NUMBER:1", bufferedReader.readLine());
-                    Assert.assertEquals("--PARAM: b:NUMBER", bufferedReader.readLine());
+                    Assert.assertEquals("--TITLE Query 1", bufferedReader.readLine());
+                    Assert.assertEquals("--DESCRIPTION Description", bufferedReader.readLine());
+                    Assert.assertEquals("--PARAM a:NUMBER:1", bufferedReader.readLine());
+                    Assert.assertEquals("--PARAM b:NUMBER", bufferedReader.readLine());
                     Assert.assertEquals("", bufferedReader.readLine());
                     Assert.assertEquals("SELECT :a + :b", bufferedReader.readLine());
                 }

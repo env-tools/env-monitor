@@ -1,15 +1,18 @@
 package org.envtools.monitor.module.querylibrary.services.export;
 
 import org.envtools.monitor.model.querylibrary.db.Category;
+import org.envtools.monitor.model.querylibrary.db.DataSource;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -60,17 +63,26 @@ public class ZipArchiveExportService {
     {
         String result = "";
 
-        result += String.format("--TITLE: %s%n", query.getTitle());
+        result += String.format("--TITLE %s%n", query.getTitle());
         if (query.getDescription() != null) {
-            result += String.format("--DESCRIPTION: %s%n", query.getDescription());
+            result += String.format("--DESCRIPTION %s%n", query.getDescription());
         }
 
         for (QueryParam param : query.getQueryParams()) {
             if (param.getDefaultValue() != null) {
-                result += String.format("--PARAM: %s:%s:%s%n", param.getName(), param.getType(), param.getDefaultValue());
+                result += String.format("--PARAM %s:%s:%s%n", param.getName(), param.getType(), param.getDefaultValue());
             } else {
-                result += String.format("--PARAM: %s:%s%n", param.getName(), param.getType());
+                result += String.format("--PARAM %s:%s%n", param.getName(), param.getType());
             }
+        }
+
+        String relatedDsStr = query.getRelatedDataSources()
+                .stream()
+                .map(DataSource::getMnemonic)
+                .collect(Collectors.joining(","));
+
+        if (!StringUtils.isEmpty(relatedDsStr)) {
+            result += String.format("--DATASOURCES %s", relatedDsStr);
         }
 
         result += String.format("%n%s", query.getText());
