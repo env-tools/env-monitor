@@ -18,6 +18,7 @@
     </div>
     <div class="col-xs-6">
         <div class="form-group col-xs-12">
+            <div> {{ currentQueryContext.queryInProgress ? 'Executing query...' : '&nbsp;'}}</div>
             <!--label>Controls</label-->
             <button data-ng-disabled="!currentQueryContext.executeButtonEnabled" data-ng-click="execute(currentQueryContext)" class="btn btn-primary"> {{ currentQueryContext.executeButtonTitle }}</button>
             <button data-ng-if="currentQueryContext.cancelButtonVisible" data-ng-click="cancel(currentQueryContext)" class="btn btn-primary">Cancel</button>

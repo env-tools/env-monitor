@@ -94,6 +94,8 @@
                 return;
             }
 
+            $scope.applyState('EXECUTING');
+
             ngstomp.send(mesDestination, body, {});
         }
 
