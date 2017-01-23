@@ -3,15 +3,14 @@ package org.envtools.monitor.module.querylibrary.viewmapper.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.envtools.monitor.model.querylibrary.db.*;
 import org.envtools.monitor.model.querylibrary.tree.view.*;
 import org.envtools.monitor.module.querylibrary.viewmapper.CategoryViewMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,12 +35,35 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
         return view;
     }
 
+    List<DataSourceView> pickRelatedDataSources(
+            List<DataSourceView> dataSourceViews,
+            LibQuery libQuery) {
+        List<DataSource> relatedDataSources = libQuery.getRelatedDataSources();
+        Set<String> relatedDsMnemonics = relatedDataSources
+                .stream()
+                .map(DataSource::getMnemonic)
+                .collect(Collectors.toCollection(LinkedHashSet<String>::new));
+
+        if (CollectionUtils.isEmpty(relatedDataSources)) {
+            return dataSourceViews;
+        } else {
+            //TODO re-code to preserve order
+            return dataSourceViews.stream().filter(
+                    dsView ->
+                            relatedDsMnemonics
+                                    .contains(dsView.getMnemonic())
+            )
+                    .collect(Collectors.<DataSourceView>toList());
+        }
+    }
+
     private List<DataSourceView> mapDataSources(List<DataSource> dataSources) {
         return dataSources.stream().map(dataSource ->
                 new DataSourceView(
                     String.valueOf(dataSource.getType()),
                     dataSource.getName(),
-                    dataSource.getDescription(),
+                    dataSource.getMnemonic(),
+                        dataSource.getDescription(),
                     dataSource
                             .getDataSourceProperties()
                             .stream()
@@ -75,7 +97,7 @@ public class DefaultCategoryViewMapper implements CategoryViewMapper {
                             libQuery.getId(),
                             parameters,
                             parameterValues,
-                            dataSourceViews));
+                            pickRelatedDataSources(dataSourceViews, libQuery)));
                 }
                 categoryView.setQueries(queryViewList);
             }

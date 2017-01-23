@@ -1,5 +1,6 @@
 package org.envtools.monitor.module.querylibrary.services.bootstrap;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.QueryParamType;
@@ -8,6 +9,7 @@ import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.exception.BootstrapZipParseException;
 import org.envtools.monitor.module.querylibrary.dao.CategoryDao;
+import org.envtools.monitor.module.querylibrary.dao.DataSourceDao;
 import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryParamDao;
 import org.envtools.monitor.module.querylibrary.services.BootstrapService;
@@ -79,6 +81,9 @@ public class ZipArchiveBootstrapService implements BootstrapService {
     @Autowired
     LibQueryDao libQueryDao;
 
+    @Autowired
+    DataSourceDao dataSourceDao;
+
     /**
      * Opens an zip file at location `fileLocation` and populates the database by reading all sql files,
      * using directory hierarchies as categories.
@@ -145,7 +150,7 @@ public class ZipArchiveBootstrapService implements BootstrapService {
              PrintWriter rawSqlWr = new PrintWriter(rawSqlString)) {
             String line;
 
-            Pattern pattern = Pattern.compile("^--(TITLE|DESCRIPTION|PARAM)\\s+(.+)$");
+            Pattern pattern = Pattern.compile("^--(TITLE|DESCRIPTION|PARAM|DATASOURCES)\\s+(.+)$");
 
             for (int lineNumber = 1; (line = reader.readLine()) != null; lineNumber++) {
                 Matcher matcher = pattern.matcher(line);
@@ -188,6 +193,15 @@ public class ZipArchiveBootstrapService implements BootstrapService {
 
                             libQuery.addQueryParam(queryParam);
 
+                            break;
+                        case "DATASOURCES":
+                            List<String> relatedDataSourceMnemonics = Lists.newArrayList(value.split(","));
+                            relatedDataSourceMnemonics
+                                    .stream()
+                                    .map(dataSourceDao::getByMnemonic)
+                                    .forEach(ds ->
+                                            Optional.ofNullable(ds)
+                                                    .ifPresent(libQuery::addRelatedDataSource));
                             break;
                         default:
                             throw new BootstrapZipParseException(String.format("Unexpected param '%s' at line %d in '%s'", line, lineNumber, path.getFileName().toString()));

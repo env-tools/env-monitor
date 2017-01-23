@@ -33,9 +33,20 @@ public class LibQueryDaoImpl extends AbstractDbDao<LibQuery, Long> implements Li
                 .getResultList();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public LibQuery getLibQueryByTitle(String title) {
+        List<LibQuery> result = em.createQuery("FROM LibQuery WHERE title = :title")
+                .setParameter("title", title)
+                .getResultList();
+        if (result.size() == 1) {
+            return result.get(0);
+        } else {
+            return null;
+        }
+    }
+
     private String createPatternString(String text) {
         return "%" + text + "%";
     }
-
-
 }

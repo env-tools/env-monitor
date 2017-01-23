@@ -111,7 +111,6 @@ public class QueryExecution extends AbstractDbIdentifiable implements Serializab
                 .append("startTimestamp", startTimestamp)
                 .append("endTimestamp", endTimestamp)
                 .append("operationId", operationId)
-                .append("libQuery", libQuery)
                 .append("queryExecutionParams", queryExecutionParams)
                 .append("dataSource", dataSource)
                 .toString();

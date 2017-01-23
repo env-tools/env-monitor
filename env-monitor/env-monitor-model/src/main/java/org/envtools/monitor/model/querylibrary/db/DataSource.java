@@ -27,6 +27,10 @@ public class DataSource extends AbstractDbIdentifiable {
 
     @NotEmpty
     private String name;
+
+    @NotEmpty
+    private String mnemonic;
+
     private String description;
 
     /*dataSource 1 ко многим с сущностью DataSourceProperty*/
@@ -71,6 +75,14 @@ public class DataSource extends AbstractDbIdentifiable {
         this.name = name;
     }
 
+    public String getMnemonic() {
+        return mnemonic;
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -85,9 +97,9 @@ public class DataSource extends AbstractDbIdentifiable {
                 .append("id", id)
                 .append("type", type)
                 .append("name", name)
+                .append("mnemonic", mnemonic)
                 .append("description", description)
                 .append("dataSourceProperties", dataSourceProperties)
-                .append("queryExecutions", queryExecutions)
                 .toString();
     }
 

@@ -19,4 +19,6 @@ public interface DataSourceDao extends Dao<DataSource, Long> {
      */
     DataSource getByName(String name);
 
+    DataSource getByMnemonic(String mnemonic);
+
 }

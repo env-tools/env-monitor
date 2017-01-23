@@ -136,11 +136,11 @@ public class QueryLibraryModule extends AbstractPluggableModule {
     public void init() throws Exception {
         super.init();
 
-        // load initial set of queries
-        treeBootstrapService.bootstrap();
-
         // load set of sources
         dataSourcesBootstrapService.bootstrapDataSources();
+
+        // load initial set of queries
+        treeBootstrapService.bootstrap();
 
         TreeUpdateTask treeUpdateTask = new TreeUpdateTask(treeUpdateTriggerService, treeUpdateService);
         executorService.execute(treeUpdateTask);

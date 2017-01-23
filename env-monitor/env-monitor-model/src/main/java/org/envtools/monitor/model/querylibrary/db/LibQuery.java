@@ -44,6 +44,19 @@ public class LibQuery extends AbstractDbIdentifiable {
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 
+    @ManyToMany
+    @JoinTable(name = "LIB_QUERY_RELATED_DS",
+            joinColumns = {
+                    @JoinColumn(name="LIB_QUERY_ID")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name="DATA_SOURCE_ID")
+            }
+
+    )
+    @OrderColumn(name = "DATA_SOURCE_INDEX")
+    private List<DataSource> relatedDataSources = new ArrayList<>();
+
     public List<QueryParam> getQueryParams() {
         return queryParams;
     }
@@ -54,6 +67,13 @@ public class LibQuery extends AbstractDbIdentifiable {
         }
         this.queryParams.add(queryParam);
         queryParam.setLibQuery(this);
+    }
+
+    public void addRelatedDataSource(DataSource dataSource) {
+        if (dataSource == null) {
+            throw new IllegalArgumentException("Related data source cannot be null");
+        }
+        this.relatedDataSources.add(dataSource);
     }
 
     public Category getCategory() {
@@ -68,6 +88,21 @@ public class LibQuery extends AbstractDbIdentifiable {
         category.getQueries().add(this);
     }
 
+    public List<QueryExecution> getQueryExecutions() {
+        return queryExecutions;
+    }
+
+    public void setQueryExecutions(List<QueryExecution> queryExecutions) {
+        this.queryExecutions = queryExecutions;
+    }
+
+    public List<DataSource> getRelatedDataSources() {
+        return relatedDataSources;
+    }
+
+    public void setRelatedDataSources(List<DataSource> relatedDataSources) {
+        this.relatedDataSources = relatedDataSources;
+    }
 
     public String getText() {
         return text;
@@ -102,6 +137,7 @@ public class LibQuery extends AbstractDbIdentifiable {
                 .append("description", description)
                 .append("queryParams", queryParams)
                 .append("queryExecutions", queryExecutions)
+                .append("relatedDataSources", relatedDataSources)
                 .toString();
     }
 }

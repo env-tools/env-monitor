@@ -14,6 +14,7 @@ public class DataSourceView {
 
     private String type;
     private String name;
+    private String mnemonic;
     private String description;
 
     private Map<String, String> properties;
@@ -21,10 +22,13 @@ public class DataSourceView {
     public DataSourceView() {
     }
 
-    public DataSourceView(String type, String name, String description,
+    public DataSourceView(String type, String name,
+                          String mnemonic,
+                          String description,
                           Map<String, String> properties) {
         this.type = type;
         this.name = name;
+        this.mnemonic = mnemonic;
         this.description = description;
         this.properties = properties;
     }
@@ -43,6 +47,14 @@ public class DataSourceView {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMnemonic() {
+        return mnemonic;
+    }
+
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
     }
 
     public String getDescription() {
@@ -66,6 +78,7 @@ public class DataSourceView {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).
                 append("type", type).
                 append("name", name).
+                append("mnemonic", mnemonic).
                 append("description", description).
                 append("properties", properties).
                 toString();

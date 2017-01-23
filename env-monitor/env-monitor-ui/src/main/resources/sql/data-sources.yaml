@@ -1,5 +1,15 @@
 -
-  name: Default
+  name: Default (H2)
+  mnemonic: def_1
+  description: Default H2 in-memory database
+  type:            JDBC
+  driverClassName: org.h2.Driver
+  url: "jdbc:h2:file:./h2_data;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;FILE_LOCK=NO"
+  user: sa
+  password: sa
+-
+  name: Default (H2) Copy
+  mnemonic: def_2
   description: Default H2 in-memory database
   type:            JDBC
   driverClassName: org.h2.Driver

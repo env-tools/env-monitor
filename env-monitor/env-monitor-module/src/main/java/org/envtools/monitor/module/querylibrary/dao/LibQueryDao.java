@@ -13,4 +13,5 @@ public interface LibQueryDao extends Dao<LibQuery, Long> {
 
     List<LibQuery> getLibQueryByTextFragment(String textFragment);
 
+    LibQuery getLibQueryByTitle(String name);
 }

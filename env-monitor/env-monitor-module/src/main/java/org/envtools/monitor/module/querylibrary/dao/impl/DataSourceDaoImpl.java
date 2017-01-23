@@ -40,6 +40,14 @@ public class DataSourceDaoImpl extends AbstractDbDao<DataSource, Long> implement
         return list.size() == 1 ? list.get(0) : null;
     }
 
+    @Override
+    public DataSource getByMnemonic(String mnemonic) {
+        List<DataSource> list = em.createQuery("FROM DataSource WHERE mnemonic = :mnemonic")
+                .setParameter("mnemonic", mnemonic)
+                .getResultList();
+        return list.size() == 1 ? list.get(0) : null;
+    }
+
     private String createPatternString(String text) {
         return "%" + text + "%";
     }

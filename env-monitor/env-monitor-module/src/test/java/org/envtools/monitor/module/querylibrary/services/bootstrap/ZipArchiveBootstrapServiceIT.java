@@ -2,6 +2,7 @@ package org.envtools.monitor.module.querylibrary.services.bootstrap;
 
 import org.apache.log4j.Logger;
 import org.envtools.monitor.model.querylibrary.QueryParamType;
+import org.envtools.monitor.model.querylibrary.db.DataSource;
 import org.envtools.monitor.model.querylibrary.db.LibQuery;
 import org.envtools.monitor.model.querylibrary.db.QueryParam;
 import org.envtools.monitor.module.querylibrary.PersistenceTestApplication;
@@ -10,6 +11,7 @@ import org.envtools.monitor.module.querylibrary.dao.LibQueryDao;
 import org.envtools.monitor.module.querylibrary.dao.QueryParamDao;
 import org.envtools.monitor.module.querylibrary.services.BootstrapService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class ZipArchiveBootstrapServiceIT {
     BootstrapService zipBootstrapService;
 
     @Autowired
+    DataSourcesBootstrapService dataSourcesBootstrapService;
+
+    @Autowired
     CategoryDao categoryDao;
 
     @Autowired
@@ -46,10 +51,14 @@ public class ZipArchiveBootstrapServiceIT {
     @Autowired
     QueryParamDao queryParamDao;
 
+    @Before
+    public void setUp() throws Exception {
+        dataSourcesBootstrapService.bootstrapDataSources();
+        zipBootstrapService.bootstrap();
+    }
 
     @Test
     public void testCategories() throws Exception {
-        zipBootstrapService.bootstrap();
 
         Assert.assertEquals(1, categoryDao.getRootCategories().size());
         Assert.assertEquals(1, categoryDao.getCategoryByTitle("Product Lines").size());
@@ -57,7 +66,6 @@ public class ZipArchiveBootstrapServiceIT {
 
     @Test
     public void testQueryByFilename() throws Exception {
-        zipBootstrapService.bootstrap();
 
         List<LibQuery> libQueryByTextFragment = queryDao.getLibQueryByTextFragment("SELECT * FROM PRODUCT_LINES");
 
@@ -71,7 +79,6 @@ public class ZipArchiveBootstrapServiceIT {
 
     @Test
     public void testQueryTitleOverride() throws Exception {
-        zipBootstrapService.bootstrap();
 
         List<LibQuery> libQueryComplexList = queryDao.getLibQueryByTextFragment("SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > :quantity AND BUY_PRICE > :price");
 
@@ -93,5 +100,16 @@ public class ZipArchiveBootstrapServiceIT {
         Assert.assertEquals(null, secondParam.getDefaultValue());
         Assert.assertEquals("SELECT * FROM PRODUCTS WHERE QUANTITY_IN_STOCK > :quantity AND BUY_PRICE > :price", complexQuery.getText());
 
+    }
+
+    @Test
+    public void testRelatedDataSources() throws Exception{
+        LibQuery libQuery = queryDao.getLibQueryByTitle("In Stock > Any quantity");
+        Assert.assertNotNull(libQuery);
+
+        List<DataSource> dataSources = libQuery.getRelatedDataSources();
+        Assert.assertNotNull(dataSources);
+        Assert.assertEquals(1, dataSources.size());
+        Assert.assertEquals("def_1", dataSources.get(0).getMnemonic());
     }
 }
