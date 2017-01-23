@@ -22,7 +22,7 @@
         $scope.itemSelect = '';
         $scope.source = {};
         $scope.settings = {
-            width: 300,
+            width: 600,
             source: $scope.source
         };
 
