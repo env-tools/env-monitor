@@ -37,6 +37,10 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
     private BasicDataSource jdbcDataSource;
 
+    private Statement currentStatement;
+
+    private volatile boolean isDbQueryInProgress = false;
+
     private StopWatch timer = new StopWatch();
 
     public JdbcQueryExecutionTask(
@@ -53,7 +57,14 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
     @Override
     protected void doRun() {
 
-        JdbcTemplate template = new JdbcTemplate(jdbcDataSource);
+        JdbcTemplate template = new JdbcTemplate(jdbcDataSource) {
+            //There is PreparedStatementCreator but I read about it too late =) and now I'm too lazy
+            @Override
+            protected void applyStatementSettings(Statement stmt) throws SQLException {
+                super.applyStatementSettings(stmt);
+                registerCurrentStatement(stmt);
+            }
+        };
         template.setQueryTimeout(queryExecutionRequest.getTimeOutMs().intValue());
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(template);
 
@@ -61,6 +72,7 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
 
             timer.start();
 
+            isDbQueryInProgress = true;
             jdbcTemplate.query(
                     queryExecutionRequest.getQuery(),
                     enrichWithTypes(
@@ -78,6 +90,31 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
             postResult(QueryExecutionResult.ofError(
                     getOperationId(),
                     t));
+        }
+    }
+
+    private void registerCurrentStatement(Statement statement) {
+        currentStatement = statement;
+    }
+
+    @Override
+    public void cancel() {
+        super.cancel();
+        if (isDbQueryInProgress && currentStatement != null) {
+            try {
+                if (currentStatement.isClosed()) {
+                    return;
+                }
+
+                LOGGER.info("JdbcQueryExecutionTask.cancel - trying to cancel current query for " + currentStatement);
+                currentStatement.cancel();
+                LOGGER.info("JdbcQueryExecutionTask.cancel - query cancelled for " + currentStatement);
+                postResult(QueryExecutionResult.ofCancel(getOperationId()));
+            } catch (SQLException ex) {
+                postResult(QueryExecutionResult.ofError(getOperationId(), ex));
+            } finally {
+                isDbQueryInProgress = false;
+            }
         }
     }
 
@@ -134,6 +171,8 @@ public class JdbcQueryExecutionTask extends AbstractQueryExecutionTask {
      */
     private List<Map<String, Object>> extractRows(ResultSet rs) {
         {
+            isDbQueryInProgress = false;
+
             String operationId = queryExecutionRequest.getOperationId();
             MutableInt currentRowNum = new MutableInt(0);
             MutableInt maxRowCount = new MutableInt(queryExecutionRequest.getRowCount()); //строки
