@@ -69,8 +69,11 @@ public class ConfigurableApplicationProviderTest {
         VersionedApplicationPropertiesXml properties = new VersionedApplicationPropertiesXml();
         PlatformXml platformXml = new PlatformXml("ULTRON", "ultron");
         EnvironmentXml environmentXml = new EnvironmentXml("Standard DEV (DEV 1)", "standard_dev");
-        VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server", "ULTRON Server", "ULTRON.net", "999", "-", "-");
-        standardDevServer.addHostee(new VersionedApplicationXml("standardDevServer", "IRON Server", "IRON Server", "IRON.net", "999", "-", "-"));
+        VersionedApplicationXml standardDevServer = new VersionedApplicationXml("standardDevServer", "ULTRON Server",
+                "ULTRON Server", "ULTRON.net", "999", "-", "-", "-");
+        standardDevServer.addHostee(
+                new VersionedApplicationXml(
+                        "standardDevServer", "IRON Server", "IRON Server", "IRON.net", "999", "-", "-", "-"));
         environmentXml.addApplication(standardDevServer);
 
         MetadataXml metadataXml = new MetadataXml();
@@ -88,7 +91,8 @@ public class ConfigurableApplicationProviderTest {
 
         standardDevServer.setMetadata(metadataXml);
 
-        VersionedApplicationXml additionalDevServer = new VersionedApplicationXml("additionalDevServer", "ULTRON Server", "ULTRON Server 1 ", "ULTRON1.net", "999", "-", "-");
+        VersionedApplicationXml additionalDevServer = new VersionedApplicationXml("additionalDevServer", "ULTRON Server",
+                "ULTRON Server 1 ", "ULTRON1.net", "999", "-", "-", "-");
         environmentXml.addApplication(additionalDevServer);
 
         MetadataXml additionalMetadataXml = new MetadataXml();

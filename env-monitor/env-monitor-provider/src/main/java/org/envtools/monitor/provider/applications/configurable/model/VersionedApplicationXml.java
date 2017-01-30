@@ -49,13 +49,17 @@ public class VersionedApplicationXml {
     @XmlTransient
     private String version;
 
+    //Which component version relates to?
+    @XmlElement
+    private String versionOf;
+
     @XmlTransient
     private Double processMemory;
 
     public VersionedApplicationXml() {
     }
 
-    public VersionedApplicationXml(String id, String name, String type, String host, String port, String url, String componentName) {
+    public VersionedApplicationXml(String id, String name, String type, String host, String port, String url, String componentName, String versionOf) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -63,7 +67,7 @@ public class VersionedApplicationXml {
         this.port = port;
         this.url = url;
         this.componentName = componentName;
-
+        this.versionOf = versionOf;
     }
 
     public String getId() {
@@ -122,6 +126,14 @@ public class VersionedApplicationXml {
         this.componentName = componentName;
     }
 
+    public String getVersionOf() {
+        return versionOf;
+    }
+
+    public void setVersionOf(String versionOf) {
+        this.versionOf = versionOf;
+    }
+
     public MetadataXml getMetadata() {
         return metadata;
     }
@@ -175,6 +187,7 @@ public class VersionedApplicationXml {
                 append("port", port).
                 append("url", url).
                 append("componentName", componentName).
+                append("versionOf", versionOf).
                 append("metadata", metadata).
                 append("hostees", hostees).
                 toString();

@@ -69,7 +69,7 @@
 
                     {name: "Version", field: "version", width: "23%", resizable: true, enableColumnResizing: true,
                         cellTooltip: function (row, col) {
-                            return row.entity.version;
+                            return ((row.entity.versionOf) ? row.entity.versionOf : '') + ' ' + row.entity.version;
                         }
                     },
                     {name: "Component Name", field: "componentName", width: "13%", resizable: true, enableColumnResizing: true,
@@ -234,6 +234,7 @@
                                 port: application.port,
                                 url: application.url,
                                 version: application.version,
+                                versionOf: application.versionOf,
                                 componentName: application.componentName,
                                 processMemory: application.processMemory,
                                 status: application.status,

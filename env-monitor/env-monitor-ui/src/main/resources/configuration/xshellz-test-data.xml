@@ -12,6 +12,7 @@
                             <port>some_port</port>
                             <url>http://some.url.com</url>
                             <componentname>some_componentname</componentname>
+                            <versionOf>s-o-m-e</versionOf>
                             <metadata>
                                 <tagBasedProcessLookup>
                                     <includeTags>
@@ -31,6 +32,7 @@
                                     <port>999</port>
                                     <url>-</url>
                                     <componentname>-</componentname>
+                                    <versionOf>bash</versionOf>
                                     <metadata>
                                         <tagBasedProcessLookup>
                                             <includeTags>
@@ -48,6 +50,7 @@
                             <port>some_port</port>
                             <url>http://some.url.com</url>
                             <componentname>some_componentname</componentname>
+                            <versionOf>s-o-m-e-1</versionOf>
                             <metadata>
                                 <webResourceBasedVersionLookup>
                                     <url>http://yyakovlev.ru/files/TestGenProject/testgen_User_Manual/letter.txt</url>

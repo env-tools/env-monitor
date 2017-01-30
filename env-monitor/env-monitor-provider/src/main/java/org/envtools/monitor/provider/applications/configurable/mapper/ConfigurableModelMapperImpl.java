@@ -93,6 +93,7 @@ public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
                 .url(versionedApplicationXml.getUrl())
                 .status(versionedApplicationXml.getStatus())
                 .version(versionedApplicationXml.getVersion())
+                .versionOf(versionedApplicationXml.getVersionOf())
                 .processMemory(versionedApplicationXml.getProcessMemory())
                 .hostees(mapApplications(versionedApplicationXml.getHostees()))
                 .build();
@@ -109,6 +110,7 @@ public class ConfigurableModelMapperImpl implements ConfigurableModelMapper {
                 .url(hosteeApp.getUrl())
                 .status(hosteeApp.getStatus())
                 .version(hosteeApp.getVersion())
+                .versionOf(hosteeApp.getVersionOf())
                 .processMemory(hosteeApp.getProcessMemory())
                 .build();
     }

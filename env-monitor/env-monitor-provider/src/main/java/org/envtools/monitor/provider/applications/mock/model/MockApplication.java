@@ -18,13 +18,16 @@ public class MockApplication extends Application {
     private String url;
     private String componentName;
     private String version;
+    private String versionOf;
     private Double processMemory;
 
     public MockApplication() {
     }
 
     public MockApplication(String id, String name, ApplicationStatus status,
-                           String applicationType, String host, String port, String url, String componentName, String version, Double processMemory,
+                           String applicationType, String host, String port, String url,
+                           String componentName, String version, String versionOf,
+                           Double processMemory,
                            List<Application> hostees) {
         super(id, name, status);
         this.applicationType = applicationType;
@@ -33,6 +36,7 @@ public class MockApplication extends Application {
         this.url = url;
         this.componentName = componentName;
         this.version = version;
+        this.versionOf = versionOf;
         this.processMemory = processMemory;
 
         setHostees(hostees);
@@ -86,6 +90,14 @@ public class MockApplication extends Application {
         this.version = version;
     }
 
+    public String getVersionOf() {
+        return versionOf;
+    }
+
+    public void setVersionOf(String versionOf) {
+        this.versionOf = versionOf;
+    }
+
     public Double getProcessMemory() {
         return processMemory;
     }
@@ -104,6 +116,7 @@ public class MockApplication extends Application {
         private String url;
         private String componentName;
         private String version;
+        private String versionOf;
         private Double processMemory;
 
         //TODO Builder-style for this?
@@ -155,6 +168,10 @@ public class MockApplication extends Application {
             return this;
         }
 
+        public Builder versionOf(String versionOf) {
+            this.versionOf = versionOf;
+            return this;
+        }
         public Builder processMemory(Double processMemory) {
             this.processMemory = processMemory;
             return this;
@@ -166,7 +183,8 @@ public class MockApplication extends Application {
         }
 
         public MockApplication build() {
-            return new MockApplication(id, name, status, applicationType, host, port, url, componentName, version, processMemory, hostees);
+            return new MockApplication(id, name, status, applicationType, host, port, url, componentName,
+                    version, versionOf, processMemory, hostees);
         }
     }
 }

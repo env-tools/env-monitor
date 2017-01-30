@@ -69,6 +69,7 @@ public class MockApplicationsDataCreator {
                 .componentName("component-1")
                 .url("http://host1:7000/app/login")
                 .version("1.12_Q20-SNAPSHOT")
+                .versionOf("comp1")
                 .processMemory(randomMemory()).build();
 
         Application application2 = new MockApplication.Builder()
@@ -81,6 +82,7 @@ public class MockApplicationsDataCreator {
                 .componentName("component-2-" + label)
                 .url("http://host1:7001/app/login")
                 .version("1.12_E20")
+                .versionOf("comp2")
                 .processMemory(randomMemory())
                 .build();
 
