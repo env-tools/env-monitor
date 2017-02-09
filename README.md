@@ -17,23 +17,6 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Java developer, Luxoft Poland*
 
-- Sergey Moldachev (InnerFlameFact)
-
-*Student of LETI University*
-
-- Anastasiya Plotnikova (anastasiya14)
-
-*Student of LETI University*
-
-- Maksim Fyodorov (jesa29)
-
-*Student of LETI University*
-
-- Ilya Sungurov (bombinmybag)
-
-*Javascript developer, interested in learning Java 8, Hibernate, and getting practical experience with Typescript*
-
-
 #How to run:
 *Build web UI:*
 - Install npm (is part of node js)
