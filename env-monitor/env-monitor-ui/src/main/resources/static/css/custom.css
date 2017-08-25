@@ -183,6 +183,11 @@ input.query-param {
 .red {
     color: #cf6255;
 }
+
+.status {
+    color: #002663
+}
+
 /*
 The selector below is for stylingh subrows of the applications tree grid.
 

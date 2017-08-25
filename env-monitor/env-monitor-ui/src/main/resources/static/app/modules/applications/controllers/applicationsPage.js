@@ -24,11 +24,14 @@
         init();
 
         function calculateStatusCellClass(cellValue) {
-            if (cellValue == 'RUNNING') {
-                return 'green';
-            } else {
-                return 'red';
-            }
+            console.log('Class recalculation for value : ' + cellValue);
+//            if (cellValue == 'RUNNING') {
+//                return 'green';
+//            } else {
+//                return 'red';
+//            }
+
+            return 'status';
         }
 
         function init() {
