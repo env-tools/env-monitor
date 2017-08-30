@@ -117,6 +117,7 @@ This will allow for instant web content re-loading when you refresh Browser page
  
 ## Developers guide
 
+### Introduction
 Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.
 The application is built from modules: 1 Core Module and several pluggable modules
  - Core module which is tightly coupled with Spring controllers and always lives together with them 
@@ -131,9 +132,11 @@ UI requests are routed to Core module which in turn:
  - either provides response immediately (because has all necessary data) 
  - or delegates processing to the responsible module
 
-Currently, the following types of interactions/flows are supported:
+### Data flow types
+Currently, the following types of interactions/flows are supported.
 
-1. Pluggable module sends some data model to Core module (which in turn caches it in memory). This happens on module startup, and also later when it's decided that data has been updated and the update should be sent. Full data is re-sent to be cached. When Core module receives the updated model, it broadcasts the updates for interested client subscribers.
+#### Push from pluggable module ("Server-Side push")
+Pluggable module sends some data model to Core module (which in turn caches it in memory). This happens on module startup, and also later when it's decided that data has been updated and the update should be sent. Full data is re-sent to be cached. When Core module receives the updated model, it broadcasts the updates for interested client subscribers.
  
 When used:
  -Applications data is sent by M_APPLICATIONS module : 
@@ -145,5 +148,11 @@ ApplicationsModule::onModelUpdate()
 QueryLibraryModule:
 treeUpdateTriggerService.triggerUpdate();
 
-2. // TO BE DONE
+#### UI-initiated data request to pluggable module ("Message")
+//TODO
+#### UI-initiated data request to core module ("Call")
+//TODO
+#### UI-initiated data request to core module with subscription to further updates ("Subscription")
+//TODO
+
 
