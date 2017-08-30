@@ -3,7 +3,7 @@
 
 Generic web-based monitoring app for distributed multi-process systems
 
-#Project participants:
+## Project participants:
 
 - Yury Yakovlev (env-tools and yyakovlev committers)
 
@@ -17,7 +17,15 @@ Generic web-based monitoring app for distributed multi-process systems
 
 *Java developer, Luxoft Poland*
 
-#How to run:
+- Sergey Moldachev
+
+*Java and Javascript developer, Luxoft*
+
+- Igor Avdeev
+
+*Java and Javascript developer, Luxoft*
+
+## How to run:
 *Build web UI:*
 - Install npm (is part of node js)
 - If you're behind proxy, set up proxy parameters:
@@ -42,6 +50,26 @@ Please note: bower is no more used
 ```sh
 gulp dist
 ```
+
+-If you have customized some placeholder values used in index-template.html, just put them in separate file like 
+```sh
+settings-myprofile.properties 
+```
+in directory 
+```sh
+\env-monitor\env-monitor-ui\src\main\resources
+```
+and use that file during gulp build with
+```sh
+gulp dist --profile myprofile
+```
+
+By default, file
+```sh
+\env-monitor\env-monitor-ui\src\main\resources\settings-default.properties 
+```
+will be used.
+
 - If you're doing UI development, start tracking changes in js/css files 
 (so that scripts.js and styles.css are re-generated automatically)
 ```sh
@@ -61,7 +89,7 @@ gulp watch
 
 *To run the prototype from your IDE*
 - Import root maven pom.xml into your project
-- Find class "Application" and method "main", run it from IDE 
+- Find class "ApplicationStartup" and method "main", run it from IDE 
 - In your run configuration (Java startup settings) use -Dserver.port=&lt;other_port&gt; if you don't like default 8080
 - If you're doing UI development, make sure your current directory is where 'env-monitor-ui' folder is located.
 This will allow for instant web content re-loading when you refresh Browser page (don't forget 'gulp watch' also).
@@ -69,23 +97,25 @@ This will allow for instant web content re-loading when you refresh Browser page
 *Final step:*
 - Access http://localhost:8080
 
-#How to debug:
+## How to debug:
 *To debug the prototype remotely as a standalone app:*
  - cd env-monitor-ui
  - mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
  - Launch remote debugging session in your IDE
  
 *To debug from your IDE*
- - Run Application::main in debug mode
+ - Run ApplicationStartup::main in debug mode
 
 
-*Caveats*
+## Caveats
+
+*There are settings for testing with real SSH service (xshellz) available in the internet. As it expires every 2 weeks, you may find that it's not available.
 
 *If SSH is blocked at your PC or there are other SSH connection issues, modify configuration:
  - set applications.provider=org.envtools.monitor.provider.applications.mock.MockApplicationsModuleProvider in application.properties
  - set load-at-startup to false in shell.xShellz.com.xml
  
-#Developers guide
+## Developers guide
 
 Client/server interaction is built on asynchronous message exchange over Websockets (STOMP protocol). Message format is JSON.
 The application is built from modules: 1 Core Module and several pluggable modules
